@@ -1,0 +1,20 @@
+main() <entry point>
+|   fib_rec(n=4) <line 8>
+|   |   fib_rec(n=3) <line 28>
+|   |   |   fib_rec(n=2) <line 28>
+|   |   |   |   fib_rec(n=1) <line 28>
+|   |   |   |   return 1 <line 27>
+|   |   |   |   fib_rec(n=0) <line 28>
+|   |   |   |   return 1 <line 27>
+|   |   |   return 2 <line 28>
+|   |   |   fib_rec(n=1) <line 28>
+|   |   |   return 1 <line 27>
+|   |   return 3 <line 28>
+|   |   fib_rec(n=2) <line 28>
+|   |   |   fib_rec(n=1) <line 28>
+|   |   |   return 1 <line 27>
+|   |   |   fib_rec(n=0) <line 28>
+|   |   |   return 1 <line 27>
+|   |   return 2 <line 28>
+|   return 5 <line 28>
+return <line 11>

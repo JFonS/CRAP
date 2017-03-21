@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="bin/Asl.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/antlr-3.4-complete.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-glfw-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-glfw.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-glfw-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-glfw-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-jemalloc-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-jemalloc-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-jemalloc-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-jemalloc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-opengl-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-opengl-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-opengl-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-opengl.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-stb-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-stb-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-stb-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-stb.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-tinyfd-javadoc.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-tinyfd-natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-tinyfd-sources.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl-tinyfd.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
