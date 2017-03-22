@@ -1,0 +1,141 @@
+// Prefabs -----------------
+prefab CUBE { Primitive: Cube; }
+prefab PATATA
+{
+  Visible = true;
+  Primitive = Sphere;
+  Rotation = (30, 30, 30);
+  Scale = (1, 2, 1);
+  Color = Brown;
+
+  Children =
+  {
+     {
+	Primitive = ...
+	Position =  ...
+     };
+     CUBE; 
+     CUBE; 
+     CUBE;
+     CUBE
+     {
+         Position =
+     }
+     
+  }
+}
+// -------------------------
+
+PATATA potato;
+PATATA littlePotato;
+
+// Functions ---------------
+timeline SlowRotate(object)
+{
+	 key(0.5) { SlowRotate (object) (0.5); }
+	 key(1.0) { object.Rotation -> object.Rotation + (30,30,30); }
+}
+
+function SlowRotateFunc(object)
+{
+	SlowRotate(object) [0.1]; // ABSOLUTE TIME
+}
+// -------------------------
+
+
+
+
+// SubTimelines -----------------
+timeline Hola()
+{
+  key(0.0) (Cubic)
+  {
+  	potato.Visible = true;
+  	SlowRotateFunc(potato);
+  }
+
+  key(0.1) (Instant) { wololo = fib(10); }
+  
+  key(0.2) (Linear)
+  {
+  	littlePotato.Visible = true;
+	littlePotato.Scale -> littlePotato.Scale - wololo;
+  }
+}
+
+timeline Adeu()
+{
+    key (1.0)  // Potatoes fade out 
+    {
+           potato.Scale -> (0,0,0);
+           littlePotato.Scale -> (0,0,0);
+    }
+}
+
+timeline main()
+{
+   key (0.0)
+   { 
+      Hola (0.3); // Duració Relativa
+   }
+
+   key (0.3)
+   { 
+      Hola [3.5]; // Duració Absoluta
+   }
+
+   key (0.6)
+   { 
+      Hola (0.4);
+   }
+
+   key(1.0) { Main (1.0); } // Loop
+}
+
+
+////////////////////////////////////////////////
+
+Creacio Prefabs:
+   prefab NomPrefab
+   {
+	NomPropietat = ValorPropietat;
+	Children = // Children si vols ofc
+        {
+            NomPrefabFill1 { /* override propietats si vols */ };
+            NomPrefabFill2;
+            NomPrefabFill3;
+        }
+   }
+
+Keyframe:
+   key (MomentInici, InterpolationType) 
+   key (MomentInici) 
+   {
+ 	Llista de tweenings / timelines / funcions / instruccions
+   }
+
+Timeline:
+   timeline NomTimeline(parameters)
+   {
+	Llista de Keyframes
+   }
+
+Crida a timeline:
+   NomTimeline(parameters) (DuracioRelativa);   
+   NomTimeline(parameters) [DuracioAbsoluta];
+   hola(1, 10) [3.4];
+
+
+Funcions:
+   function NomFuncio(parameters)
+   {
+	Llista timelines / funcions / instruccions
+   }
+
+Tweenings:
+   NomObjecte.NomPropietat -> Valor
+   myObject.Scale -> (5,5,5);
+   myObject.Scale -> myObject.Scale + (2,2,2);   
+
+
+

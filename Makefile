@@ -92,8 +92,8 @@ exec:
 	  mkdir $(BIN);\
 	fi
 	echo "Main-Class: Asl.Asl" > $(MANIFEST)
-	echo -e "Class-Path: $(JARPATH)" >> $(MANIFEST)
-	cd $(CLASSDIR); jar -cvfm $(JARFILE) $(MANIFEST) *
+	printf "Class-Path: $(JARPATH)" >> $(MANIFEST)
+	cd $(CLASSDIR); jar -cfm $(JARFILE) $(MANIFEST) *
 	printf "#!/bin/sh\n\n" > $(EXEC)
 #	printf 'exec java -enableassertions -jar $(JARFILE) "$$@"' >> $(EXEC)
 	printf 'exec java -cp "$(BIN)/Asl.jar:$(LIBDIR)/*" Asl.Asl "$$@"' >> $(EXEC) 
