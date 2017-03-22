@@ -3,11 +3,11 @@ Desciption of the directories:
 
 src:      all the source files
 classes:  all the class files
-bin:      the executable Asl
+bin:      the executable CRAP
 libs:     directory with external libraries
-examples: some examples of Asl programs
+examples: some examples of CRAP programs
 javadoc:  the doc files produced by javadoc
-doc:      a simple user guide (Asl.pdf)
+doc:      a simple user guide (CRAP.pdf)
 
 Installation:
 =============
@@ -15,15 +15,15 @@ Installation:
 The Makefile contains several commands:
 
 make all     -> creates the program and doc files (recommended)
-make compile -> creates the all Asl classes
-make exec    -> creates the executable script (bin/Asl)
+make compile -> creates the all CRAP classes
+make exec    -> creates the executable script (bin/CRAP)
 make clean   -> cleans the directories and keeps the essential files
 
 Execution:
 ==========
 
 * Set your path too look into the bin directory
-* Run "Asl" (you can run "Asl -help" too see the available options)
+* Run "CRAP" (you can run "CRAP -help" too see the available options)
 
 Licesing:
 =========

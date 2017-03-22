@@ -38,7 +38,7 @@ import org.antlr.runtime.Token;
  * However, it helps to understand how to extend AST nodes in ANTLR.
  */
  
-public class AslTree extends CommonTree {
+public class CRAPTree extends CommonTree {
     /** Field to store integer literals */
     private int intValue;
 
@@ -46,13 +46,13 @@ public class AslTree extends CommonTree {
     private String strValue;
 
     /** Constructor of the class */
-    public AslTree(Token t) {
+    public CRAPTree(Token t) {
         super(t);
     }
 
     /** Function to get the child of the node. */
-    public AslTree getChild(int i) {
-        return (AslTree) super.getChild(i);
+    public CRAPTree getChild(int i) {
+        return (CRAPTree) super.getChild(i);
     }
 
     /** Get the integer value of the node. */

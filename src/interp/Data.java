@@ -163,11 +163,11 @@ public class Data {
     public void evaluateArithmetic (int op, Data d) {
         assert type == Type.INTEGER && d.type == Type.INTEGER;
         switch (op) {
-            case AslLexer.PLUS: value += d.value; break;
-            case AslLexer.MINUS: value -= d.value; break;
-            case AslLexer.MUL: value *= d.value; break;
-            case AslLexer.DIV: checkDivZero(d); value /= d.value; break;
-            case AslLexer.MOD: checkDivZero(d); value %= d.value; break;
+            case CRAPLexer.PLUS: value += d.value; break;
+            case CRAPLexer.MINUS: value -= d.value; break;
+            case CRAPLexer.MUL: value *= d.value; break;
+            case CRAPLexer.DIV: checkDivZero(d); value /= d.value; break;
+            case CRAPLexer.MOD: checkDivZero(d); value %= d.value; break;
             default: assert false;
         }
     }
@@ -181,12 +181,12 @@ public class Data {
     public Data evaluateRelational (int op, Data d) {
         assert type != Type.VOID && type == d.type;
         switch (op) {
-            case AslLexer.EQUAL: return new Data(value == d.value);
-            case AslLexer.NOT_EQUAL: return new Data(value != d.value);
-            case AslLexer.LT: return new Data(value < d.value);
-            case AslLexer.LE: return new Data(value <= d.value);
-            case AslLexer.GT: return new Data(value > d.value);
-            case AslLexer.GE: return new Data(value >= d.value);
+            case CRAPLexer.EQUAL: return new Data(value == d.value);
+            case CRAPLexer.NOT_EQUAL: return new Data(value != d.value);
+            case CRAPLexer.LT: return new Data(value < d.value);
+            case CRAPLexer.LE: return new Data(value <= d.value);
+            case CRAPLexer.GT: return new Data(value > d.value);
+            case CRAPLexer.GE: return new Data(value >= d.value);
             default: assert false; 
         }
         return null;

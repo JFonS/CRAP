@@ -25,19 +25,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package Asl;
+package CRAP;
 
 // Imports for ANTLR
-import interp.AslTree;
-import interp.AslTreeAdaptor;
+import interp.CRAPTree;
+import interp.CRAPTreeAdaptor;
 import interp.Interp;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.DOTTreeGenerator;
 import org.apache.commons.cli.*;
-import parser.AslLexer;
-import parser.AslParser;
+import parser.CRAPLexer;
+import parser.CRAPParser;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -48,13 +48,13 @@ import java.io.IOException;
 // Parser and Interpreter
 
 /**
- * The class <code>Asl</code> implement the main function of the
+ * The class <code>CRAP</code> implement the main function of the
  * interpreter. It accepts a set of options to generate the AST in
  * dot format and avoid the execution of the program. To know about
- * the accepted options, run the command Asl -help.
+ * the accepted options, run the command CRAP -help.
  */
 
-public class Asl{
+public class CRAP{
 
     /** The file name of the program. */
     private static String infile = null;
@@ -90,14 +90,14 @@ public class Asl{
         }
 
         // Creates the lexer
-        AslLexer lex = new AslLexer(input);
+        CRAPLexer lex = new CRAPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
         // Creates and runs the parser. As a result, an AST is created
-        AslParser parser = new AslParser(tokens);
-        AslTreeAdaptor adaptor = new AslTreeAdaptor();
+        CRAPParser parser = new CRAPParser(tokens);
+        CRAPTreeAdaptor adaptor = new CRAPTreeAdaptor();
         parser.setTreeAdaptor(adaptor);
-        AslParser.prog_return result = null;
+        CRAPParser.prog_return result = null;
         try {
             result = parser.prog();
         } catch (Exception e) {} // Just catch the exception (nothing to do)
@@ -111,7 +111,7 @@ public class Asl{
         }
 
         // Get the AST
-        AslTree t = (AslTree)result.getTree();
+        CRAPTree t = (CRAPTree)result.getTree();
 
         // Generate a file for the AST (option -ast file)
         if (astfile != null) {
@@ -182,7 +182,7 @@ public class Asl{
         CommandLineParser clp = new GnuParser();
         CommandLine line = null;
 
-        String cmdline = "Asl [options] file";
+        String cmdline = "CRAP [options] file";
         
         
         // Parse the options

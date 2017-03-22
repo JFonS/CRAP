@@ -8,9 +8,10 @@ bin/*
 *.war
 *.ear
 
-src/parser/Asl.tokens
-src/parser/AslLexer.java
-src/parser/AslParser.java
+.settings/*
+src/parser/CRAP.tokens
+src/parser/CRAPLexer.java
+src/parser/CRAPParser.java
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*

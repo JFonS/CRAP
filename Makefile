@@ -1,4 +1,4 @@
-TARGET =	Asl
+TARGET =	CRAP
 
 # Directories
 ROOT =		$(PWD)
@@ -71,7 +71,7 @@ INTERP_SRC =	$(INTERP)/Interp.java \
 				$(INTERP)/Stack.java \
 				$(INTERP)/Data.java \
 				$(INTERP)/$(TARGET)Tree.java \
-				$(INTERP)/AslTreeAdaptor.java
+				$(INTERP)/CRAPTreeAdaptor.java
 
 ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
 
@@ -91,12 +91,12 @@ exec:
 	if [ ! -e $(BIN) ]; then\
 	  mkdir $(BIN);\
 	fi
-	echo "Main-Class: Asl.Asl" > $(MANIFEST)
+	echo "Main-Class: CRAP.CRAP" > $(MANIFEST)
 	printf "Class-Path: $(JARPATH)" >> $(MANIFEST)
 	cd $(CLASSDIR); jar -cfm $(JARFILE) $(MANIFEST) *
 	printf "#!/bin/sh\n\n" > $(EXEC)
 #	printf 'exec java -enableassertions -jar $(JARFILE) "$$@"' >> $(EXEC)
-	printf 'exec java -cp "$(BIN)/Asl.jar:$(LIBDIR)/*" Asl.Asl "$$@"' >> $(EXEC) 
+	printf 'exec java -cp "$(BIN)/CRAP.jar:$(LIBDIR)/*" CRAP.CRAP "$$@"' >> $(EXEC) 
 	chmod a+x $(EXEC)
 
 clean:

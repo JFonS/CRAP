@@ -41,14 +41,14 @@ import parser.*;
  * to the new AST nodes.
  */
  
-public class AslTreeAdaptor extends CommonTreeAdaptor {
+public class CRAPTreeAdaptor extends CommonTreeAdaptor {
     public Object create(Token t) {
-        return new AslTree(t);
+        return new CRAPTree(t);
     }
 
     public Object dupNode(Object t) {
         if ( t==null ) return null;
-        return create(((AslTree)t).token);
+        return create(((CRAPTree)t).token);
     }
     
     public Object errorNode(TokenStream input, Token start, Token stop,

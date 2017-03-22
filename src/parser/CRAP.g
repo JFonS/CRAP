@@ -25,11 +25,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-grammar Asl;
+grammar CRAP;
 
 options {
     output = AST;
-    ASTLabelType = AslTree;
+    ASTLabelType = CRAPTree;
 }
 
 // Imaginary tokens to create some AST nodes
@@ -52,7 +52,7 @@ tokens {
 
 @header {
 package parser;
-import interp.AslTree;
+import interp.CRAPTree;
 }
 
 @lexer::header {
