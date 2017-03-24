@@ -110,7 +110,7 @@ public class Interp {
         int n = T.getChildCount();
         for (int i = 0; i < n; ++i) {
             CRAPTree f = T.getChild(i);
-            assert f.getType() == CRAPLexer.FUNC;
+            assert f.getType() == CRAPLexer.FUNCTION;
             String fname = f.getChild(0).getText();
             if (FuncName2Tree.containsKey(fname)) {
                 throw new RuntimeException("Multiple definitions of function " + fname);
@@ -127,7 +127,7 @@ public class Interp {
     private void PreProcessAST(CRAPTree T) {
         if (T == null) return;
         switch(T.getType()) {
-            case CRAPLexer.INT: T.setIntValue(); break;
+            case CRAPLexer.NUMBER: T.setIntValue(); break;
             case CRAPLexer.STRING: T.setStringValue(); break;
             case CRAPLexer.BOOLEAN: T.setBooleanValue(); break;
             default: break;
@@ -242,7 +242,7 @@ public class Interp {
                 CRAPTree arrAccess = t.getChild(0);
                 Data array = Stack.getVariable( arrAccess.getChild(0).getText() );
 
-                Integer index = evaluateExpression( arrAccess.getChild(1) ).getIntegerValue();
+                Integer index = (int) evaluateExpression( arrAccess.getChild(1) ).getNumberValue();
                 array.setValue(index, value);
                 return null;
 
@@ -337,10 +337,10 @@ public class Interp {
             case CRAPLexer.ARR_ACCESS:
                 Data array = Stack.getVariable(t.getChild(0).getText());
                 Data index = evaluateExpression( t.getChild(1) );
-                if (!index.isInteger()) {
+                if (!index.isNumber()) {
                     throw new RuntimeException ("index not an integer");
                 }
-                value = new Data( array.getArrayValue( index.getIntegerValue() ) );
+                value = new Data( array.getArrayValue( (int)(index.getNumberValue()) ) );
                 break;
                 
             // A variable
@@ -348,8 +348,8 @@ public class Interp {
                 value = new Data(Stack.getVariable(t.getText()));
                 break;
             // An integer literal
-            case CRAPLexer.INT:
-                value = new Data(t.getIntValue());
+            case CRAPLexer.NUMBER:
+                value = new Data( Float.parseFloat(t.getStringValue()) );
                 break;
             // A Boolean literal
             case CRAPLexer.BOOLEAN:
@@ -392,7 +392,7 @@ public class Interp {
                     break;
                 case CRAPLexer.MINUS:
                     checkInteger(value);
-                    value.setValue(-value.getIntegerValue());
+                    value.setValue(-value.getNumberValue());
                     break;
                 case CRAPLexer.NOT:
                     checkBoolean(value);
@@ -490,7 +490,7 @@ public class Interp {
     
     /** Checks that the data is integer and raises an exception if it is not. */
     private void checkInteger (Data b) {
-        if (!b.isInteger()) {
+        if (!b.isNumber()) {
             throw new RuntimeException ("Expecting numerical expression");
         }
     }

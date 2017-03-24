@@ -8,6 +8,7 @@ bin/*
 *.war
 *.ear
 
+classes/*
 .settings/*
 src/parser/CRAP.tokens
 src/parser/CRAPLexer.java

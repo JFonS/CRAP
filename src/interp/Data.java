@@ -42,17 +42,17 @@ import java.util.*;
 
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, INTEGER, ARRAY;}
+    public enum Type {VOID, BOOLEAN, NUMBER, ARRAY;}
 
     /** Type of data*/
     private Type type;
 
     /** Value of the data */
-    private int value;
+    private float value;
     private ArrayList<Data> arrayValues;
 
-    /** Constructor for integers */
-    Data(int v) { type = Type.INTEGER; value = v; }
+    Data(int v) { type = Type.NUMBER; value = v; }
+    Data(float v) { type = Type.NUMBER; value = v; }
 
     /** Constructor for Booleans */
     Data(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
@@ -72,7 +72,7 @@ public class Data {
     public boolean isBoolean() { return type == Type.BOOLEAN; }
 
     /** Indicates whether the data is integer */
-    public boolean isInteger() { return type == Type.INTEGER; }
+    public boolean isNumber() { return type == Type.NUMBER; }
 
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
@@ -83,8 +83,8 @@ public class Data {
      * Gets the value of an integer data. The method asserts that
      * the data is an integer.
      */
-    public int getIntegerValue() {
-        assert type == Type.INTEGER;
+    public float getNumberValue() {
+        assert type == Type.NUMBER;
         return value;
     }
 
@@ -106,7 +106,7 @@ public class Data {
     public void setValue(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
 
     /** Defines an integer value for the data */
-    public void setValue(int v) { type = Type.INTEGER; value = v; }
+    public void setValue(float v) { type = Type.NUMBER; value = v; }
     
     /** Defines an integer value for the data */
     public void setValue(ArrayList<Data> array)
@@ -127,7 +127,7 @@ public class Data {
     /** Returns a string representing the data in textual form. */
     public String toString() {
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
-        if (type == Type.INTEGER) return Integer.toString(value);
+        if (type == Type.NUMBER) return Float.toString(value);
         if (type == Type.ARRAY)
         {
             int s = arrayValues.size();
@@ -161,7 +161,7 @@ public class Data {
      */
      
     public void evaluateArithmetic (int op, Data d) {
-        assert type == Type.INTEGER && d.type == Type.INTEGER;
+        assert type == Type.NUMBER && d.type == Type.NUMBER;
         switch (op) {
             case CRAPLexer.PLUS: value += d.value; break;
             case CRAPLexer.MINUS: value -= d.value; break;

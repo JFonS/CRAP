@@ -71,8 +71,8 @@ public class CRAP{
     
     public static void main(String[] args) throws Exception {
 
-        System.out.println("asdasdasd");
-        new HelloWorld().run();
+        //System.out.println("asdasdasd");
+    	//new HelloWorld().run();
 
         // Parser for command line options
         if (!readOptions (args)) {
@@ -100,7 +100,7 @@ public class CRAP{
         CRAPParser.prog_return result = null;
         try {
             result = parser.prog();
-        } catch (Exception e) {} // Just catch the exception (nothing to do)
+        } catch (Exception e) { System.err.println ("Error parsing..." + e.toString()); System.exit(1); } 
         
         // Check for parsing errors
         int nerrors = parser.getNumberOfSyntaxErrors();
@@ -111,7 +111,7 @@ public class CRAP{
         }
 
         // Get the AST
-        CRAPTree t = (CRAPTree)result.getTree();
+        CRAPTree t = (CRAPTree) result.getTree();
 
         // Generate a file for the AST (option -ast file)
         if (astfile != null) {
