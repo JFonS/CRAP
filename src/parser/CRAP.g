@@ -59,12 +59,12 @@ instruction
         :	assign       ';'! // Assignment
         |	ite_stmt          // if-then-else
         |	while_stmt        // while statement
-        |   timelineCall ';'!
-        |   funcCall     ';'! // Call to a procedure (no result produced)
+        |       timelineCall ';'!
+        |       funcCall     ';'! // Call to a procedure (no result produced)
         |	return_stmt  ';'! // Return statement
         |	read         ';'! // Read a variable
         | 	write        ';'! // Write a string or an expression
-        |                ';'! // Nothing
+        |                    ';'! // Nothing
         ;
 
 timeline_body: (timeline_instruction)* -> ^(TIMELINE_BODY timeline_instruction*);
@@ -79,11 +79,11 @@ assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
         ;
 
 // if-then-else (else is optional)
-ite_stmt	:	IF^ expr THEN! instruction_list (ELSE! instruction_list)? ENDIF!
+ite_stmt	:	IF^ '('! expr ')'! '{'! instruction_list '}'! (ELSE! '{'! instruction_list '}'! )? 
             ;
 
 // while statement
-while_stmt	:	WHILE^ expr DO! instruction_list ENDWHILE!
+while_stmt	:	WHILE^ '('! expr ')'! '{'! instruction_list '}'!
             ;
 
 // Return statement with an expression
@@ -136,12 +136,8 @@ NOT	    : 'not';
 AND	    : 'and' ;
 OR	    : 'or' ;
 IF  	: 'if' ;
-THEN	: 'then' ;
 ELSE	: 'else' ;
-ENDIF	: 'endif' ;
 WHILE	: 'while' ;
-DO	    : 'do' ;
-ENDWHILE: 'endwhile' ;
 TIMELINE	: 'timeline' ;
 FUNCTION	: 'function' ;
 RETURN	: 'return' ;

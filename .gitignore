@@ -5,6 +5,7 @@
 
 # Package Files #
 bin/*
+*.swp
 *.war
 *.ear
 *.dot
