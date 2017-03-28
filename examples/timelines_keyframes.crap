@@ -3,13 +3,17 @@ timeline Hola(potato,carrot)
 	key (0.4, Linear)
 	{
 	}
-	
-	key (1.0)
+
+    key (1.0)
 	{
-		wololo = 5;
+		if 2 + 2 < 7 then
+            wololo = 5;
+        else
+            main(1.0)();
+        endif
 	}
-	
-	Hola(1.0)(1,2)
+
+	Hola(1.0)(1,2);
 }
 
 function rotateThis(potato)

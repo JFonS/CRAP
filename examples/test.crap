@@ -1,0 +1,17 @@
+prefab Sphere { Primitive: Sphere; }
+
+Sphere sphere;
+int n = 0;
+
+timeline main()
+{
+    n = n + 1;
+
+    if (n%2 == 0) then
+        key(1.0) { sphere.Color -> (1,1,1); }
+    else
+        key(1.0) { sphere.Color -> (0,1,0); }
+    endif
+    
+    key(1.0) { main()(1.0); }
+}

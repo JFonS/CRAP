@@ -1,15 +1,15 @@
 // SubTimelines -----------------
 timeline Hola()
 {
-  key(0.0) (Cubic)
+  key(0.0, Cubic)
   {
   	potato.Visible = true;
   	SlowRotateFunc(potato);
   }
 
-  key(0.1) (Instant) { wololo = fib(10); }
+  key(0.1, Instant) { wololo = fib(10); }
   
-  key(0.2) (Linear)
+  key(0.2, Linear)
   {
   	littlePotato.Visible = true;
 	littlePotato.Scale -> littlePotato.Scale - wololo;

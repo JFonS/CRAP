@@ -15,6 +15,7 @@ tokens {
     TIMELINECALL;
     ARGLIST;    // List of arguments passed in a function call
     LIST_INSTR; // Block of instructions
+    TIMELINE_BODY;
     LIST_KEYS; // Block of keys
     BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
     PVALUE;     // Parameter by value in the list of parameters
@@ -39,33 +40,35 @@ prog: routineDeclare+ EOF -> ^(LIST_FUNCTIONS routineDeclare+);
 
 routineDeclare: funcDeclare | timelineDeclare;
 
-funcDeclare: FUNCTION^ ID params '{'! block_instructions '}'!;
+funcDeclare: FUNCTION^ ID params '{'! instruction_list '}'!;
 funcCall: ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?));
 
-timelineDeclare: TIMELINE^ ID params '{'! block_keys '}'!;
-timelineCall: ID '(' NUMBER ')'! '(' expr_list? ')';
+timelineDeclare: TIMELINE^ ID params '{'! timeline_body '}'!;
+timelineCall: ID '(' NUMBER ')' '(' expr_list? ')' -> ^(TIMELINECALL ID NUMBER ^(ARGLIST expr_list?));
 
 params	: '(' paramlist? ')' -> ^(PARAMS paramlist?);
 paramlist: param (','! param)*;
 param   :   '&' id=ID -> ^(PREF[$id,$id.text])
         |   id=ID -> ^(PVALUE[$id,$id.text]);
 
-block_keys: (key)* -> ^(LIST_KEYS key*);
-key: KEY^ '('! NUMBER (','! interp_type)? ')'! '{'! block_instructions '}'!;
+key: KEY^ '('! NUMBER (','! interp_type)? ')'! '{'! instruction_list '}'!;
 interp_type: LINEAR | CUBIC;
 
-block_instructions:	(instruction ';')* -> ^(LIST_INSTR instruction*);
+instruction_list:	instruction* -> ^(LIST_INSTR instruction*);
 instruction
-        :	assign          // Assignment
-        |	ite_stmt        // if-then-else
-        |	while_stmt      // while statement
-        |   timelineCall
-        |   funcCall         // Call to a procedure (no result produced)
-        |	return_stmt     // Return statement
-        |	read            // Read a variable
-        | 	write           // Write a string or an expression
-        |                   // Nothing
+        :	assign       ';'! // Assignment
+        |	ite_stmt          // if-then-else
+        |	while_stmt        // while statement
+        |   timelineCall ';'!
+        |   funcCall     ';'! // Call to a procedure (no result produced)
+        |	return_stmt  ';'! // Return statement
+        |	read         ';'! // Read a variable
+        | 	write        ';'! // Write a string or an expression
+        |                ';'! // Nothing
         ;
+
+timeline_body: (timeline_instruction)* -> ^(TIMELINE_BODY timeline_instruction*);
+timeline_instruction: instruction | key;
 
 expr_list:  expr (','! expr)*;
 
@@ -76,11 +79,11 @@ assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
         ;
 
 // if-then-else (else is optional)
-ite_stmt	:	IF^ expr THEN! block_instructions (ELSE! block_instructions)? ENDIF!
+ite_stmt	:	IF^ expr THEN! instruction_list (ELSE! instruction_list)? ENDIF!
             ;
 
 // while statement
-while_stmt	:	WHILE^ expr DO! block_instructions ENDWHILE!
+while_stmt	:	WHILE^ expr DO! instruction_list ENDWHILE!
             ;
 
 // Return statement with an expression
@@ -107,9 +110,9 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*;
 term    :   factor ( (MUL^ | DIV^ | MOD^) factor)*;
 factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
-atom    :   ID 
+atom    :   ID
         |   NUMBER
-    	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr) 
+    	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
         |   '('! expr ')'!
@@ -131,7 +134,7 @@ DIV	    : '/';
 MOD	    : '%' ;
 NOT	    : 'not';
 AND	    : 'and' ;
-OR	    : 'or' ;	
+OR	    : 'or' ;
 IF  	: 'if' ;
 THEN	: 'then' ;
 ELSE	: 'else' ;
@@ -157,7 +160,7 @@ COMMENT	: '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
     	| '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
     	;
 
-// Strings (in quotes) with escape sequences        
+// Strings (in quotes) with escape sequences
 STRING  :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
         ;
 
