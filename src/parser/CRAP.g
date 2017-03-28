@@ -15,11 +15,11 @@ tokens {
     TIMELINECALL;
     ARGLIST;    // List of arguments passed in a function call
     LIST_INSTR; // Block of instructions
-    TIMELINE_BODY;
     LIST_KEYS; // Block of keys
     BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
+    PREFAB_PROPS;
     ARR_ACCESS;
     ARR_ELM_ASSIGN; // One element assign
     LIST;
@@ -36,29 +36,38 @@ package parser;
 
 
 // A program is a list of functions
-prog: routineDeclare+ EOF -> ^(LIST_FUNCTIONS routineDeclare+);
+prog: declaration+ EOF -> ^(LIST_FUNCTIONS declaration+);
 
-routineDeclare: funcDeclare | timelineDeclare;
+declaration: globalVarDeclare | prefabDeclare | funcDeclare | timelineDeclare;
+
+prop_list: (assign ';')* -> ^(PREFAB_PROPS assign*);
+prefabDeclare  : PREFAB^ ID (':' ID)? '{'! 
+		prop_list
+	  '}'!;
+
+globalVarDeclare: GLOBAL^ ID';'!;
 
 funcDeclare: FUNCTION^ ID params '{'! instruction_list '}'!;
 funcCall: ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?));
 
-timelineDeclare: TIMELINE^ ID params '{'! timeline_body '}'!;
-timelineCall: ID '(' NUMBER ')' '(' expr_list? ')' -> ^(TIMELINECALL ID NUMBER ^(ARGLIST expr_list?));
+timelineDeclare: TIMELINE^ ID params '{'! instruction_list '}'!;
+timelineCall: ID time '(' expr_list? ')' -> ^(TIMELINECALL ID time ^(ARGLIST expr_list?));
 
 params	: '(' paramlist? ')' -> ^(PARAMS paramlist?);
 paramlist: param (','! param)*;
 param   :   '&' id=ID -> ^(PREF[$id,$id.text])
         |   id=ID -> ^(PVALUE[$id,$id.text]);
 
-key: KEY^ '('! NUMBER (','! interp_type)? ')'! '{'! instruction_list '}'!;
+key: KEY^ '('! expr (','! interp_type)? ')'! '{'! instruction_list '}'!;
 interp_type: LINEAR | CUBIC;
 
 instruction_list:	instruction* -> ^(LIST_INSTR instruction*);
 instruction
-        :	assign       ';'! // Assignment
-        |	ite_stmt          // if-then-else
+        :	ite_stmt          // if-then-else
         |	while_stmt        // while statement
+	|       key
+        |	assign       ';'! // Assignment
+        |	tween        ';'! // Tween
         |       timelineCall ';'!
         |       funcCall     ';'! // Call to a procedure (no result produced)
         |	return_stmt  ';'! // Return statement
@@ -67,14 +76,16 @@ instruction
         |                    ';'! // Nothing
         ;
 
-timeline_body: (timeline_instruction)* -> ^(TIMELINE_BODY timeline_instruction*);
-timeline_instruction: instruction | key;
+time: time_rel | time_abs;
+time_rel: '<<'! expr '>>'!;
+time_abs: '[['! expr ']]'!;
 
 expr_list:  expr (','! expr)*;
 
 // Assignment
+tween   :       ID tw=TWEEN expr -> ^(TWEEN[$tw, "TWEEN"] ID expr);
+
 assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
-	//|	ID eq=EQUAL list -> ^(ARR_ASSIGN[$eq,"ARR_ASSIGN"] ID list )
 	|	ID '[' index=expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID $index) $val )
         ;
 
@@ -98,6 +109,7 @@ read	:	READ^ ID
 write	:   WRITE^ (expr | STRING )
         ;
 
+
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    :   boolterm (OR^ boolterm)*;
 
@@ -112,16 +124,18 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
 atom    :   ID
         |   NUMBER
+	|   VEC^ '('! expr_list ')'!
     	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
         |   '('! expr ')'!
-	    |   '[' expr_list ']' -> ^(LIST expr_list)
+	|   '[' expr_list ']' -> ^(LIST expr_list)
         ;
 
 
 // Basic tokens
 EQUAL	: '=' ;
+TWEEN   : '->';
 NOT_EQUAL: '!=' ;
 LT	    : '<' ;
 LE	    : '<=';
@@ -146,9 +160,13 @@ WRITE	: 'write' ;
 TRUE    : 'true' ;
 FALSE   : 'false';
 KEY     : 'key';
-LINEAR: 'Linear';
-CUBIC: 'Cubic';
-ID  	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
+VEC     : 'vec';
+GLOBAL  : 'global';
+PREFAB  :  'prefab'; 
+LINEAR  : 'Linear';
+CUBIC   : 'Cubic';
+ID      :('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* | 
+	 ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
 NUMBER  : '0'..'9'+ | '0'..'9'+ '.' '0'..'9'+;
 
 // C-style comments
