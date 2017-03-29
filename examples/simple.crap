@@ -1,6 +1,31 @@
 function main()
 {
-	a.Scale.Position.x.y.z = false;
-	a.Position.Movement.x = 3;
+	a.Position.x = 1;
+	a.Position.y = 2;
+	a.Position.z = 3;
+	a.Rotation.x = 30;
+	a.Rotation.y = 60;
+	a.Rotation.z = 90;
+	a.Rotation.w = 120;
+	a.Scale.x = 11;
+	a.Scale.y = 22;
+	a.Scale.z = 33;
 	write a;
+	write a.Position;
+	write a.Position.x;
+	write a.Position.y;
+	write a.Position.z;
+	write a.Rotation;
+	write a.Rotation.x;
+	write a.Rotation.y;
+	write a.Rotation.z;
+	write a.Rotation.w;
+	write a.Scale;
+	write a.Scale.x;
+	write a.Scale.y;
+	write a.Scale.z;
+	//write a.Scale.Position.x;
+	//write a.Scale.Position.x.y;
+	//write a.Scale.Position.x.y.z;
+	//write a.Scale.Position.x.y.z;
 }

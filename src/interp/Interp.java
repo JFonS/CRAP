@@ -320,18 +320,17 @@ public class Interp {
         int previous_line = lineNumber();
         setLineNumber(t);
         int type = t.getType();
-        
+
         Data value = null;
         // Atoms
         switch (type) {
             // A variable
             case CRAPLexer.ID:
-            	System.out.println("Trying to evaluateExpression: " + t.getText());
                 value = new Data( Stack.getVariable(t.getText()) );
                 break;
             // An integer literal
             case CRAPLexer.NUMBER:
-                value = new Data( Float.parseFloat(t.getText()) );
+            	value = new Data( Float.parseFloat(t.getText()) );
                 break;
             // A Boolean literal
             case CRAPLexer.BOOLEAN:

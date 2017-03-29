@@ -124,12 +124,12 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
 atom    :   ID
         |   NUMBER
-	|   VEC^ '('! expr_list ')'!
+	    |   VEC^ '('! expr_list ')'!
     	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
         |   '('! expr ')'!
-	|   '[' expr_list ']' -> ^(LIST expr_list)
+	    |   '[' expr_list ']' -> ^(LIST expr_list)
         ;
 
 

@@ -77,14 +77,15 @@ public class Data {
     }
 
     /** Copy constructor */
-    Data(Data d)
+    Data(Data copyThis)
     { 
-    	type = d.type; 
-    	value = d.value;
+    	type = copyThis.type; 
+    	value = copyThis.value;
     	properties = new HashMap<String, Data>();
-    	for (String propName : d.properties.keySet())
+    	for (String propName : copyThis.properties.keySet())
     	{
-    		setProperty(propName, new Data( d.properties.get(propName) )); 
+    		Data v = new Data( copyThis.getProperty(propName) );
+    		setProperty(propName, v);
     	}
     }
 
@@ -122,11 +123,16 @@ public class Data {
     
     public Data getProperty(String propertyPath)
     {
-    	if (!propertyPath.contains("."))
+    	if (!propertyPath.isEmpty())
     	{
     		String propName = propertyPath.split("\\.", 2)[0];
-    		String propPathNoName = propertyPath.split("\\.", 2)[1];
-    		return properties.get(propName).getProperty(propPathNoName);
+
+    		if (propertyPath.contains("."))
+    		{
+	    		String propPathNoName = propertyPath.split("\\.", 2)[1];
+	    		return properties.get(propName).getProperty(propPathNoName);
+    		}
+    		else { return properties.get(propName); }
     	}
 		return this;
     }
@@ -140,16 +146,16 @@ public class Data {
     public void setProperty(String propertyPath, Data propertyValue)
     { 
         type = Type.OBJECT;
-        
-    	String propertyName = propertyPath.split("\\.", 2)[0];
+
+    	String propName = propertyPath.split("\\.", 2)[0];
     	Data prop;
-    	if (properties.containsKey(propertyName)) { prop = properties.get(propertyName); }
+    	if (properties.containsKey(propName)) { prop = properties.get(propName); }
     	else 
     	{ 
-    		prop = new Data();  
-        	properties.put(propertyName, propertyValue);
+    		prop = new Data();
+        	properties.put(propName, prop);
         }
-    	
+
         if (propertyPath.contains("."))
         {
         	prop.setProperty(propertyPath.split("\\.", 2)[1], propertyValue);
@@ -161,12 +167,19 @@ public class Data {
     }
 
     /** Copies the value from another data */
-    public void setData(Data d) { type = d.type; value = d.value; }
+    public void setData(Data d) 
+    { 
+    	type = d.type; 
+    	value = d.value;
+    	for (String propName : d.properties.keySet())
+    	{
+    		setProperty(propName, d.getProperty(propName));
+    	}
+    }
     
     /** Returns a string representing the data in textual form. */
     public String toString() 
     {
-    	System.out.println("Tostringing " + type );
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
         
@@ -174,10 +187,10 @@ public class Data {
         String str = "{";
         for (String propName: properties.keySet())
         {
-            str += propName + ": "  + properties.get(propName).toString() + ", ";
+            str += propName + ": "  + getProperty(propName).toString() + ", ";
         }
-        str = str.substring(0, str.length() - 2);
         str += "}";
+        str = str.replace(", }", "}");
         return str;
     }
     

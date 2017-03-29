@@ -92,17 +92,14 @@ public class Stack {
      * @param value The value of the variable
      */
     public void defineVariable(String propertyPath, Data value) {
-        System.out.println("propertyPath: " + propertyPath);
     	String varName = propertyPath.split("\\.", 2)[0];
     	if (propertyPath.contains(".")) // IS AN OBJECT
     	{
 	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
 	        Data var = CurrentAR.get(varName);
-	        System.out.println(propertyPath);
 	        if (var == null) 
 	        {
 	        	var = new Data();
-		        System.out.println("Creating new data and setting property: " + propPathNoName);
 	        	CurrentAR.put(varName, var); // New definition
 	        }
 	        var.setProperty(propPathNoName, value); // Use the previous data
@@ -130,10 +127,7 @@ public class Stack {
     public Data getVariable(String propertyPath) {
     	String varName = propertyPath.split("\\.", 2)[0];
         Data v = CurrentAR.get(varName);
-        if (v == null) {
-            throw new RuntimeException ("Variable " + varName + " not defined");
-        }
-        else
+        if (v != null) 
         {
         	if (propertyPath.contains("."))
         	{
@@ -142,6 +136,7 @@ public class Stack {
         	}
         	else { return v; }
         }
+        else { throw new RuntimeException ("Variable " + varName + " not defined"); }
     }
 
     /**
