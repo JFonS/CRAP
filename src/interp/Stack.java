@@ -27,6 +27,7 @@
 
 package interp;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -90,10 +91,34 @@ public class Stack {
      * @param name The name of the variable
      * @param value The value of the variable
      */
-    public void defineVariable(String name, Data value) {
-        Data d = CurrentAR.get(name);
-        if (d == null) CurrentAR.put(name, value); // New definition
-        else d.setData(value); // Use the previous data 
+    public void defineVariable(String propertyPath, Data value) {
+        System.out.println("propertyPath: " + propertyPath);
+    	String varName = propertyPath.split("\\.", 2)[0];
+    	if (propertyPath.contains(".")) // IS AN OBJECT
+    	{
+	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
+	        Data var = CurrentAR.get(varName);
+	        System.out.println(propertyPath);
+	        if (var == null) 
+	        {
+	        	var = new Data();
+		        System.out.println("Creating new data and setting property: " + propPathNoName);
+	        	CurrentAR.put(varName, var); // New definition
+	        }
+	        var.setProperty(propPathNoName, value); // Use the previous data
+    	}
+    	else // IS NOT AN OBJECT
+    	{
+	        Data var = CurrentAR.get(varName);
+	        if (var == null) 
+	        {
+	        	CurrentAR.put(varName, value); // New definition
+	        }
+	        else
+	        {
+	        	var.setData(value);
+	        }
+    	}
     }
 
     /** Gets the value of the variable. The value is represented as
@@ -102,12 +127,21 @@ public class Stack {
      * @param name The name of the variable
      * @return The value of the variable
      */
-    public Data getVariable(String name) {
-        Data v = CurrentAR.get(name);
+    public Data getVariable(String propertyPath) {
+    	String varName = propertyPath.split("\\.", 2)[0];
+        Data v = CurrentAR.get(varName);
         if (v == null) {
-            throw new RuntimeException ("Variable " + name + " not defined");
+            throw new RuntimeException ("Variable " + varName + " not defined");
         }
-        return v;
+        else
+        {
+        	if (propertyPath.contains("."))
+        	{
+	        	String propPathNoName = propertyPath.split("\\.", 2)[1];
+	        	return v.getProperty(propPathNoName);
+        	}
+        	else { return v; }
+        }
     }
 
     /**

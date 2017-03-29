@@ -42,28 +42,51 @@ import java.util.*;
 
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, NUMBER, ARRAY;}
+    public enum Type {VOID, BOOLEAN, NUMBER, OBJECT;}
 
     /** Type of data*/
     private Type type;
 
     /** Value of the data */
     private float value;
-    private ArrayList<Data> arrayValues;
+    private HashMap<String, Data> properties;
 
-    Data(int v) { type = Type.NUMBER; value = v; }
-    Data(float v) { type = Type.NUMBER; value = v; }
+    Data(int v) 
+    { 
+    	type = Type.NUMBER; value = v;
+    	properties = new HashMap<String, Data>(); 
+    }
+    Data(float v) 
+    {
+    	type = Type.NUMBER; value = v;
+    	properties = new HashMap<String, Data>(); 
+    }
 
     /** Constructor for Booleans */
-    Data(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
-
-    Data(ArrayList<Data> arr) { type = Type.ARRAY; value = -1; arrayValues = arr; }
+    Data(boolean b) 
+    { 
+    	type = Type.BOOLEAN; value = b ? 1 : 0;
+		properties = new HashMap<String, Data>(); 
+	}
 
     /** Constructor for void data */
-    Data() {type = Type.VOID; }
+    Data() 
+    {
+    	type = Type.VOID; 
+    	properties = new HashMap<String, Data>();
+    }
 
     /** Copy constructor */
-    Data(Data d) { type = d.type; value = d.value; arrayValues = d.arrayValues; }
+    Data(Data d)
+    { 
+    	type = d.type; 
+    	value = d.value;
+    	properties = new HashMap<String, Data>();
+    	for (String propName : d.properties.keySet())
+    	{
+    		setProperty(propName, new Data( d.properties.get(propName) )); 
+    	}
+    }
 
     /** Returns the type of data */
     public Type getType() { return type; }
@@ -77,7 +100,7 @@ public class Data {
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
 
-    public boolean isArray() { return type == Type.ARRAY; }
+    public boolean isObject() { return type == Type.OBJECT; }
 
     /**
      * Gets the value of an integer data. The method asserts that
@@ -96,10 +119,16 @@ public class Data {
         assert type == Type.BOOLEAN;
         return value == 1;
     }
-
-    public Data getArrayValue(int index) {
-        assert type == Type.ARRAY;
-        return arrayValues.get( (index + arrayValues.size() * 999) % arrayValues.size()  );
+    
+    public Data getProperty(String propertyPath)
+    {
+    	if (!propertyPath.contains("."))
+    	{
+    		String propName = propertyPath.split("\\.", 2)[0];
+    		String propPathNoName = propertyPath.split("\\.", 2)[1];
+    		return properties.get(propName).getProperty(propPathNoName);
+    	}
+		return this;
     }
 
     /** Defines a Boolean value for the data */
@@ -108,41 +137,48 @@ public class Data {
     /** Defines an integer value for the data */
     public void setValue(float v) { type = Type.NUMBER; value = v; }
     
-    /** Defines an integer value for the data */
-    public void setValue(ArrayList<Data> array)
+    public void setProperty(String propertyPath, Data propertyValue)
     { 
-        type = Type.ARRAY; 
-        value = -1;
-        arrayValues = array;
-    }
-    public void setValue(int index, Data value)
-    { 
-        type = Type.ARRAY;
-        arrayValues.set(index, value);
+        type = Type.OBJECT;
+        
+    	String propertyName = propertyPath.split("\\.", 2)[0];
+    	Data prop;
+    	if (properties.containsKey(propertyName)) { prop = properties.get(propertyName); }
+    	else 
+    	{ 
+    		prop = new Data();  
+        	properties.put(propertyName, propertyValue);
+        }
+    	
+        if (propertyPath.contains("."))
+        {
+        	prop.setProperty(propertyPath.split("\\.", 2)[1], propertyValue);
+        }
+        else
+        {
+        	prop.setData(propertyValue);
+        }
     }
 
     /** Copies the value from another data */
     public void setData(Data d) { type = d.type; value = d.value; }
     
     /** Returns a string representing the data in textual form. */
-    public String toString() {
+    public String toString() 
+    {
+    	System.out.println("Tostringing " + type );
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
-        if (type == Type.ARRAY)
+        
+        // Type OBJECT
+        String str = "{";
+        for (String propName: properties.keySet())
         {
-            int s = arrayValues.size();
-            if (s == 0) return "[]";
-            
-            String str = "[";
-            for (int i = 0; i < s-1; ++i)
-            {
-                str += arrayValues.get(i).toString() + ", ";
-            }
-            str += arrayValues.get(s-1) + "]";
-            return str;
+            str += propName + ": "  + properties.get(propName).toString() + ", ";
         }
-
-        return "<" + type.toString() + ">";
+        str = str.substring(0, str.length() - 2);
+        str += "}";
+        return str;
     }
     
     /**

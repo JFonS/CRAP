@@ -230,22 +230,12 @@ public class Interp {
      */
     private Data executeInstruction (CRAPTree t) {
         assert t != null;
-        
+
         setLineNumber(t);
         Data value = new Data(); // The returned value
 
         // A big switch for all type of instructions
         switch (t.getType()) {
-
-            case CRAPLexer.ARR_ELM_ASSIGN:
-                value = evaluateExpression(t.getChild(1));
-                CRAPTree arrAccess = t.getChild(0);
-                Data array = Stack.getVariable( arrAccess.getChild(0).getText() );
-
-                Integer index = (int) evaluateExpression( arrAccess.getChild(1) ).getNumberValue();
-                array.setValue(index, value);
-                return null;
-
             // Assignment
             case CRAPLexer.ASSIGN:
                 value = evaluateExpression(t.getChild(1));
@@ -330,40 +320,22 @@ public class Interp {
         int previous_line = lineNumber();
         setLineNumber(t);
         int type = t.getType();
-
+        
         Data value = null;
         // Atoms
         switch (type) {
-            case CRAPLexer.ARR_ACCESS:
-                Data array = Stack.getVariable(t.getChild(0).getText());
-                Data index = evaluateExpression( t.getChild(1) );
-                if (!index.isNumber()) {
-                    throw new RuntimeException ("index not an integer");
-                }
-                value = new Data( array.getArrayValue( (int)(index.getNumberValue()) ) );
-                break;
-                
             // A variable
             case CRAPLexer.ID:
-                value = new Data(Stack.getVariable(t.getText()));
+            	System.out.println("Trying to evaluateExpression: " + t.getText());
+                value = new Data( Stack.getVariable(t.getText()) );
                 break;
             // An integer literal
             case CRAPLexer.NUMBER:
-                value = new Data( Float.parseFloat(t.getStringValue()) );
+                value = new Data( Float.parseFloat(t.getText()) );
                 break;
             // A Boolean literal
             case CRAPLexer.BOOLEAN:
                 value = new Data(t.getBooleanValue());
-                break;
-            case CRAPLexer.LIST:
-                CRAPTree arrValues = t;
-                ArrayList<Data> arrayOfValues = new ArrayList<Data>();
-                for (int i = 0; i < arrValues.getChildCount(); ++i)
-                {
-                    Data v = evaluateExpression(arrValues.getChild(i));
-                    arrayOfValues.add(v);
-                }
-                value = new Data(arrayOfValues);
                 break;
             // A function call. Checks that the function returns a result.
             case CRAPLexer.FUNCALL:

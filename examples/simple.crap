@@ -1,0 +1,6 @@
+function main()
+{
+	a.Scale.Position.x.y.z = false;
+	a.Position.Movement.x = 3;
+	write a;
+}
