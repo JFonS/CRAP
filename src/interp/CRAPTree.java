@@ -40,7 +40,7 @@ import org.antlr.runtime.Token;
  
 public class CRAPTree extends CommonTree {
     /** Field to store integer literals */
-    private int intValue;
+    private float floatValue;
 
     /** Field to store string literals (without the enclosing quotes) */
     private String strValue;
@@ -56,17 +56,17 @@ public class CRAPTree extends CommonTree {
     }
 
     /** Get the integer value of the node. */
-    public int getIntValue() { return intValue;}
+    public float getFloatValue() { return floatValue;}
 
     /** Define the integer value of the node. */
-    public void setIntValue() { intValue = Integer.parseInt(getText()); }
+    public void setFloatValue() { floatValue = Float.parseFloat(getText()); }
 
     /** Get the Boolean value of the node. */
-    public boolean getBooleanValue() { return intValue != 0; }
+    public boolean getBooleanValue() { return floatValue != 0.0f; }
 
     /** Define the Boolean value of the node. */
     public void setBooleanValue() {
-        intValue = getText().equals("true") ? 1 : 0;
+        floatValue = getText().equals("true") ? 1 : 0;
     }
 
     /** Get the string value of the node. */

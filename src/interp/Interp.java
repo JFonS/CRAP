@@ -127,7 +127,7 @@ public class Interp {
     private void PreProcessAST(CRAPTree T) {
         if (T == null) return;
         switch(T.getType()) {
-            case CRAPLexer.NUMBER: T.setIntValue(); break;
+            case CRAPLexer.NUMBER: T.setFloatValue(); break;
             case CRAPLexer.STRING: T.setStringValue(); break;
             case CRAPLexer.BOOLEAN: T.setBooleanValue(); break;
             default: break;
