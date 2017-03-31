@@ -1,8 +1,15 @@
+global a;
+
+timeline Explosion()
+{
+	key (0.5)
+	{
+		a.Position.x -> 10.0;
+	}
+}
+
 function main()
 {
-	a.Position.x = 2.23;
-	a.Scale.y = 3.95;
-	a.result = a.Position.x + a.Scale.y;
-	
-	write a.result;
+	a.Position.x = 0.0;
+	Explosion<<20.0>>();
 }

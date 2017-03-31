@@ -29,10 +29,14 @@ package interp;
 
 import parser.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.io.*;
+
+import CRAP.Tween;
+import CRAP.TweenManager;
 
 /** Class that implements the interpreter of the language. */
 
@@ -84,10 +88,26 @@ public class Interp {
         }
         function_nesting = -1;
     }
-
+    
     /** Runs the program by calling the main function without parameters. */
-    public void Run() {
-        executeFunction ("main", null);
+    public void Run() 
+    {
+    	TweenManager tweenManager = new TweenManager();
+    	
+    	float timeAbsSeconds = 0.0f;
+    	Data d = new Data(3.0f);
+    	tweenManager.AddTween( new Tween(d, 0.0f, 4.5f, 0.0f) );
+    	tweenManager.AddTween( new Tween(d, 5.0f, 15.0f, 100.0f) );
+    	
+		long init = System.currentTimeMillis();
+    	while (true)
+    	{
+    		tweenManager.Update(timeAbsSeconds);
+    		
+    		timeAbsSeconds = (System.currentTimeMillis() - init) / 1000.0f;
+    	}
+    	
+        // executeFunction ("main", null);
     }
 
     /** Returns the contents of the stack trace */

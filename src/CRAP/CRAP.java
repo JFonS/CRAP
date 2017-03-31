@@ -28,9 +28,7 @@
 package CRAP;
 
 // Imports for ANTLR
-import interp.CRAPTree;
-import interp.CRAPTreeAdaptor;
-import interp.Interp;
+import interp.*;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -43,6 +41,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Random;
 
 // Imports from Java
 // Parser and Interpreter
@@ -69,18 +70,12 @@ public class CRAP{
       
     /** Main program that invokes the parser and the interpreter. */
     
-    public static void main(String[] args) throws Exception {
-
-        //System.out.println("asdasdasd");
-    	//new HelloWorld().run();
-
+    public static void main(String[] args) throws Exception 
+    {
         // Parser for command line options
-        if (!readOptions (args)) {
-            System.exit(1);
-        }
+        if (!readOptions (args)) { System.exit(1); }
 
         // Parsing of the input file
-        
         CharStream input = null;
         try {
             input = new ANTLRFileStream(infile);
@@ -114,7 +109,8 @@ public class CRAP{
         CRAPTree t = (CRAPTree) result.getTree();
 
         // Generate a file for the AST (option -ast file)
-        if (astfile != null) {
+        if (astfile != null) 
+        {
             File ast = new File(astfile);
             BufferedWriter output = new BufferedWriter(new FileWriter(ast));
             if (dotformat) {
@@ -127,13 +123,14 @@ public class CRAP{
         }
 
         // Start interpretation (only if execution required)
-        if (execute) {
+        if (execute) 
+        {
             // Creates and prepares the interpreter
             Interp I = null;
             int linenumber = -1;
             try {
                 I = new Interp(t, tracefile); // prepares the interpreter
-                I.Run();                  // Executes the code
+                I.Run();                      // Executes the code
             } catch (RuntimeException e) {
                 if (I != null) linenumber = I.lineNumber();
                 System.err.print ("Runtime error");

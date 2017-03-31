@@ -51,42 +51,38 @@ public class Data {
     private float value;
     private HashMap<String, Data> properties;
 
-    Data(int v) 
+    public Data(int v) 
     { 
-    	type = Type.NUMBER; value = v;
+    	type = Type.NUMBER; 
+    	value = v;
     	properties = new HashMap<String, Data>(); 
     }
-    Data(float v) 
+    public Data(float v) 
     {
-    	type = Type.NUMBER; value = v;
+    	type = Type.NUMBER; 
+    	value = v;
     	properties = new HashMap<String, Data>(); 
     }
 
     /** Constructor for Booleans */
-    Data(boolean b) 
+    public Data(boolean b) 
     { 
-    	type = Type.BOOLEAN; value = b ? 1 : 0;
+    	type = Type.BOOLEAN; 
+    	value = b ? 1 : 0;
 		properties = new HashMap<String, Data>(); 
 	}
 
     /** Constructor for void data */
-    Data() 
+    public Data() 
     {
     	type = Type.VOID; 
     	properties = new HashMap<String, Data>();
     }
 
     /** Copy constructor */
-    Data(Data copyThis)
+    public Data(Data copyThis)
     { 
-    	type = copyThis.type; 
-    	value = copyThis.value;
-    	properties = new HashMap<String, Data>();
-    	for (String propName : copyThis.properties.keySet())
-    	{
-    		Data v = new Data( copyThis.getProperty(propName) );
-    		setProperty(propName, v);
-    	}
+    	setData(copyThis);
     }
 
     /** Returns the type of data */
@@ -167,13 +163,15 @@ public class Data {
     }
 
     /** Copies the value from another data */
-    public void setData(Data d) 
+    public void setData(Data copyThis)
     { 
-    	type = d.type; 
-    	value = d.value;
-    	for (String propName : d.properties.keySet())
+    	type = copyThis.type; 
+    	value = copyThis.value;
+    	properties = new HashMap<String, Data>();
+    	for (String propName : copyThis.properties.keySet())
     	{
-    		setProperty(propName, d.getProperty(propName));
+    		Data v = new Data( copyThis.getProperty(propName) );
+    		setProperty(propName, v);
     	}
     }
     
