@@ -43,6 +43,8 @@ public class Tween
 		data.setValue(vStart + (vFinish - vStart) * t);
 	}
 	
+	public Data GetData() { return data; }
+	
 	public boolean HasStarted()  { return tweenStarted; }
 	public boolean HasFinished() { return tweenFinished; }
 }

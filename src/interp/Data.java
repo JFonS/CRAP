@@ -139,6 +139,8 @@ public class Data {
     /** Defines an integer value for the data */
     public void setValue(float v) { type = Type.NUMBER; value = v; }
     
+    public void setType(Data.Type type) { this.type = type; }
+    
     public void setProperty(String propertyPath, Data propertyValue)
     { 
         type = Type.OBJECT;

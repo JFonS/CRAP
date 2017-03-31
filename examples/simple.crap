@@ -2,14 +2,27 @@ global a;
 
 timeline Explosion()
 {
-	key (0.5)
+	write "Started explosion";
+	
+	key <<0.5>>
 	{
-		a.Position.x -> 10.0;
+		a.Position.x -> -5.0;
+		write a.Position.x;
+	}
+	
+	key <<1.0>> { Explosion<<0.9>>(); }
+}
+
+timeline Main()
+{
+	a.Position.x = 0.0;
+	key [[5.0]]
+	{
+		Explosion[[5.0]]();
 	}
 }
 
 function main()
 {
-	a.Position.x = 0.0;
-	Explosion<<20.0>>();
+	Main[[1.0]]();
 }

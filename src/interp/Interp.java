@@ -28,6 +28,7 @@
 package interp;
 
 import parser.*;
+import CRAP.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -35,13 +36,22 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.io.*;
 
+import CRAP.Timeline;
 import CRAP.Tween;
 import CRAP.TweenManager;
 
 /** Class that implements the interpreter of the language. */
 
-public class Interp {
-
+public class Interp 
+{
+	private float currentKeyTimeAbs = 0.0f;
+	private float timeScopeStartAbs  = 0.0f;
+	private float timeScopeFinishAbs = 1.0f;
+	
+	private float timeAbsSeconds = 0.0f;
+	private TimelineManager timelineManager;
+	private TweenManager tweenManager;
+	
     /** Memory of the virtual machine. */
     private Stack Stack;
 
@@ -71,14 +81,19 @@ public class Interp {
      * Constructor of the interpreter. It prepares the main
      * data structures for the execution of the main program.
      */
-    public Interp(CRAPTree T, String tracefile) {
+    public Interp(CRAPTree T, String tracefile) 
+    {
         assert T != null;
+        Stack = new Stack(); // Creates the memory of the virtual machine
+        Stack.pushActivationRecord("__global", 0);
+
         MapFunctions(T);  // Creates the table to map function names into AST nodes
         PreProcessAST(T); // Some internal pre-processing ot the AST
-        Stack = new Stack(); // Creates the memory of the virtual machine
+        
         // Initializes the standard input of the program
         stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
-        if (tracefile != null) {
+        if (tracefile != null) 
+        {
             try {
                 trace = new PrintWriter(new FileWriter(tracefile));
             } catch (IOException e) {
@@ -92,22 +107,18 @@ public class Interp {
     /** Runs the program by calling the main function without parameters. */
     public void Run() 
     {
-    	TweenManager tweenManager = new TweenManager();
-    	
-    	float timeAbsSeconds = 0.0f;
-    	Data d = new Data(3.0f);
-    	tweenManager.AddTween( new Tween(d, 0.0f, 4.5f, 0.0f) );
-    	tweenManager.AddTween( new Tween(d, 5.0f, 15.0f, 100.0f) );
+    	tweenManager = new TweenManager();
+    	timelineManager = new TimelineManager(this);
+    
+    	executeFunction ("main", null);
     	
 		long init = System.currentTimeMillis();
     	while (true)
     	{
     		tweenManager.Update(timeAbsSeconds);
-    		
+    		timelineManager.Update(timeAbsSeconds);
     		timeAbsSeconds = (System.currentTimeMillis() - init) / 1000.0f;
     	}
-    	
-        // executeFunction ("main", null);
     }
 
     /** Returns the contents of the stack trace */
@@ -124,19 +135,34 @@ public class Interp {
      * Gathers information from the AST and creates the map from
      * function names to the corresponding AST nodes.
      */
-    private void MapFunctions(CRAPTree T) {
+    private void MapFunctions(CRAPTree T) 
+    {
         assert T != null && T.getType() == CRAPLexer.LIST_FUNCTIONS;
+        
+        // Map globals and functions
         FuncName2Tree = new HashMap<String,CRAPTree> ();
         int n = T.getChildCount();
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) 
+        {
             CRAPTree f = T.getChild(i);
-            assert f.getType() == CRAPLexer.FUNCTION;
             String fname = f.getChild(0).getText();
-            if (FuncName2Tree.containsKey(fname)) {
-                throw new RuntimeException("Multiple definitions of function " + fname);
+            switch (f.getType())
+            {
+            	case CRAPLexer.GLOBAL:
+            		Data globalVariable = new Data();
+            		globalVariable.setType(Data.Type.OBJECT);
+            		Stack.defineVariable(fname, globalVariable);
+            		break;
+
+            	case CRAPLexer.TIMELINE:
+            	case CRAPLexer.FUNCTION:
+	                if (FuncName2Tree.containsKey(fname)) {
+	                    throw new RuntimeException("Multiple definitions of function " + fname);
+	                }
+	                FuncName2Tree.put(fname, f);
+	                break;
             }
-            FuncName2Tree.put(fname, f);
-        } 
+        }
     }
 
     /**
@@ -210,8 +236,6 @@ public class Interp {
         // If the result is null, then the function returns void
         if (result == null) result = new Data();
 
-
-        
         // Dumps trace information
         if (trace != null) traceReturn(f, result, Arg_values);
         
@@ -219,6 +243,14 @@ public class Interp {
         Stack.popActivationRecord();
 
         return result;
+    }
+    
+    public Data executeTimeline(Timeline timeline)
+    {
+    	timeScopeStartAbs  = timeline.GetStartTimeAbs();
+    	timeScopeFinishAbs = timeline.GetFinishTimeAbs();
+    	
+    	return executeFunction( timeline.GetName(), null );
     }
 
     /**
@@ -256,12 +288,21 @@ public class Interp {
 
         // A big switch for all type of instructions
         switch (t.getType()) {
-            // Assignment
             case CRAPLexer.ASSIGN:
                 value = evaluateExpression(t.getChild(1));
                 Stack.defineVariable (t.getChild(0).getText(), value);
                 return null;
 
+            case CRAPLexer.TWEEN:
+            	Data dataToTween = Stack.getVariable(t.getChild(0).getText());
+            	Data finalValue = evaluateExpression(t.getChild(1));
+            	
+            	Tween tween = new Tween(dataToTween, timeAbsSeconds, 10.0f, 
+            							finalValue.getNumberValue());
+            	tweenManager.AddTween(tween);        
+            	
+            	return null;
+                
             // If-then-else
             case CRAPLexer.IF:
                 value = evaluateExpression(t.getChild(0));
@@ -281,6 +322,16 @@ public class Interp {
                     if (r != null) return r;
                 }
 
+            case CRAPLexer.KEY:
+            	float keyTime = evaluateExpression(t.getChild(0).getChild(0)).getNumberValue();
+            	if (t.getChild(0).getText().contains("REL")) {
+            		currentKeyTimeAbs = timeScopeStartAbs + (timeScopeFinishAbs - timeScopeStartAbs) * keyTime; 
+            	} else {
+            		currentKeyTimeAbs = timeScopeStartAbs + keyTime;
+            	}
+            	executeListInstructions(t.getChild(1));
+            	return null;
+            	
             // Return
             case CRAPLexer.RETURN:
                 if (t.getChildCount() != 0) {
@@ -319,6 +370,23 @@ public class Interp {
             case CRAPLexer.FUNCALL:
                 executeFunction(t.getChild(0).getText(), t.getChild(1));
                 return null;
+
+            case CRAPLexer.TIMELINECALL:
+            	// Calculate the init and duration of the timeline call
+            	float initTimeAbs = currentKeyTimeAbs;
+            	float durationAbs = evaluateExpression( t.getChild(1).getChild(0) ).getNumberValue();
+            	if (t.getChild(1).getText().contains("REL")) // Relative duration
+            	{
+            		durationAbs *= (timeScopeFinishAbs - timeScopeStartAbs);
+            	}
+                
+            	// Enqueue the timeline with the specified init and finish time
+            	Timeline timeline = new Timeline(t.getChild(0).getText(), 
+            			                         initTimeAbs, 
+            			                         initTimeAbs + durationAbs);
+            	timelineManager.AddTimeline(timeline);
+            	
+            	return null;
 
             default: assert false; // Should never happen
         }

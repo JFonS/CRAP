@@ -91,25 +91,33 @@ public class Stack {
      * @param name The name of the variable
      * @param value The value of the variable
      */
-    public void defineVariable(String propertyPath, Data value) {
+    public void defineVariable(String propertyPath, Data value) 
+    {
     	String varName = propertyPath.split("\\.", 2)[0];
+    	
+    	HashMap<String, Data> activationRecord = Stack.getFirst();
+        Data var = activationRecord.get(varName);
+        if (var == null) // If its not globally defined, then use local one 
+        {
+        	activationRecord = CurrentAR;
+        	var = activationRecord.get(varName); // Else modify local one
+        }
+        
     	if (propertyPath.contains(".")) // IS AN OBJECT
     	{
 	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
-	        Data var = CurrentAR.get(varName);
 	        if (var == null) 
 	        {
 	        	var = new Data();
-	        	CurrentAR.put(varName, var); // New definition
+	        	activationRecord.put(varName, var); // New definition
 	        }
 	        var.setProperty(propPathNoName, value); // Use the previous data
     	}
     	else // IS NOT AN OBJECT
     	{
-	        Data var = CurrentAR.get(varName);
 	        if (var == null) 
 	        {
-	        	CurrentAR.put(varName, value); // New definition
+	        	activationRecord.put(varName, value); // New definition
 	        }
 	        else
 	        {
@@ -126,7 +134,13 @@ public class Stack {
      */
     public Data getVariable(String propertyPath) {
     	String varName = propertyPath.split("\\.", 2)[0];
-        Data v = CurrentAR.get(varName);
+        Data v = Stack.getFirst().get(varName);
+        if (v == null)
+        {
+        	// Look for v in local AR, if not found global
+        	v = CurrentAR.get(varName);
+        }
+        
         if (v != null) 
         {
         	if (propertyPath.contains("."))

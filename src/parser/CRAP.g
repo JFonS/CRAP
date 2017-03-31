@@ -13,6 +13,8 @@ tokens {
     PARAMS;     // List of parameters in the declaration of a function
     FUNCALL;    // Function call
     TIMELINECALL;
+    TIME_REL;
+    TIME_ABS;
     ARGLIST;    // List of arguments passed in a function call
     LIST_INSTR; // Block of instructions
     LIST_KEYS; // Block of keys
@@ -58,7 +60,7 @@ paramlist: param (','! param)*;
 param   :   '&' id=ID -> ^(PREF[$id,$id.text])
         |   id=ID -> ^(PVALUE[$id,$id.text]);
 
-key: KEY^ '('! expr (','! interp_type)? ')'! '{'! instruction_list '}'!;
+key: KEY^ time '{'! instruction_list '}'!;
 interp_type: LINEAR | CUBIC;
 
 instruction_list:	instruction* -> ^(LIST_INSTR instruction*);
@@ -77,8 +79,8 @@ instruction
         ;
 
 time: time_rel | time_abs;
-time_rel: '<<'! expr '>>'!;
-time_abs: '[['! expr ']]'!;
+time_rel: '<<' expr '>>' -> ^(TIME_REL expr);
+time_abs: '[[' expr ']]' -> ^(TIME_ABS expr);
 
 expr_list:  expr (','! expr)*;
 
