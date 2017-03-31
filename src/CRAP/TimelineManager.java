@@ -24,13 +24,14 @@ public class TimelineManager
 		{
 			Timeline timeline = timelineQueue.element();
 			interpret.executeTimeline(timeline);
+			System.out.println("  Executing " + timeline.ToString());
 			timelineQueue.remove();
 		}
 	}
 	
 	public void AddTimeline(Timeline timeline)
 	{
-		System.out.println("Adding timeline " + timeline.GetStartTimeAbs() + " to " + timeline.GetFinishTimeAbs());
+		System.out.println("  Adding " + timeline.ToString());
 		timelineQueue.add(timeline);
 	}
 }

@@ -105,12 +105,12 @@ public class Stack {
         
     	if (propertyPath.contains(".")) // IS AN OBJECT
     	{
-	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
 	        if (var == null) 
 	        {
 	        	var = new Data();
 	        	activationRecord.put(varName, var); // New definition
-	        }
+	        }	
+	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
 	        var.setProperty(propPathNoName, value); // Use the previous data
     	}
     	else // IS NOT AN OBJECT

@@ -1,35 +1,49 @@
 package CRAP;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.PriorityQueue;
+import CRAP.*;
+import interp.*;
+import java.util.*;
 
 public class TweenManager 
 {
-	ArrayList<Tween> tweenPool;
+	HashMap<Data, ArrayList<Tween>> tweenPool;
 	
 	public TweenManager()
 	{
-		tweenPool = new ArrayList<Tween>();
+		tweenPool = new HashMap<Data, ArrayList<Tween>>();
 	}
 	
 	public void AddTween(Tween tween)
 	{
-		System.out.println("AddTween: " + tween);
-		tweenPool.add(tween);
+		ArrayList<Tween> tweenList = tweenPool.get(tween.GetData());
+		if (tweenList == null) { tweenList = new ArrayList<Tween>(); }
+		
+		if (tweenList.size() == 0) { tweenList.add(tween); }
+		for (int i = 0; i < tweenList.size(); ++i)
+		{
+			Tween other = tweenList.get(i);
+			if (tween.GetFinishTimeAbs() < other.GetFinishTimeAbs())
+			{
+				tweenList.add(i, tween);
+			}
+		}
 	}
 	
 	public void Update(float timeAbs)
 	{
-		Iterator<Tween> it = tweenPool.iterator();
-		while (it.hasNext())
+		for (ArrayList<Tween> tweenList : tweenPool.values())
 		{
-			Tween tween = it.next();
-			tween.Update(timeAbs);
-			//System.out.println(tween.GetData().getNumberValue());
-			if (tween.HasFinished())
+			Iterator<Tween> it = tweenList.iterator();
+			while (it.hasNext())
 			{
-				it.remove();
+				Tween tween = it.next();
+				tween.Update(timeAbs);
+				
+				// TODO, remove when the next one has finished too
+				if (tween.HasFinished()) 
+				{kjas,hdkjsa
+					it.remove();
+				}
 			}
 		}
 	}

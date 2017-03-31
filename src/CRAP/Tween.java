@@ -44,6 +44,7 @@ public class Tween
 	}
 	
 	public Data GetData() { return data; }
+	public float GetFinishTimeAbs() { return finishTimeAbs; }
 	
 	public boolean HasStarted()  { return tweenStarted; }
 	public boolean HasFinished() { return tweenFinished; }

@@ -26,6 +26,11 @@ public class Timeline implements Comparable
 		return startTimeAbs < other.startTimeAbs ? -1 : 1;
 	}
 	
+	public String ToString()
+	{
+		return "Timeline " + name + "[[" + startTimeAbs + ", " + finishTimeAbs + "]]";
+	}
+	
 	public float GetStartTimeAbs() { return startTimeAbs; }
 	public float GetFinishTimeAbs() { return finishTimeAbs; }
 	public String GetName() { return name; }
