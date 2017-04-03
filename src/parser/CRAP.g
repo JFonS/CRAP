@@ -37,80 +37,76 @@ package parser;
 }
 
 
-// A program is a list of functions
-prog: declaration+ EOF -> ^(LIST_FUNCTIONS declaration+);
+// A program is a list of declarations
+prog    :   declaration+ EOF -> ^(LIST_FUNCTIONS declaration+);
 
-declaration: globalVarDeclare | prefabDeclare | funcDeclare | timelineDeclare;
+declaration     :   globalDeclare | prefabDeclare | funcDeclare | timelineDeclare;
 
-prop_list: (assign ';')* -> ^(PREFAB_PROPS assign*);
-prefabDeclare  : PREFAB^ ID (':' ID)? '{'! 
-		prop_list
-	  '}'!;
+prop_list       :   (assign ';')* -> ^(PREFAB_PROPS assign*);
+prefabDeclare   :   PREFAB^ ID (':' ID)? '{'! prop_list '}'!;
 
-globalVarDeclare: GLOBAL^ ID';'!;
+globalDeclare   :   GLOBAL^ ID ';'!;
 
-funcDeclare: FUNCTION^ ID params '{'! instruction_list '}'!;
-funcCall: ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?));
+funcDeclare     :   FUNCTION^ ID params '{'! instruction_list '}'!;
 
-timelineDeclare: TIMELINE^ ID params '{'! instruction_list '}'!;
-timelineCall: ID time '(' expr_list? ')' -> ^(TIMELINECALL ID time ^(ARGLIST expr_list?));
+funcCall        :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?));
 
-params	: '(' paramlist? ')' -> ^(PARAMS paramlist?);
-paramlist: param (','! param)*;
-param   :   '&' id=ID -> ^(PREF[$id,$id.text])
-        |   id=ID -> ^(PVALUE[$id,$id.text]);
+timelineDeclare :   TIMELINE^ ID params '{'! instruction_list '}'!;
+timelineCall    :   ID time '(' expr_list? ')' -> ^(TIMELINECALL ID time ^(ARGLIST expr_list?));
 
-key: KEY^ time '{'! instruction_list '}'!;
-interp_type: LINEAR | CUBIC;
+params          :   '(' paramlist? ')' -> ^(PARAMS paramlist?);
 
-instruction_list:	instruction* -> ^(LIST_INSTR instruction*);
+paramlist       :   param (','! param)*;
+
+param           :   '&' id=ID -> ^(PREF[$id,$id.text])
+                |   id=ID -> ^(PVALUE[$id,$id.text])
+                ;
+
+key         :   KEY^ time '{'! instruction_list '}'!;
+interp_type :   LINEAR | CUBIC;
+
+instruction_list:   instruction* -> ^(LIST_INSTR instruction*);
 instruction
-        :	ite_stmt          // if-then-else
-        |	while_stmt        // while statement
-	|       key
-        |	assign       ';'! // Assignment
-        |	tween        ';'! // Tween
-        |       timelineCall ';'!
-        |       funcCall     ';'! // Call to a procedure (no result produced)
-        |	return_stmt  ';'! // Return statement
-        |	read         ';'! // Read a variable
-        | 	write        ';'! // Write a string or an expression
-        |                    ';'! // Nothing
+        :   ite_stmt          // if-then-else
+        |   while_stmt        // while statement
+        |   key
+        |   assign       ';'! // Assignment
+        |   tween        ';'! // Tween
+        |   timelineCall ';'!
+        |   funcCall     ';'! // Call to a procedure (no result produced)
+        |   return_stmt  ';'! // Return statement
+        |   read         ';'! // Read a variable
+        |   write        ';'! // Write a string or an expression
+        |                ';'! // Nothing
         ;
 
-time: time_rel | time_abs;
-time_rel: '<<' expr '>>' -> ^(TIME_REL expr);
-time_abs: '[[' expr ']]' -> ^(TIME_ABS expr);
+time    :   time_rel | time_abs;
+time_rel:   '<<' expr '>>' -> ^(TIME_REL expr);
+time_abs:   '[[' expr ']]' -> ^(TIME_ABS expr);
 
 expr_list:  expr (','! expr)*;
 
 // Assignment
-tween   :       ID tw=TWEEN expr -> ^(TWEEN[$tw, "TWEEN"] ID expr);
+tween   :   ID tw=TWEEN expr -> ^(TWEEN[$tw, "TWEEN"] ID expr);
 
-assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
-	    |	ID '[' expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID expr) $val )
+assign  :   ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
+        |   ID '[' expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID expr) $val )
         ;
 
 // if-then-else (else is optional)
-ite_stmt	:	IF^ '('! expr ')'! '{'! instruction_list '}'! (ELSE! '{'! instruction_list '}'! )? 
-            ;
+ite_stmt:   IF^ '('! expr ')'! '{'! instruction_list '}'! (ELSE! '{'! instruction_list '}'! )? ;
 
 // while statement
-while_stmt	:	WHILE^ '('! expr ')'! '{'! instruction_list '}'!
-            ;
+while_stmt  :   WHILE^ '('! expr ')'! '{'! instruction_list '}'!;
 
 // Return statement with an expression
-return_stmt	:	RETURN^ expr?
-        ;
+return_stmt :   RETURN^ expr?;
 
 // Read a variable
-read	:	READ^ ID
-        ;
+read        :   READ^ ID;
 
 // Write an expression or a string
-write	:   WRITE^ expr
-        ;
-
+write       :   WRITE^ expr;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    :   boolexpr (CONCAT^ boolexpr)*;
@@ -127,42 +123,42 @@ term    :   factor ( (MUL^ | DIV^ | MOD^) factor)*;
 factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
 atom    :   ID
-		|	STRING
+        |   STRING
         |   NUMBER
-	    |   VEC^ '('! expr_list ')'!
-    	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
+        |   VEC^ '('! expr_list ')'!
+        |   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
         |   '('! expr ')'!
-	    |   '[' expr_list ']' -> ^(LIST expr_list)
+        |   '[' expr_list ']' -> ^(LIST expr_list)
         ;
 
 
 // Basic tokens
-EQUAL	: '=' ;
+EQUAL   : '=' ;
 TWEEN   : '->';
 NOT_EQUAL: '!=' ;
-LT	    : '<' ;
-LE	    : '<=';
-GT	    : '>';
-GE	    : '>=';
+LT      : '<' ;
+LE      : '<=';
+GT      : '>';
+GE      : '>=';
 CONCAT  : '..';
-PLUS	: '+' ;
-MINUS	: '-' ;
-MUL	    : '*';
-DIV	    : '/';
-MOD	    : '%' ;
-NOT	    : 'not';
-AND	    : 'and' ;
-OR	    : 'or' ;
-IF  	: 'if' ;
-ELSE	: 'else' ;
-WHILE	: 'while' ;
-TIMELINE	: 'timeline' ;
-FUNCTION	: 'function' ;
-RETURN	: 'return' ;
-READ	: 'read' ;
-WRITE	: 'write' ;
+PLUS    : '+' ;
+MINUS   : '-' ;
+MUL     : '*';
+DIV     : '/';
+MOD     : '%' ;
+NOT     : 'not';
+AND     : 'and' ;
+OR      : 'or' ;
+IF      : 'if' ;
+ELSE    : 'else' ;
+WHILE   : 'while' ;
+TIMELINE    : 'timeline' ;
+FUNCTION    : 'function' ;
+RETURN  : 'return' ;
+READ    : 'read' ;
+WRITE   : 'write' ;
 TRUE    : 'true' ;
 FALSE   : 'false';
 KEY     : 'key';
@@ -171,14 +167,14 @@ GLOBAL  : 'global';
 PREFAB  :  'prefab'; 
 LINEAR  : 'Linear';
 CUBIC   : 'Cubic';
-ID      :('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* | 
-	 ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
+ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* | 
+          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
 NUMBER  : '0'..'9'+ | '0'..'9'+ '.' '0'..'9'+;
 
 // C-style comments
-COMMENT	: '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    	| '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
-    	;
+COMMENT : '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+        | '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+        ;
 
 // Strings (in quotes) with escape sequences
 STRING  :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
@@ -190,11 +186,9 @@ ESC_SEQ
     ;
 
 // White spaces
-WS  	: ( ' '
+WS      : ( ' '
         | '\t'
         | '\r'
         | '\n'
         ) {$channel=HIDDEN;}
-    	;
-
-
+        ;
