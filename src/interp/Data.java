@@ -140,10 +140,11 @@ public class Data {
     	if (!propertyPath.isEmpty())
     	{
     		String propName = propertyPath.split("\\.", 2)[0];
+    		if (!properties.containsKey(propName)) { return null; }
 
     		if (propertyPath.contains("."))
     		{
-	    		String propPathNoName = propertyPath.split("\\.", 2)[1];
+	    		String propPathNoName = propertyPath.split("\\.", 2)[1];	    			
 	    		return properties.get(propName).getProperty(propPathNoName);
     		}
     		else { return properties.get(propName); }

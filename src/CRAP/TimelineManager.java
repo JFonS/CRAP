@@ -6,7 +6,7 @@ import interp.Interp;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
-public class TimelineManager 
+public class TimelineManager
 {
 	Interp interpret;
 	PriorityQueue<Timeline> timelineQueue;
@@ -20,11 +20,12 @@ public class TimelineManager
 	
 	public void Update(float timeAbs)
 	{
-		while (timeAbs >= timelineQueue.element().GetStartTimeAbs())
+		while (!timelineQueue.isEmpty() && 
+				timeAbs >= timelineQueue.element().GetStartTimeAbs())
 		{
 			Timeline timeline = timelineQueue.element();
-			interpret.executeTimeline(timeline);
 			System.out.println("  Executing " + timeline.ToString());
+			interpret.executeTimeline(timeline);
 			timelineQueue.remove();
 		}
 	}

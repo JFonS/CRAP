@@ -33,6 +33,7 @@ import CRAP.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
 import java.io.*;
 
@@ -44,6 +45,8 @@ import CRAP.TweenManager;
 
 public class Interp 
 {
+	private static Interp interp;
+	
 	private float currentKeyTimeAbs = 0.0f;
 	private float timeScopeStartAbs  = 0.0f;
 	private float timeScopeFinishAbs = 1.0f;
@@ -53,7 +56,7 @@ public class Interp
 	private TweenManager tweenManager;
 	
     /** Memory of the virtual machine. */
-    private Stack Stack;
+    private Stack stack;
 
     /**
      * Map between function names (keys) and ASTs (values).
@@ -83,9 +86,11 @@ public class Interp
      */
     public Interp(CRAPTree T, String tracefile) 
     {
+    	interp = this;
+    	
         assert T != null;
-        Stack = new Stack(); // Creates the memory of the virtual machine
-        Stack.pushActivationRecord("__global", 0);
+        stack = new Stack(); // Creates the memory of the virtual machine
+        stack.pushActivationRecord("__global", 0);
 
         MapFunctions(T);  // Creates the table to map function names into AST nodes
         PreProcessAST(T); // Some internal pre-processing ot the AST
@@ -118,17 +123,27 @@ public class Interp
     		tweenManager.Update(timeAbsSeconds);
     		timelineManager.Update(timeAbsSeconds);
     		timeAbsSeconds = (System.currentTimeMillis() - init) / 1000.0f;
+    		if ( (timeAbsSeconds*2.0f - (int)(timeAbsSeconds*2.0f)) < 0.000000001f) 
+    		{ 
+    			System.out.println("timeAbsSeconds: " + timeAbsSeconds);
+    			stack.Print(); 
+    		}
     	}
     }
 
+    public static float GetTimeAbs() 
+    { 
+    	return interp.timeAbsSeconds; 
+    }
+    
     /** Returns the contents of the stack trace */
     public String getStackTrace() {
-        return Stack.getStackTrace(lineNumber());
+        return stack.getStackTrace(lineNumber());
     }
 
     /** Returns a summarized contents of the stack trace */
     public String getStackTrace(int nitems) {
-        return Stack.getStackTrace(lineNumber(), nitems);
+        return stack.getStackTrace(lineNumber(), nitems);
     }
     
     /**
@@ -151,7 +166,7 @@ public class Interp
             	case CRAPLexer.GLOBAL:
             		Data globalVariable = new Data();
             		globalVariable.setType(Data.Type.OBJECT);
-            		Stack.defineVariable(fname, globalVariable);
+            		stack.defineVariable(fname, globalVariable);
             		break;
 
             	case CRAPLexer.TIMELINE:
@@ -197,14 +212,15 @@ public class Interp
     
     /**
      * Executes a function.
-     * @param funcname The name of the function.
+     * @param funcName The name of the function.
      * @param args The AST node representing the list of arguments of the caller.
      * @return The data returned by the function.
      */
-    private Data executeFunction (String funcname, CRAPTree args) {
+    private Data executeFunction (String funcName, CRAPTree args) 
+    {
         // Get the AST of the function
-        CRAPTree f = FuncName2Tree.get(funcname);
-        if (f == null) throw new RuntimeException(" function " + funcname + " not declared");
+        CRAPTree f = FuncName2Tree.get(funcName);
+        if (f == null) throw new RuntimeException(" function " + funcName + " not declared");
 
         // Gather the list of arguments of the caller. This function
         // performs all the checks required for the compatibility of
@@ -219,7 +235,7 @@ public class Interp
         int nparam = p.getChildCount(); // Number of parameters
 
         // Create the activation record in memory
-        Stack.pushActivationRecord(funcname, lineNumber());
+        stack.pushActivationRecord(funcName, lineNumber());
 
         // Track line number
         setLineNumber(f);
@@ -227,7 +243,7 @@ public class Interp
         // Copy the parameters to the current activation record
         for (int i = 0; i < nparam; ++i) {
             String param_name = p.getChild(i).getText();
-            Stack.defineVariable(param_name, Arg_values.get(i));
+            stack.defineVariable(param_name, Arg_values.get(i));
         }
 
         // Execute the instructions
@@ -240,7 +256,7 @@ public class Interp
         if (trace != null) traceReturn(f, result, Arg_values);
         
         // Destroy the activation record
-        Stack.popActivationRecord();
+        stack.popActivationRecord();
 
         return result;
     }
@@ -290,7 +306,7 @@ public class Interp
         switch (t.getType()) {
             case CRAPLexer.ASSIGN:
                 value = evaluateExpression(t.getChild(1));
-                Stack.defineVariable (t.getChild(0).getText(), value);
+                stack.defineVariable (t.getChild(0).getText(), value);
                 return null;
             
             case CRAPLexer.ARR_ELM_ASSIGN:
@@ -311,15 +327,22 @@ public class Interp
             	
             	String arrName = t.getChild(0).getChild(0).getText();
             	String fullPath = arrName + "." + index;
-            	Stack.defineVariable (fullPath, value);
+            	stack.defineVariable (fullPath, value);
             	
             	return null;
 
             case CRAPLexer.TWEEN:
-            	Data dataToTween = Stack.getVariable(t.getChild(0).getText());
+            	System.out.println("TWEEN");
+            	Data dataToTween = stack.getVariable(t.getChild(0).getText());
+            	if (dataToTween == null) 
+            	{ 
+            		stack.defineVariable(t.getChild(0).getText(), new Data(0.0f));
+            		dataToTween = stack.getVariable(t.getChild(0).getText());
+            	}
+            	
             	Data finalValue = evaluateExpression(t.getChild(1));
             	
-            	Tween tween = new Tween(dataToTween, timeAbsSeconds, 10.0f, 
+            	Tween tween = new Tween(dataToTween, currentKeyTimeAbs, 
             							finalValue.getNumberValue());
             	tweenManager.AddTween(tween);        
             	
@@ -372,7 +395,7 @@ public class Interp
                 } catch (NumberFormatException ex) {
                     throw new RuntimeException ("Format error when reading a number: " + token);
                 }
-                Stack.defineVariable (t.getChild(0).getText(), val);
+                stack.defineVariable (t.getChild(0).getText(), val);
                 return null;
 
             // Write statement: it can write an expression or a string.
@@ -436,7 +459,7 @@ public class Interp
         switch (type) {
             // A variable
             case CRAPLexer.ID:
-                value = new Data( Stack.getVariable(t.getText()) );
+                value = new Data( stack.getVariable(t.getText()) );
                 break;
             // An integer literal
             case CRAPLexer.NUMBER:
@@ -468,7 +491,7 @@ public class Interp
             	String arrName = t.getChild(0).getText();
             	String fullPath = arrName + "." + index;
             	
-            	value = new Data( Stack.getVariable(fullPath));
+            	value = new Data( stack.getVariable(fullPath));
             	break;
             // A function call. Checks that the function returns a result.
             case CRAPLexer.FUNCALL:
@@ -647,7 +670,7 @@ public class Interp
                     throw new RuntimeException("Wrong argument for pass by reference");
                 }
                 // Find the variable and pass the reference
-                Data v = Stack.getVariable(a.getText());
+                Data v = stack.getVariable(a.getText());
                 Params.add(i,v);
             }
         }

@@ -2,11 +2,13 @@ global car;
 
 function MoveCarForward()
 {
-	car.Position.x -> car.Position.x + 1.0;
+	car.Position.x -> car.Position.x + 1.0; 
+	write "MoveCarForward();";
 }
 function MoveCarBack()
 {
 	car.Position.x -> car.Position.x - 1.0; 
+	write "MoveCarBack();";
 }
 
 timeline AnimateCar()

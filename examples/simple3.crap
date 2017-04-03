@@ -1,0 +1,31 @@
+global car;
+
+timeline Main()
+{
+	i = 0;
+	b = false;
+	while (i < 100)
+	{
+		if (b) 
+		{ 
+			key [[ i ]]
+			{
+				car.Position.x -> car.Position.x + 10.0; 
+			}
+		}
+		else   
+		{ 
+			key [[ i ]]
+			{
+				car.Position.x -> car.Position.x - 5.0;
+			} 
+		}
+		b = not b;
+		i = i + 1;
+	}
+}
+
+function main()
+{
+	Main[[1.0]]();
+}

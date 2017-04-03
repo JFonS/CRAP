@@ -42,10 +42,10 @@ import java.util.ListIterator;
 public class Stack {
 
     /** Stack of activation records */
-    private LinkedList<HashMap<String,Data>> Stack;
+    private LinkedList< HashMap<String,Data> > actRecords;
 
     /** Reference to the current activation record */
-    private HashMap<String,Data> CurrentAR = null;
+    private HashMap<String,Data> currentAR = null;
 
     /**
      * Class to represent an item of the Stack trace.
@@ -61,28 +61,48 @@ public class Stack {
     }
 
     /** Stack trace to keep track of function calls */
-    private LinkedList<StackTraceItem> StackTrace;
+    private LinkedList<StackTraceItem> stackTrace;
     
     /** Constructor of the memory */
     public Stack() {
-        Stack = new LinkedList<HashMap<String,Data>>();
-        CurrentAR = null;
-        StackTrace = new LinkedList<StackTraceItem>();
+        actRecords = new LinkedList<HashMap<String,Data>>();
+        currentAR = null;
+        stackTrace = new LinkedList<StackTraceItem>();
     }
 
     /** Creates a new activation record on the top of the stack */
     public void pushActivationRecord(String name, int line) {
-        CurrentAR = new HashMap<String,Data>();
-        Stack.addLast (CurrentAR);
-        StackTrace.addLast (new StackTraceItem(name, line));
+        currentAR = new HashMap<String,Data>();
+        actRecords.addLast (currentAR);
+        stackTrace.addLast (new StackTraceItem(name, line));
     }
 
     /** Destroys the current activation record */
     public void popActivationRecord() {
-        Stack.removeLast();
-        if (Stack.isEmpty()) CurrentAR = null;
-        else CurrentAR = Stack.getLast();
-        StackTrace.removeLast();
+        actRecords.removeLast();
+        if (actRecords.isEmpty()) currentAR = null;
+        else currentAR = actRecords.getLast();
+        stackTrace.removeLast();
+    }
+    
+    public String toString()
+    {
+    	String out = "{\n";
+    	for (HashMap<String,Data> ar : actRecords)
+    	{
+    		for (String varName : ar.keySet())
+    		{
+    			Data data = ar.get(varName);
+    			out += "  " + varName + ": " + data.toString() + "\n";
+    		}
+    	}
+    	out += "}\n";
+    	return out;
+    }
+    
+    public void Print()
+    {
+    	System.out.println( this );
     }
 
     /** Defines the value of a variable. If the variable does not
@@ -95,11 +115,11 @@ public class Stack {
     {
     	String varName = propertyPath.split("\\.", 2)[0];
     	
-    	HashMap<String, Data> activationRecord = Stack.getFirst();
+    	HashMap<String, Data> activationRecord = actRecords.getFirst();
         Data var = activationRecord.get(varName);
         if (var == null) // If its not globally defined, then use local one 
         {
-        	activationRecord = CurrentAR;
+        	activationRecord = currentAR;
         	var = activationRecord.get(varName); // Else modify local one
         }
         
@@ -132,20 +152,23 @@ public class Stack {
      * @param name The name of the variable
      * @return The value of the variable
      */
-    public Data getVariable(String propertyPath) {
+    public Data getVariable(String propertyPath) 
+    {
     	String varName = propertyPath.split("\\.", 2)[0];
-        Data v = Stack.getFirst().get(varName);
+        Data v = actRecords.getFirst().get(varName);
         if (v == null)
         {
         	// Look for v in local AR, if not found global
-        	v = CurrentAR.get(varName);
+        	v = currentAR.get(varName);
         }
+    	System.out.println(varName + ": " + v);
         
-        if (v != null) 
+        if (v != null)
         {
         	if (propertyPath.contains("."))
         	{
 	        	String propPathNoName = propertyPath.split("\\.", 2)[1];
+	        	System.out.println(propPathNoName);
 	        	return v.getProperty(propPathNoName);
         	}
         	else { return v; }
@@ -163,8 +186,8 @@ public class Stack {
      * @return A string with the contents of the stack trace.
      */ 
     public String getStackTrace(int current_line) {
-        int size = StackTrace.size();
-        ListIterator<StackTraceItem> itr = StackTrace.listIterator(size);
+        int size = stackTrace.size();
+        ListIterator<StackTraceItem> itr = stackTrace.listIterator(size);
         StringBuffer trace = new StringBuffer("---------------%n| Stack trace |%n---------------%n");
         trace.append("** Depth = ").append(size).append("%n");
         while (itr.hasPrevious()) {
@@ -185,9 +208,9 @@ public class Stack {
      * @return A string with the contents of the stack trace.
      */ 
     public String getStackTrace(int current_line, int nitems) {
-        int size = StackTrace.size();
+        int size = stackTrace.size();
         if (2*nitems >= size) return getStackTrace(current_line);
-        ListIterator<StackTraceItem> itr = StackTrace.listIterator(size);
+        ListIterator<StackTraceItem> itr = stackTrace.listIterator(size);
         StringBuffer trace = new StringBuffer("---------------%n| Stack trace |%n---------------%n");
         trace.append("** Depth = ").append(size).append("%n");
         int i;
