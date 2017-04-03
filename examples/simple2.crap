@@ -3,7 +3,7 @@ global car;
 function MoveCarForward()
 {
 	car.Position.x -> car.Position.x + 1.0; 
-	write "MoveCarForward();";
+	write "MovingCarForward();";
 }
 function MoveCarBack()
 {
@@ -25,21 +25,17 @@ timeline AnimateCar()
 		}
 	}
 		
-	if (car.advancing) { car.advancing = false; } else { car.advancing = true; }
-	key <<1.0>> { AnimateCar <<1.0>> (); }
+	car.advancing = not car.advancing;
+	key <<1.0>> { AnimateCar <<1.0>> (); } // Recursive timeline call, to create a loop
 }
 
 timeline Main()
 {
 	key <<0.0>>
 	{
-	    car.Position.x = 0.0;
+		car.Position.x = 0.0;
 		car.advancing = false;
 		AnimateCar[[5.0]]();
 	}
 }
 
-function main()
-{
-	Main[[1.0]]();
-}

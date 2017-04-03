@@ -1,28 +1,19 @@
-global a;
-
-timeline Explosion()
+prefab Bomb
 {
-	write "Started explosion";
-	
-	key <<0.5>>
+	Primitive = Sphere;
+	Color = Red;
+}
+
+timeline Explode(obj)
+{
+	key <<1.0>>
 	{
-		a.Position.x -> -5.0;
-		write a.Position.x;
+		obj.Scale -> obj.Scale * 5.0;
 	}
-	
-	key <<1.0>> { Explosion<<0.9>>(); }
 }
 
 timeline Main()
 {
-	a.Position.x = 0.0;
-	key [[5.0]]
-	{
-		Explosion[[5.0]]();
-	}
-}
-
-function main()
-{
-	Main[[1.0]]();
+	bomb = new Bomb;
+	Explode(bomb);
 }

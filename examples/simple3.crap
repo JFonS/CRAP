@@ -2,30 +2,30 @@ global car;
 
 timeline Main()
 {
+	// Creem 100 keyframes usant un while.
+	// L'animació serà el cotxe avançant amb petites recessions 
+
 	i = 0;
-	b = false;
+	advance = false;
+	speed = 10;
 	while (i < 100)
 	{
-		if (b) 
+		// Cada segon (i) avança 10 o retrocedeix 5.
+		if (advance) 
 		{ 
 			key [[ i ]]
 			{
-				car.Position.x -> car.Position.x + 10.0; 
+				car.Position.x -> i * 10; 
 			}
 		}
 		else   
 		{ 
 			key [[ i ]]
 			{
-				car.Position.x -> car.Position.x - 5.0;
+				car.Position.x -> (i-1) * 10 - 5.0;
 			} 
 		}
-		b = not b;
+		advance = not advance;
 		i = i + 1;
 	}
-}
-
-function main()
-{
-	Main[[1.0]]();
 }

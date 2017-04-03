@@ -126,6 +126,7 @@ atom    :   ID
         |   STRING
         |   NUMBER
         |   VEC^ '('! expr_list ')'!
+	|   NEW^ ID
         |   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
@@ -157,6 +158,7 @@ WHILE   : 'while' ;
 TIMELINE    : 'timeline' ;
 FUNCTION    : 'function' ;
 RETURN  : 'return' ;
+NEW     : 'new' ;
 READ    : 'read' ;
 WRITE   : 'write' ;
 TRUE    : 'true' ;
