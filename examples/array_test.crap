@@ -1,0 +1,20 @@
+global a;
+global b;
+
+
+function main() {
+    a[0] = 3.0;
+    a[2] = false;
+    b["Scale"] = 4;
+    b[3+2*3] = 3+2*3;
+
+    prop = "Sca";
+
+    b.Scale = b[prop .. "le"] + 3 + a[1-1];
+
+    write 2 .. b.Scale .. "!";
+    write "%n";
+    write b;
+    write "%n";
+    write prop;
+}

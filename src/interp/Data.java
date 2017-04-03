@@ -40,15 +40,18 @@ package interp;
 import parser.*;
 import java.util.*;
 
+import org.omg.CORBA.portable.StreamableValue;
+
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, NUMBER, OBJECT;}
+    public enum Type {VOID, BOOLEAN, NUMBER, OBJECT, STRING;}
 
     /** Type of data*/
     private Type type;
 
     /** Value of the data */
     private float value;
+    private String str;
     private HashMap<String, Data> properties;
 
     public Data(int v) 
@@ -84,6 +87,14 @@ public class Data {
     { 
     	setData(copyThis);
     }
+    
+    /** Constructor for Booleans */
+    public Data(String s) 
+    { 
+    	type = Type.STRING; 
+    	str = s;
+    	properties = new HashMap<String, Data>();
+	}
 
     /** Returns the type of data */
     public Type getType() { return type; }
@@ -96,6 +107,8 @@ public class Data {
 
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
+    
+    public boolean isString() { return type == Type.STRING; }
 
     public boolean isObject() { return type == Type.OBJECT; }
 
@@ -115,6 +128,11 @@ public class Data {
     public boolean getBooleanValue() {
         assert type == Type.BOOLEAN;
         return value == 1;
+    }
+    
+    public String getStringValue() {
+        assert type == Type.STRING;
+        return str;
     }
     
     public Data getProperty(String propertyPath)
@@ -138,6 +156,8 @@ public class Data {
 
     /** Defines an integer value for the data */
     public void setValue(float v) { type = Type.NUMBER; value = v; }
+    
+    public void setValue(String s) { type = Type.STRING; str = s; }
     
     public void setType(Data.Type type) { this.type = type; }
     
@@ -169,6 +189,7 @@ public class Data {
     { 
     	type = copyThis.type; 
     	value = copyThis.value;
+    	str = copyThis.str;
     	properties = new HashMap<String, Data>();
     	for (String propName : copyThis.properties.keySet())
     	{
@@ -182,6 +203,7 @@ public class Data {
     {
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
+        if (type == Type.STRING) return "\"" + str + "\"";
         
         // Type OBJECT
         String str = "{";

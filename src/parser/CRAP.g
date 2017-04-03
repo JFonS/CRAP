@@ -88,7 +88,7 @@ expr_list:  expr (','! expr)*;
 tween   :       ID tw=TWEEN expr -> ^(TWEEN[$tw, "TWEEN"] ID expr);
 
 assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
-	|	ID '[' index=expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID $index) $val )
+	    |	ID '[' expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID expr) $val )
         ;
 
 // if-then-else (else is optional)
@@ -108,12 +108,14 @@ read	:	READ^ ID
         ;
 
 // Write an expression or a string
-write	:   WRITE^ (expr | STRING )
+write	:   WRITE^ expr
         ;
 
 
 // Grammar for expressions with boolean, relational and aritmetic operators
-expr    :   boolterm (OR^ boolterm)*;
+expr    :   boolexpr (CONCAT^ boolexpr)*;
+
+boolexpr:   boolterm (OR^ boolterm)*;
 
 boolterm:   boolfact (AND^ boolfact)*;
 
@@ -125,6 +127,7 @@ term    :   factor ( (MUL^ | DIV^ | MOD^) factor)*;
 factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
 atom    :   ID
+		|	STRING
         |   NUMBER
 	    |   VEC^ '('! expr_list ')'!
     	|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
@@ -143,6 +146,7 @@ LT	    : '<' ;
 LE	    : '<=';
 GT	    : '>';
 GE	    : '>=';
+CONCAT  : '..';
 PLUS	: '+' ;
 MINUS	: '-' ;
 MUL	    : '*';

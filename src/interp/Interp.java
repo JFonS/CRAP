@@ -292,6 +292,28 @@ public class Interp
                 value = evaluateExpression(t.getChild(1));
                 Stack.defineVariable (t.getChild(0).getText(), value);
                 return null;
+            
+            case CRAPLexer.ARR_ELM_ASSIGN:
+            	value = evaluateExpression(t.getChild(1));
+
+            	CRAPTree indexExpr = t.getChild(0).getChild(1);
+
+            	Data indexVal = evaluateExpression(indexExpr);
+            	String index;
+            	if (indexVal.isNumber()) {
+	        		int i = (int) Math.floor(indexVal.getNumberValue());
+	        		index = Integer.toString(i);
+            	} else if (indexVal.isString()) {
+            		index = indexVal.getStringValue();
+            	} else {
+            		throw new RuntimeException("Object indices must be numbers or strings.");
+            	}
+            	
+            	String arrName = t.getChild(0).getChild(0).getText();
+            	String fullPath = arrName + "." + index;
+            	Stack.defineVariable (fullPath, value);
+            	
+            	return null;
 
             case CRAPLexer.TWEEN:
             	Data dataToTween = Stack.getVariable(t.getChild(0).getText());
@@ -424,6 +446,30 @@ public class Interp
             case CRAPLexer.BOOLEAN:
                 value = new Data(t.getBooleanValue());
                 break;
+            case CRAPLexer.STRING:
+            	value = new Data(t.getStringValue());
+            	break;
+            	
+            case CRAPLexer.ARR_ACCESS:
+            	CRAPTree indexExpr = t.getChild(1);
+
+            	Data indexVal = evaluateExpression(indexExpr);
+            	
+            	String index;
+            	if (indexVal.isNumber()) {
+	        		int i = (int) Math.floor(indexVal.getNumberValue());
+	        		index = Integer.toString(i);
+            	} else if (indexVal.isString()) {
+            		index = indexVal.getStringValue();
+            	} else {
+            		throw new RuntimeException("Object indices must be numbers or strings.");
+            	}
+            	
+            	String arrName = t.getChild(0).getText();
+            	String fullPath = arrName + "." + index;
+            	
+            	value = new Data( Stack.getVariable(fullPath));
+            	break;
             // A function call. Checks that the function returns a result.
             case CRAPLexer.FUNCALL:
                 value = executeFunction(t.getChild(0).getText(), t.getChild(1));
@@ -480,6 +526,12 @@ public class Interp
                 value = value.evaluateRelational(type, value2);
                 break;
 
+            case CRAPLexer.CONCAT:
+            	value2 = evaluateExpression(t.getChild(1));
+                value = new Data((value.isString() ? value.getStringValue() : value.toString())  
+                		+ (value2.isString() ? value2.getStringValue() : value2.toString()));
+                break;
+                
             // Arithmetic operators
             case CRAPLexer.PLUS:
             case CRAPLexer.MINUS:

@@ -41,7 +41,7 @@ public class TweenManager
 				
 				// TODO, remove when the next one has finished too
 				if (tween.HasFinished()) 
-				{kjas,hdkjsa
+				{
 					it.remove();
 				}
 			}
