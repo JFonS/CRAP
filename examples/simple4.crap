@@ -1,0 +1,34 @@
+global car; 
+
+timeline MoveCarForward()
+{
+	key <<1.0>> { car.Position.x -> car.Position.x + 0.5; }
+}
+
+timeline MoveCarBackwards()
+{
+	key <<1.0>> { car.Position.x -> car.Position.x - 0.25; }
+}
+
+timeline Animate()
+{
+	if (car.advance)
+	{
+		MoveCarForward <<1.0>>();
+	}
+	else
+	{
+		MoveCarBackwards <<1.0>>();
+	}
+	car.advance = not car.advance;
+	
+	key <<1.0>> { Animate<<1.0>>(); }
+}
+
+timeline Main()
+{	
+	car.Position.x = 0;
+	car.Position.y = 0;
+	car.advance = true;
+	Animate [[2.0]]();
+}

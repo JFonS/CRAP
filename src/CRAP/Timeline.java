@@ -1,10 +1,16 @@
 package CRAP;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import interp.CRAPTree;
+import interp.Data;
 import interp.Interp;
 
 public class Timeline implements Comparable
 {
+	private HashMap<String,Data> activationRecord;
+	
 	private float startTimeAbs;
 	private float finishTimeAbs;
 	private String name;
@@ -26,7 +32,12 @@ public class Timeline implements Comparable
 		return startTimeAbs < other.startTimeAbs ? -1 : 1;
 	}
 	
-	public String ToString()
+	public void SetActivationRecord(HashMap<String,Data> activationRecord)
+	{
+		this.activationRecord = activationRecord;
+	}
+	
+	public String toString()
 	{
 		return "Timeline " + name + "[[" + startTimeAbs + ", " + finishTimeAbs + "]]";
 	}
@@ -34,5 +45,15 @@ public class Timeline implements Comparable
 	public float GetStartTimeAbs() { return startTimeAbs; }
 	public float GetFinishTimeAbs() { return finishTimeAbs; }
 	public String GetName() { return name; }
+	
+	public ArrayList<Data> GetAliveDatas()
+	{
+		ArrayList<Data> aliveDatas = new ArrayList<Data>();
+		for (Data aliveData : activationRecord.values())
+		{
+			aliveDatas.add(aliveData);
+		}
+		return aliveDatas;
+	}
 
 }

@@ -55,8 +55,8 @@ import java.util.Random;
  * the accepted options, run the command CRAP -help.
  */
 
-public class CRAP{
-
+public class CRAP
+{
     /** The file name of the program. */
     private static String infile = null;
     /** Name of the file representing the AST. */
@@ -66,11 +66,12 @@ public class CRAP{
     /** Name of the file storing the trace of the program. */
     private static String tracefile = null;
     /** Flag to indicate whether the program must be executed after parsing. */
-    private static boolean execute = true;
-      
-    /** Main program that invokes the parser and the interpreter. */
+    public static boolean execute = true;
     
-    public static void main(String[] args) throws Exception 
+    public static Interp interp;
+    
+    /** Main program that invokes the parser and the interpreter. */
+    public static void Init(String[] args) throws Exception
     {
         // Parser for command line options
         if (!readOptions (args)) { System.exit(1); }
@@ -123,27 +124,31 @@ public class CRAP{
         }
 
         // Start interpretation (only if execution required)
-        if (execute) 
+        if (execute)
         {
             // Creates and prepares the interpreter
-            Interp I = null;
             int linenumber = -1;
-            try {
-                I = new Interp(t, tracefile); // prepares the interpreter
-                I.Run();                      // Executes the code
-            } catch (RuntimeException e) {
-                if (I != null) linenumber = I.lineNumber();
+            try 
+            {
+                interp = new Interp(t, tracefile); // prepares the interpreter
+                interp.Init();
+            } 
+            catch (RuntimeException e) 
+            {
+                if (interp != null) linenumber = interp.lineNumber();
                 System.err.print ("Runtime error");
                 if (linenumber < 0) System.err.print (": ");
                 else System.err.print (" (" + infile + ", line " + linenumber + "): ");
                 System.err.println (e.getMessage() + ".");
-                System.err.format (I.getStackTrace());
-            } catch (StackOverflowError e) {
-                if (I != null) linenumber = I.lineNumber();
+                System.err.format (interp.getStackTrace());
+            } 
+            catch (StackOverflowError e) 
+            {
+                if (interp != null) linenumber = interp.lineNumber();
                 System.err.print("Stack overflow error");
                 if (linenumber < 0) System.err.print (".");
                 else System.err.println (" (" + infile + ", line " + linenumber + ").");
-                System.err.format (I.getStackTrace(5));
+                System.err.format (interp.getStackTrace(5));
             }
         }
     }

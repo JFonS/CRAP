@@ -91,12 +91,12 @@ exec:
 	if [ ! -e $(BIN) ]; then\
 	  mkdir $(BIN);\
 	fi
-	echo "Main-Class: CRAP.CRAP" > $(MANIFEST)
+	echo "Main-Class: CRAP.Main" > $(MANIFEST)
 	printf "Class-Path: $(JARPATH)" >> $(MANIFEST)
 	cd $(CLASSDIR); jar -cfm $(JARFILE) $(MANIFEST) *
 	printf "#!/bin/sh\n\n" > $(EXEC)
 #	printf 'exec java -enableassertions -jar $(JARFILE) "$$@"' >> $(EXEC)
-	printf 'exec java -cp "$(BIN)/CRAP.jar:$(LIBDIR)/*" CRAP.CRAP "$$@"' >> $(EXEC) 
+	printf 'exec java -cp "$(BIN)/CRAP.jar:$(LIBDIR)/*" CRAP.Main "$$@"' >> $(EXEC) 
 	chmod a+x $(EXEC)
 
 clean:

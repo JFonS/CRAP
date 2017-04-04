@@ -44,19 +44,16 @@ import CRAP.TweenManager;
 /** Class that implements the interpreter of the language. */
 
 public class Interp 
-{
-	private static Interp interp;
-	
+{	
 	private float currentKeyTimeAbs = 0.0f;
 	private float timeScopeStartAbs  = 0.0f;
 	private float timeScopeFinishAbs = 1.0f;
 	
-	private float timeAbsSeconds = 0.0f;
-	private TimelineManager timelineManager;
-	private TweenManager tweenManager;
+	public TimelineManager timelineManager;
+	public TweenManager tweenManager;
 	
     /** Memory of the virtual machine. */
-    private Stack stack;
+	public Stack stack;
 
     /**
      * Map between function names (keys) and ASTs (values).
@@ -85,9 +82,7 @@ public class Interp
      * data structures for the execution of the main program.
      */
     public Interp(CRAPTree T, String tracefile) 
-    {
-    	interp = this;
-    	
+    {    	
         assert T != null;
         stack = new Stack(); // Creates the memory of the virtual machine
         stack.pushActivationRecord("__global", 0);
@@ -109,33 +104,27 @@ public class Interp
         function_nesting = -1;
     }
     
-    /** Runs the program by calling the main function without parameters. */
-    public void Run() 
+    public void Init()
     {
     	tweenManager = new TweenManager();
     	timelineManager = new TimelineManager(this);
+
+    	Timeline mainTimeline = new Timeline("Main", 0.0f, 1.0f);
+    	executeTimeline(mainTimeline);
+    }
     
-    	executeFunction ("main", null);
-    	
-		long init = System.currentTimeMillis();
-    	while (true)
-    	{
-    		tweenManager.Update(timeAbsSeconds);
-    		timelineManager.Update(timeAbsSeconds);
-    		timeAbsSeconds = (System.currentTimeMillis() - init) / 1000.0f;
-    		if ( (timeAbsSeconds*2.0f - (int)(timeAbsSeconds*2.0f)) < 0.000000001f) 
-    		{ 
-    			System.out.println("timeAbsSeconds: " + timeAbsSeconds);
-    			stack.Print(); 
-    		}
-    	}
+    public void Update() 
+    {
+		tweenManager.Update();
+		timelineManager.Update();
+		
+		/*if ( (Time.GetTimeAbs()*2.0f - (int)(Time.GetTimeAbs()*2.0f)) < 0.000000001f) 
+		{ 
+			System.out.println("time: " + Time.GetTimeAbs());
+			stack.Print(); 
+		}*/
     }
 
-    public static float GetTimeAbs() 
-    { 
-    	return interp.timeAbsSeconds; 
-    }
-    
     /** Returns the contents of the stack trace */
     public String getStackTrace() {
         return stack.getStackTrace(lineNumber());
@@ -210,13 +199,8 @@ public class Interp
     /** Defines the current line number with a specific value */
     private void setLineNumber(int l) { linenumber = l;}
     
-    /**
-     * Executes a function.
-     * @param funcName The name of the function.
-     * @param args The AST node representing the list of arguments of the caller.
-     * @return The data returned by the function.
-     */
-    private Data executeFunction (String funcName, CRAPTree args) 
+
+    private Data executeFunction (String funcName, CRAPTree args, Timeline timeline) 
     {
         // Get the AST of the function
         CRAPTree f = FuncName2Tree.get(funcName);
@@ -236,7 +220,12 @@ public class Interp
 
         // Create the activation record in memory
         stack.pushActivationRecord(funcName, lineNumber());
-
+       
+        if (timeline != null) 
+        { 
+        	timeline.SetActivationRecord(stack.GetCurrentActivationRecord()); 
+        }
+        
         // Track line number
         setLineNumber(f);
          
@@ -261,12 +250,17 @@ public class Interp
         return result;
     }
     
+    private Data executeFunction (String funcName, CRAPTree args) 
+    {
+    	return executeFunction(funcName, args, null);
+    }
+    
     public Data executeTimeline(Timeline timeline)
     {
     	timeScopeStartAbs  = timeline.GetStartTimeAbs();
     	timeScopeFinishAbs = timeline.GetFinishTimeAbs();
     	
-    	return executeFunction( timeline.GetName(), null );
+    	return executeFunction(timeline.GetName(), null, timeline);
     }
 
     /**

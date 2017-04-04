@@ -6,6 +6,7 @@ timeline Main()
 	// L'animació serà el cotxe avançant amb petites recessions 
 
 	i = 0;
+	movement = 0;
 	advance = false;
 	speed = 10;
 	while (i < 100)
@@ -13,19 +14,26 @@ timeline Main()
 		// Cada segon (i) avança 10 o retrocedeix 5.
 		if (advance) 
 		{ 
-			key [[ i ]]
+			key [[ i * 5.0 ]]
 			{
-				car.Position.x -> i * 10; 
+				movement = movement + 10;
+				car.Position.x -> movement; 
 			}
 		}
 		else   
 		{ 
-			key [[ i ]]
+			key [[ i * 5.0 ]]
 			{
-				car.Position.x -> (i-1) * 10 - 5.0;
+				movement = movement - 5;
+				car.Position.x -> movement;
 			} 
 		}
 		advance = not advance;
 		i = i + 1;
 	}
+}
+
+function main()
+{
+	Main[[1.0]]();
 }

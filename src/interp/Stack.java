@@ -27,6 +27,7 @@
 
 package interp;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -77,6 +78,11 @@ public class Stack {
         stackTrace.addLast (new StackTraceItem(name, line));
     }
 
+    public HashMap<String, Data> GetCurrentActivationRecord()
+    {
+    	return actRecords.getLast();
+    }
+    
     /** Destroys the current activation record */
     public void popActivationRecord() {
         actRecords.removeLast();
@@ -174,6 +180,14 @@ public class Stack {
         	else { return v; }
         }
         else { throw new RuntimeException ("Variable " + varName + " not defined"); }
+    }
+    
+    public ArrayList<Data> GetGlobalDatas()
+    {
+    	HashMap<String,Data> globalAR = actRecords.getFirst();
+    	ArrayList<Data> globalDatas = new ArrayList<Data>();
+    	globalDatas.addAll(globalAR.values());
+    	return globalDatas;
     }
 
     /**

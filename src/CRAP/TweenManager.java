@@ -23,7 +23,7 @@ public class TweenManager
 		if (tweenList == null || tweenList.isEmpty())
 		{
 			tweenList = new ArrayList<Tween>(); 
-			Tween beginTween = new Tween(tween.GetData(), Interp.GetTimeAbs(), 
+			Tween beginTween = new Tween(tween.GetData(), Time.GetTimeAbs(), 
 					                     tween.GetData().getNumberValue());
 			tweenList.add(beginTween); 
 			tweenList.add(tween);
@@ -49,8 +49,9 @@ public class TweenManager
 		
 	}
 	
-	public void Update(float timeAbs)
+	public void Update()
 	{
+		float timeAbs = Time.GetTimeAbs();
 		for (Data tweenData : tweenPool.keySet())
 		{
 			// First tween the data
@@ -91,6 +92,13 @@ public class TweenManager
 				}
 			}
 		}
-		
+	}
+	
+	public ArrayList<Data> GetAliveDatas()
+	{
+		ArrayList<Data> aliveDatas = new ArrayList<Data>();
+		aliveDatas.addAll(tweenPool.keySet());
+		System.out.println("ALIVE TWEEN DATAS:" + aliveDatas);
+		return aliveDatas;
 	}
 }
