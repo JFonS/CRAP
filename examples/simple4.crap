@@ -2,12 +2,18 @@ global car;
 
 timeline MoveCarForward()
 {
-	key <<1.0>> { car.Position.x -> car.Position.x + 0.5; }
+	key <<1.0>> { 
+		car.Position.x -> car.Position.x + 0.5;
+		car.Rotation.z -> -180; 
+	}
 }
 
 timeline MoveCarBackwards()
 {
-	key <<1.0>> { car.Position.x -> car.Position.x - 0.25; }
+	key <<1.0>> { 
+		car.Position.x -> car.Position.x - 0.25;
+		car.Rotation.z -> 180; 
+	}
 }
 
 timeline Animate()
@@ -27,8 +33,10 @@ timeline Animate()
 
 timeline Main()
 {	
+	car = new Car;
 	car.Position.x = 0;
 	car.Position.y = 0;
+	car.Position.z = -10;
 	car.advance = true;
 	Animate [[2.0]]();
 }

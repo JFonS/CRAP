@@ -117,12 +117,6 @@ public class Interp
     {
 		tweenManager.Update();
 		timelineManager.Update();
-		
-		/*if ( (Time.GetTimeAbs()*2.0f - (int)(Time.GetTimeAbs()*2.0f)) < 0.000000001f) 
-		{ 
-			System.out.println("time: " + Time.GetTimeAbs());
-			stack.Print(); 
-		}*/
     }
 
     /** Returns the contents of the stack trace */
@@ -495,6 +489,22 @@ public class Interp
                     throw new RuntimeException ("function expected to return a value");
                 }
                 break;
+            case CRAPLexer.NEW:
+            	value = new Data();
+            	
+            	value.setProperty("Position.x", new Data(0.0f));
+            	value.setProperty("Position.y", new Data(0.0f));
+            	value.setProperty("Position.z", new Data(0.0f));
+            	
+            	value.setProperty("Rotation.x", new Data(0.0f));
+            	value.setProperty("Rotation.y", new Data(0.0f));
+            	value.setProperty("Rotation.z", new Data(0.0f));
+            	
+            	value.setProperty("Scale.y", new Data(1.0f));
+            	value.setProperty("Scale.x", new Data(1.0f));
+            	value.setProperty("Scale.z", new Data(1.0f));
+            	
+            	break;
             default: break;
         }
 

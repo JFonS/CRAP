@@ -93,34 +93,39 @@ public class Main
         	Update();
         }
     }
+    
+    private static void perspectiveGL(float fovY, float aspect, float zNear, float zFar )
+    {
+        float pi = 3.141592f;
+        float fW, fH;
 
+        fH = (float) Math.tan( fovY / 360 * pi ) * zNear;
+        fW = fH * aspect;
+
+        glFrustum( -fW, fW, -fH, fH, zNear, zFar );
+    }
+    
     private static void Update()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+        // Camera
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		perspectiveGL(60.0f, 1.0f, 0.1f, 1000.0f);
+		
     	HashSet<Data> aliveDatas = GetAliveDatas();
     	for (Data data : aliveDatas)
     	{
     		if (!data.isObject()) { continue; }
     		
-    		float x = data.getProperty("Position.x").getNumberValue();
-    		float y = data.getProperty("Position.y").getNumberValue();
-    		
-	        glBegin(GL_QUADS);
-	        glColor3f(1.0f, 0.0f, 0.0f);
-	        glVertex3d(x + 0.0f, y + 0.0f, 0.0f);
-	        glVertex3d(x + 0.1f, y + 0.0f, 0.0f);
-	        glVertex3d(x + 0.1f, y + 0.1f, 0.0f);
-	        glVertex3d(x + 0.0f, y + 0.1f, 0.0f);
-	        glEnd();
+    		ObjectRenderer.RenderObject(data);
     	}
     	
         Time.Update();
         CRAP.interp.Update();
 
-
         glfwSwapBuffers(window); // swap the color buffers
-        
         glfwPollEvents();
     }
     

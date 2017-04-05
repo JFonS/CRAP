@@ -126,7 +126,7 @@ atom    :   ID
         |   STRING
         |   NUMBER
         |   VEC^ '('! expr_list ')'!
-	|   NEW^ ID
+	    |   NEW^ ID
         |   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
