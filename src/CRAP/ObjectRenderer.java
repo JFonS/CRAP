@@ -5,16 +5,17 @@ import interp.Data;
 
 public class ObjectRenderer {
 	public static void RenderObject(Data object) {
-		float posx = object.getProperty("Position.x").getNumberValue();
-		float posy = object.getProperty("Position.y").getNumberValue();
-		float posz = object.getProperty("Position.z").getNumberValue();
-		float rotx = object.getProperty("Rotation.x").getNumberValue();
-		float roty = object.getProperty("Rotation.y").getNumberValue();
-		float rotz = object.getProperty("Rotation.z").getNumberValue();
-		float scalex = object.getProperty("Scale.x").getNumberValue();
-		float scaley = object.getProperty("Scale.y").getNumberValue();
-		float scalez = object.getProperty("Scale.z").getNumberValue();
-		System.out.println(posx + "," + posy + "," + posz);
+		float posx = object.getProperty("Position").getProperty("x").getNumberValue();
+		float posy = object.getProperty("Position").getProperty("y").getNumberValue();
+		float posz = object.getProperty("Position").getProperty("z").getNumberValue();
+		
+		float rotx = object.getProperty("Rotation").getProperty("x").getNumberValue();
+		float roty = object.getProperty("Rotation").getProperty("y").getNumberValue();
+		float rotz = object.getProperty("Rotation").getProperty("z").getNumberValue();
+		
+		float scalex = object.getProperty("Scale").getProperty("x").getNumberValue();
+		float scaley = object.getProperty("Scale").getProperty("y").getNumberValue();
+		float scalez = object.getProperty("Scale").getProperty("z").getNumberValue();
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();

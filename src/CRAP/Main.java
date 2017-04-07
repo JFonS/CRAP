@@ -87,6 +87,7 @@ public class Main
     private static void Loop() 
     {
         GL.createCapabilities();
+        
         glClearColor(0.0f,1.0f, 0.0f, 0.0f);
         while ( !glfwWindowShouldClose(window) ) 
         {
@@ -107,8 +108,9 @@ public class Main
     
     private static void Update()
     {
+    	glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
+        
         // Camera
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();

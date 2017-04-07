@@ -15,8 +15,6 @@ public class TweenManager
 	
 	public void AddTween(Tween tween)
 	{	
-
-		System.out.println("Add tween!"); 
 		ArrayList<Tween> tweenList = tweenPool.get(tween.GetData());
 		System.out.println("Adding tween to list BEFORE: " + 
 								(tweenList == null ? "[]" : tweenList.toString()));
@@ -70,7 +68,6 @@ public class TweenManager
 					float vStart = tweenStart.GetKeyValue();
 					float vEnd   = tweenEnd.GetKeyValue();
 					tweenData.setValue( t * (vEnd - vStart) + vStart);
-					
 					break;
 				}
 			}
@@ -92,13 +89,5 @@ public class TweenManager
 				}
 			}
 		}
-	}
-	
-	public ArrayList<Data> GetAliveDatas()
-	{
-		ArrayList<Data> aliveDatas = new ArrayList<Data>();
-		aliveDatas.addAll(tweenPool.keySet());
-		System.out.println("ALIVE TWEEN DATAS:" + aliveDatas);
-		return aliveDatas;
 	}
 }

@@ -135,19 +135,12 @@ public class Data {
         return str;
     }
     
-    public Data getProperty(String propertyPath)
+    public Data getProperty(String propName)
     {
-    	if (!propertyPath.isEmpty())
+    	if (!propName.isEmpty())
     	{
-    		String propName = propertyPath.split("\\.", 2)[0];
     		if (!properties.containsKey(propName)) { return null; }
-
-    		if (propertyPath.contains("."))
-    		{
-	    		String propPathNoName = propertyPath.split("\\.", 2)[1];	    			
-	    		return properties.get(propName).getProperty(propPathNoName);
-    		}
-    		else { return properties.get(propName); }
+    		return properties.get(propName);
     	}
 		return this;
     }
@@ -162,11 +155,10 @@ public class Data {
     
     public void setType(Data.Type type) { this.type = type; }
     
-    public void setProperty(String propertyPath, Data propertyValue)
+    public void setProperty(String propName, Data propertyValue)
     { 
         type = Type.OBJECT;
 
-    	String propName = propertyPath.split("\\.", 2)[0];
     	Data prop;
     	if (properties.containsKey(propName)) { prop = properties.get(propName); }
     	else 
@@ -175,14 +167,7 @@ public class Data {
         	properties.put(propName, prop);
         }
 
-        if (propertyPath.contains("."))
-        {
-        	prop.setProperty(propertyPath.split("\\.", 2)[1], propertyValue);
-        }
-        else
-        {
-        	prop.setData(propertyValue);
-        }
+        prop.setData(propertyValue);
     }
 
     /** Copies the value from another data */
@@ -215,6 +200,13 @@ public class Data {
         str += "}";
         str = str.replace(", }", "}");
         return str;
+    }
+    
+    public String toArrIndex() 
+    {
+        if (type == Type.STRING) return str;
+        if (type == Type.OBJECT) return "::" + System.identityHashCode(this) + "::";
+        return toString();
     }
     
     /**

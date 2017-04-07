@@ -2,33 +2,38 @@ global car;
 
 timeline MoveCarForward()
 {
-	//smallBall = new Ball;
-	//smallBall.Position.z = car.Position.z + 2;
-	//smallBall.Position.x = car.Position.x;
+	io = new Ball;
 	
-	key <<0.25>> {
-		car.Rotation.x -> 90;
-		smallBall.Position.y -> 5;
-	}
+	io.Scale.x = 0.1;
+	io.Scale.y = 0.1;
+	io.Scale.z = 0.1;
 	
+	a = "on";
+	dist = 2;
 	
-	key <<0.75>> {
-		car.Rotation.x -> -90;
-		smallBall.Position.y -> -5;
-	}
+	io["Positi" .. a].x = car.Position.x;
+	io.Position.z = car["Position"]["z"] + 2;
+	io.Position.y = -dist;
 	
-
-	key <<1.0>> { 
+	key <<0.5>> {
 		car.Position.x -> car.Position.x + 2;
-		smallBall.Position.y -> 0;
+		io.Position.y -> 0;
+	}
+	
+	key <<1.0>> {
+	car.Position.x -> car.Position.x;
+		io.Position.y -> dist;
 	}
 }
 
 timeline MoveCarBackwards()
 {
+	key <<0.9>> { 
+		car.Position.x -> car.Position.y - 2;
+	}
+
 	key <<1.0>> { 
-		car.Position.x -> car.Position.x - 2;
-		//car.Rotation.x -> 360; 
+		car.Position.x -> car.Position.y;
 	}
 }
 
@@ -51,7 +56,6 @@ timeline Main()
 {	
 	car = new Car;
 	car.Position.z = -10;
-	
 	car.advance = true;
 	
 	Animate [[2.0]]();

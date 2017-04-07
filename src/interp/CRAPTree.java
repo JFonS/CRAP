@@ -81,4 +81,8 @@ public class CRAPTree extends CommonTree {
         // Do not store the " at the extremes of the string
         strValue = s.substring(1,s.length()-1);
     }
+    
+    public CRAPTree getLastChild() {
+    	return getChild(getChildCount()-1); 
+    }
 }

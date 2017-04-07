@@ -10,6 +10,7 @@ options {
 tokens {
     LIST_FUNCTIONS; // List of functions (the root of the tree)
     ASSIGN;     // Assignment instruction
+    TWEEN;
     PARAMS;     // List of parameters in the declaration of a function
     FUNCALL;    // Function call
     TIMELINECALL;
@@ -25,6 +26,8 @@ tokens {
     ARR_ACCESS;
     ARR_ELM_ASSIGN; // One element assign
     LIST;
+    ARR_INDEX;
+    VAR;
 }
 
 @header {
@@ -71,7 +74,7 @@ instruction
         |   while_stmt        // while statement
         |   key
         |   assign       ';'! // Assignment
-        |   tween        ';'! // Tween
+  //      |   tween        ';'! // Tween
         |   timelineCall ';'!
         |   funcCall     ';'! // Call to a procedure (no result produced)
         |   return_stmt  ';'! // Return statement
@@ -86,12 +89,9 @@ time_abs:   '[[' expr ']]' -> ^(TIME_ABS expr);
 
 expr_list:  expr (','! expr)*;
 
-// Assignment
-tween   :   ID tw=TWEEN expr -> ^(TWEEN[$tw, "TWEEN"] ID expr);
-
-assign  :   ID eq=EQUAL expr -> ^(ASSIGN[$eq,"ASSIGN"] ID expr)
-        |   ID '[' expr ']' eq=EQUAL val=expr -> ^(ARR_ELM_ASSIGN ^(ARR_ACCESS ID expr) $val )
-        ;
+assign  : variable ((EQUAL expr) -> ^(ASSIGN variable expr) | (ARROW expr) -> ^(TWEEN variable expr))
+		//variable op=(EQUAL|TWEEN) expr -> ^($op variable expr)
+		;
 
 // if-then-else (else is optional)
 ite_stmt:   IF^ '('! expr ')'! '{'! instruction_list '}'! (ELSE! '{'! instruction_list '}'! )? ;
@@ -122,22 +122,27 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*;
 term    :   factor ( (MUL^ | DIV^ | MOD^) factor)*;
 factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
-atom    :   ID
+variableIndex: '[' expr ']' -> ^(ARR_INDEX expr);
+variableElem: ID (variableIndex)*;
+variable: r=variableElem ('.' c+=variableElem)* -> ^(VAR $r $c*);
+
+atom    :   variable
+		|   EMPTYOBJ
         |   STRING
         |   NUMBER
         |   VEC^ '('! expr_list ')'!
 	    |   NEW^ ID
-        |   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
+        //|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
         |   '('! expr ')'!
-        |   '[' expr_list ']' -> ^(LIST expr_list)
+        //|   '[' expr_list ']' -> ^(LIST expr_list)
         ;
 
 
 // Basic tokens
 EQUAL   : '=' ;
-TWEEN   : '->';
+ARROW   : '->';
 NOT_EQUAL: '!=' ;
 LT      : '<' ;
 LE      : '<=';
@@ -149,6 +154,7 @@ MINUS   : '-' ;
 MUL     : '*';
 DIV     : '/';
 MOD     : '%' ;
+EMPTYOBJ: '{' '}';
 NOT     : 'not';
 AND     : 'and' ;
 OR      : 'or' ;
@@ -169,8 +175,8 @@ GLOBAL  : 'global';
 PREFAB  :  'prefab'; 
 LINEAR  : 'Linear';
 CUBIC   : 'Cubic';
-ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* | 
-          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
+ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
+//|          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
 NUMBER  : '0'..'9'+ | '0'..'9'+ '.' '0'..'9'+;
 
 // C-style comments

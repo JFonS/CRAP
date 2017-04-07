@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
+
+import javax.management.RuntimeErrorException;
+
 import java.io.*;
 
 import CRAP.Timeline;
@@ -293,48 +296,60 @@ public class Interp
         // A big switch for all type of instructions
         switch (t.getType()) {
             case CRAPLexer.ASSIGN:
+            {
+            	
                 value = evaluateExpression(t.getChild(1));
-                stack.defineVariable (t.getChild(0).getText(), value);
+
+                CRAPTree var = t.getChild(0);
+                String baseVar = var.getChild(0).getText();
+                
+                if (var.getChildCount() == 1) {
+                	stack.defineVariable (baseVar, value);
+                	return null;
+                }
+                
+                Data data = stack.getVariable(baseVar);
+
+                for (int i = 1; i < var.getChildCount() - 1; ++i) {
+                	CRAPTree vari = var.getChild(i);
+                	
+                	String index = vari.getType() == CRAPLexer.ARR_INDEX ?
+            				evaluateExpression(vari.getChild(0)).toArrIndex() : 
+            				vari.getText();
+            				
+            		data = data.getProperty(index);
+                }
+                
+                CRAPTree index = var.getLastChild(); 
+                String indexStr = index.getType() == CRAPLexer.ARR_INDEX ?
+        				evaluateExpression(index.getChild(0)).toArrIndex() : 
+        				index.getText();
+                
+                data.setProperty(indexStr, new Data(value));
+                
                 return null;
-            
-            case CRAPLexer.ARR_ELM_ASSIGN:
-            	value = evaluateExpression(t.getChild(1));
-
-            	CRAPTree indexExpr = t.getChild(0).getChild(1);
-
-            	Data indexVal = evaluateExpression(indexExpr);
-            	String index;
-            	if (indexVal.isNumber()) {
-	        		int i = (int) Math.floor(indexVal.getNumberValue());
-	        		index = Integer.toString(i);
-            	} else if (indexVal.isString()) {
-            		index = indexVal.getStringValue();
-            	} else {
-            		throw new RuntimeException("Object indices must be numbers or strings.");
-            	}
-            	
-            	String arrName = t.getChild(0).getChild(0).getText();
-            	String fullPath = arrName + "." + index;
-            	stack.defineVariable (fullPath, value);
-            	
-            	return null;
+            }
 
             case CRAPLexer.TWEEN:
-            	System.out.println("TWEEN");
-            	Data dataToTween = stack.getVariable(t.getChild(0).getText());
-            	if (dataToTween == null) 
-            	{ 
-            		stack.defineVariable(t.getChild(0).getText(), new Data(0.0f));
-            		dataToTween = stack.getVariable(t.getChild(0).getText());
+            {
+            	CRAPTree var = t.getChild(0);
+            	Data dataToTween = stack.getVariable(var.getChild(0).getText());
+
+            	for (int i = 1; i < var.getChildCount(); ++i) {
+            		CRAPTree vari = var.getChild(i);
+            		String index = vari.getType() == CRAPLexer.ARR_INDEX ?
+            				evaluateExpression(vari.getChild(0)).toArrIndex() : 
+            				vari.getText();	
+            		dataToTween = dataToTween.getProperty(index);
             	}
             	
             	Data finalValue = evaluateExpression(t.getChild(1));
-            	
             	Tween tween = new Tween(dataToTween, currentKeyTimeAbs, 
             							finalValue.getNumberValue());
-            	tweenManager.AddTween(tween);        
             	
+            	tweenManager.AddTween(tween);
             	return null;
+            }
                 
             // If-then-else
             case CRAPLexer.IF:
@@ -446,9 +461,24 @@ public class Interp
         // Atoms
         switch (type) {
             // A variable
-            case CRAPLexer.ID:
-                value = new Data( stack.getVariable(t.getText()) );
+            case CRAPLexer.VAR:
+            	value = stack.getVariable(t.getChild(0).getText());
+
+            	for (int i = 1; i < t.getChildCount(); ++i) {
+            		CRAPTree ti = t.getChild(i);
+            		String index = ti.getType() == CRAPLexer.ARR_INDEX ?
+            				evaluateExpression(ti.getChild(0)).toArrIndex() : 
+            				ti.getText();
+            				
+            		value = value.getProperty(index);
+            		
+            	}
+            	value = new Data(value);
                 break;
+            case CRAPLexer.EMPTYOBJ:
+            	value = new Data();
+            	value.setType(Data.Type.OBJECT);
+            	break;
             // An integer literal
             case CRAPLexer.NUMBER:
             	value = new Data( Float.parseFloat(t.getText()) );
@@ -461,26 +491,6 @@ public class Interp
             	value = new Data(t.getStringValue());
             	break;
             	
-            case CRAPLexer.ARR_ACCESS:
-            	CRAPTree indexExpr = t.getChild(1);
-
-            	Data indexVal = evaluateExpression(indexExpr);
-            	
-            	String index;
-            	if (indexVal.isNumber()) {
-	        		int i = (int) Math.floor(indexVal.getNumberValue());
-	        		index = Integer.toString(i);
-            	} else if (indexVal.isString()) {
-            		index = indexVal.getStringValue();
-            	} else {
-            		throw new RuntimeException("Object indices must be numbers or strings.");
-            	}
-            	
-            	String arrName = t.getChild(0).getText();
-            	String fullPath = arrName + "." + index;
-            	
-            	value = new Data( stack.getVariable(fullPath));
-            	break;
             // A function call. Checks that the function returns a result.
             case CRAPLexer.FUNCALL:
                 value = executeFunction(t.getChild(0).getText(), t.getChild(1));
@@ -492,17 +502,25 @@ public class Interp
             case CRAPLexer.NEW:
             	value = new Data();
             	
-            	value.setProperty("Position.x", new Data(0.0f));
-            	value.setProperty("Position.y", new Data(0.0f));
-            	value.setProperty("Position.z", new Data(0.0f));
+            	Data prop = new Data();
+            	prop.setProperty("x", new Data(0.0f));
+            	prop.setProperty("y", new Data(0.0f));
+            	prop.setProperty("z", new Data(0.0f));
+            	value.setProperty("Position", prop);
             	
-            	value.setProperty("Rotation.x", new Data(0.0f));
-            	value.setProperty("Rotation.y", new Data(0.0f));
-            	value.setProperty("Rotation.z", new Data(0.0f));
+            	prop = new Data();
+            	prop.setProperty("x", new Data(0.0f));
+            	prop.setProperty("y", new Data(0.0f));
+            	prop.setProperty("z", new Data(0.0f));
+            	value.setProperty("Rotation", prop);
             	
-            	value.setProperty("Scale.y", new Data(1.0f));
-            	value.setProperty("Scale.x", new Data(1.0f));
-            	value.setProperty("Scale.z", new Data(1.0f));
+            	prop = new Data();
+            	prop.setProperty("x", new Data(1.0f));
+            	prop.setProperty("y", new Data(1.0f));
+            	prop.setProperty("z", new Data(1.0f));
+            	value.setProperty("Scale", prop);
+            	
+            	// TODO Set prefab properties
             	
             	break;
             default: break;
@@ -585,7 +603,7 @@ public class Interp
         setLineNumber(previous_line);
         return value;
     }
-    
+
     /**
      * Evaluation of Boolean expressions. This function implements
      * a short-circuit evaluation. The second operand is still a tree
