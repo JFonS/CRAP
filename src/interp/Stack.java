@@ -117,10 +117,8 @@ public class Stack {
      * @param name The name of the variable
      * @param value The value of the variable
      */
-    public void defineVariable(String propertyPath, Data value) 
+    public void defineVariable(String varName, Data value) 
     {
-    	String varName = propertyPath.split("\\.", 2)[0];
-    	
     	HashMap<String, Data> activationRecord = actRecords.getFirst();
         Data var = activationRecord.get(varName);
         if (var == null) // If its not globally defined, then use local one 
@@ -128,28 +126,15 @@ public class Stack {
         	activationRecord = currentAR;
         	var = activationRecord.get(varName); // Else modify local one
         }
-        
-    	if (propertyPath.contains(".")) // IS AN OBJECT
-    	{
-	        if (var == null) 
-	        {
-	        	var = new Data();
-	        	activationRecord.put(varName, var); // New definition
-	        }	
-	    	String propPathNoName = propertyPath.split("\\.", 2)[1];
-	        var.setProperty(propPathNoName, value); // Use the previous data
-    	}
-    	else // IS NOT AN OBJECT
-    	{
-	        if (var == null) 
-	        {
-	        	activationRecord.put(varName, value); // New definition
-	        }
-	        else
-	        {
-	        	var.setData(value);
-	        }
-    	}
+    	
+        if (var == null) 
+        {
+        	activationRecord.put(varName, value); // New definition
+        }
+        else
+        {
+        	var.setData(value);
+        }
     }
 
     /** Gets the value of the variable. The value is represented as
@@ -158,26 +143,18 @@ public class Stack {
      * @param name The name of the variable
      * @return The value of the variable
      */
-    public Data getVariable(String propertyPath) 
+    public Data getVariable(String varName) 
     {
-    	String varName = propertyPath.split("\\.", 2)[0];
         Data v = actRecords.getFirst().get(varName);
         if (v == null)
         {
         	// Look for v in local AR, if not found global
         	v = currentAR.get(varName);
         }
-    	System.out.println(varName + ": " + v);
-        
+
         if (v != null)
         {
-        	if (propertyPath.contains("."))
-        	{
-	        	String propPathNoName = propertyPath.split("\\.", 2)[1];
-	        	System.out.println(propPathNoName);
-	        	return v.getProperty(propPathNoName);
-        	}
-        	else { return v; }
+        	return v;
         }
         else { throw new RuntimeException ("Variable " + varName + " not defined"); }
     }
