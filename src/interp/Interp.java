@@ -304,7 +304,7 @@ public class Interp
                 String baseVar = var.getChild(0).getText();
                 
                 if (var.getChildCount() == 1) {
-                	stack.defineVariable (baseVar, value);
+                	stack.defineVariable (baseVar, new Data(value));
                 	return null;
                 }
                 
@@ -404,14 +404,8 @@ public class Interp
             // Write statement: it can write an expression or a string.
             case CRAPLexer.WRITE:
                 CRAPTree v = t.getChild(0);
-                // Special case for strings
-                if (v.getType() == CRAPLexer.STRING) {
-                    System.out.format(v.getStringValue());
-                    return null;
-                }
-
-                // Write an expression
-                System.out.print(evaluateExpression(v).toString());
+                Data str = evaluateExpression(v);
+                System.out.format(str.isString() ? str.getStringValue() : str.toString());
                 return null;
 
             // Function call
@@ -479,6 +473,20 @@ public class Interp
             	value = new Data();
             	value.setType(Data.Type.OBJECT);
             	break;
+            case CRAPLexer.VEC:
+            	switch (t.getChildCount()) {
+            		case 1: 
+            			value = new Data(new Vec3(evaluateExpression(t.getChild(0)).getNumberValue()));
+            			break;
+            		case 3:
+            			value = new Data(new Vec3(
+            					evaluateExpression(t.getChild(0)).getNumberValue(),
+            					evaluateExpression(t.getChild(1)).getNumberValue(),
+            					evaluateExpression(t.getChild(2)).getNumberValue()));
+            			break;
+            		default: throw new RuntimeException("Wrong number of vector elements.");
+            	}
+                break;
             // An integer literal
             case CRAPLexer.NUMBER:
             	value = new Data( Float.parseFloat(t.getText()) );
@@ -584,7 +592,6 @@ public class Interp
             case CRAPLexer.DIV:
             case CRAPLexer.MOD:
                 value2 = evaluateExpression(t.getChild(1));
-                checkInteger(value); checkInteger(value2);
                 value.evaluateArithmetic(type, value2);
                 break;
 

@@ -1,6 +1,7 @@
 package CRAP;
 
 import static org.lwjgl.opengl.GL11.*;
+
 import interp.Data;
 
 public class ObjectRenderer {
@@ -24,7 +25,7 @@ public class ObjectRenderer {
 		glRotatef(roty, 0, 1, 0);
 		glRotatef(rotz, 0, 0, 1);
 		glScalef(scalex, scaley, scalez);
-
+		
 		/*glBegin(GL_QUADS);
 		glColor3f(0.0f, 0.0f, 1.0f);
 		glVertex3f(-1, -1, 0);

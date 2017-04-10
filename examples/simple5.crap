@@ -55,8 +55,12 @@ timeline Animate()
 timeline Main()
 {	
 	car = new Car;
+	
 	car.Position.z = -10;
 	car.advance = true;
+	
+	vector = vec(1,2,3);
+	write vec(3) .. "%n";
 	
 	Animate [[2.0]]();
 }

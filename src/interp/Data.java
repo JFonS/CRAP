@@ -39,12 +39,13 @@ package interp;
 
 import parser.*;
 import java.util.*;
+import CRAP.Vec3;
 
 import org.omg.CORBA.portable.StreamableValue;
 
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, NUMBER, OBJECT, STRING;}
+    public enum Type {VOID, BOOLEAN, NUMBER, OBJECT, STRING, VEC;}
 
     /** Type of data*/
     private Type type;
@@ -52,19 +53,19 @@ public class Data {
     /** Value of the data */
     private float value;
     private String str;
-    private HashMap<String, Data> properties;
+    private HashMap<String, Data> properties = new HashMap<String, Data>();
+    private Vec3 vec;
 
     public Data(int v) 
     { 
     	type = Type.NUMBER; 
     	value = v;
-    	properties = new HashMap<String, Data>(); 
     }
+    
     public Data(float v) 
     {
     	type = Type.NUMBER; 
     	value = v;
-    	properties = new HashMap<String, Data>(); 
     }
 
     /** Constructor for Booleans */
@@ -72,14 +73,17 @@ public class Data {
     { 
     	type = Type.BOOLEAN; 
     	value = b ? 1 : 0;
-		properties = new HashMap<String, Data>(); 
 	}
+    
+    public Data(Vec3 v)
+    {
+    	setValue(v);
+    }
 
     /** Constructor for void data */
     public Data() 
     {
-    	type = Type.VOID; 
-    	properties = new HashMap<String, Data>();
+    	type = Type.VOID;
     }
 
     /** Copy constructor */
@@ -93,7 +97,6 @@ public class Data {
     { 
     	type = Type.STRING; 
     	str = s;
-    	properties = new HashMap<String, Data>();
 	}
 
     /** Returns the type of data */
@@ -111,6 +114,8 @@ public class Data {
     public boolean isString() { return type == Type.STRING; }
 
     public boolean isObject() { return type == Type.OBJECT; }
+    
+    public boolean isVec() { return type == Type.VEC; }
 
     /**
      * Gets the value of an integer data. The method asserts that
@@ -134,6 +139,12 @@ public class Data {
         assert type == Type.STRING;
         return str;
     }
+
+    public Vec3 getVecValue() 
+    {
+    	assert type == Type.VEC;
+    	return vec;
+    }
     
     public Data getProperty(String propName)
     {
@@ -153,6 +164,9 @@ public class Data {
     
     public void setValue(String s) { type = Type.STRING; str = s; }
     
+    public void setValue(Vec3 v) { type = Type.VEC; vec = new Vec3(v); }
+    
+   
     public void setType(Data.Type type) { this.type = type; }
     
     public void setProperty(String propName, Data propertyValue)
@@ -177,6 +191,7 @@ public class Data {
     	value = copyThis.value;
     	str = copyThis.str;
     	properties = new HashMap<String, Data>();
+    	vec = copyThis.vec;
     	for (String propName : copyThis.properties.keySet())
     	{
     		Data v = new Data( copyThis.getProperty(propName) );
@@ -190,6 +205,7 @@ public class Data {
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
         if (type == Type.STRING) return "\"" + str + "\"";
+        if (type == Type.VEC) return "(" + vec.x + ", " + vec.y + ", " + vec.z + ")";
         
         // Type OBJECT
         String str = "{";
@@ -225,14 +241,43 @@ public class Data {
      */
      
     public void evaluateArithmetic (int op, Data d) {
-        assert type == Type.NUMBER && d.type == Type.NUMBER;
-        switch (op) {
-            case CRAPLexer.PLUS: value += d.value; break;
-            case CRAPLexer.MINUS: value -= d.value; break;
-            case CRAPLexer.MUL: value *= d.value; break;
-            case CRAPLexer.DIV: checkDivZero(d); value /= d.value; break;
-            case CRAPLexer.MOD: checkDivZero(d); value %= d.value; break;
-            default: assert false;
+        if (this.type == Type.NUMBER && d.type == Type.NUMBER)
+        {
+	        switch (op) {
+	            case CRAPLexer.PLUS:  value += d.value; break;
+	            case CRAPLexer.MINUS: value -= d.value; break;
+	            case CRAPLexer.MUL:   value *= d.value; break;
+	            case CRAPLexer.DIV:   checkDivZero(d); value /= d.value; break;
+	            case CRAPLexer.MOD:   checkDivZero(d); value %= d.value; break;
+	            default: assert false;
+	        }
+        } else if (this.type == Type.VEC && d.type == Type.VEC) {
+        	switch (op) {
+	            case CRAPLexer.PLUS:  setValue(Vec3.Sum(vec, d.vec)); break;
+	            case CRAPLexer.MINUS: setValue(Vec3.Sub(vec, d.vec)); break;
+	            case CRAPLexer.MUL:   setValue(Vec3.Mul(vec, d.vec)); break;
+	            case CRAPLexer.DIV:   setValue(Vec3.Div(vec, d.vec)); break;
+	            case CRAPLexer.MOD:   setValue(Vec3.Mod(vec, d.vec)); break;
+	            default: assert false;
+	        }
+        } else if (this.type == Type.NUMBER && d.type == Type.VEC) {
+        	switch (op) {
+		        case CRAPLexer.PLUS:  setValue(Vec3.Sum(value, d.vec)); break;
+		        case CRAPLexer.MINUS: setValue(Vec3.Sub(value, d.vec)); break;
+		        case CRAPLexer.MUL:   setValue(Vec3.Mul(value, d.vec)); break;
+		        case CRAPLexer.DIV:   setValue(Vec3.Div(value, d.vec)); break;
+		        case CRAPLexer.MOD:   setValue(Vec3.Mod(value, d.vec)); break;
+		        default: assert false;
+        	}
+        } else if (this.type == Type.VEC && d.type == Type.NUMBER) {
+        	switch (op) {
+		        case CRAPLexer.PLUS:  setValue(Vec3.Sum(vec, d.value)); break;
+		        case CRAPLexer.MINUS: setValue(Vec3.Sub(vec, d.value)); break;
+		        case CRAPLexer.MUL:   setValue(Vec3.Mul(vec, d.value)); break;
+		        case CRAPLexer.DIV:   setValue(Vec3.Div(vec, d.value)); break;
+		        case CRAPLexer.MOD:   setValue(Vec3.Mod(vec, d.value)); break;
+		        default: assert false;
+        	}
         }
     }
 
@@ -243,15 +288,26 @@ public class Data {
      * @return A Boolean data with the value of the expression.
      */
     public Data evaluateRelational (int op, Data d) {
-        assert type != Type.VOID && type == d.type;
-        switch (op) {
-            case CRAPLexer.EQUAL: return new Data(value == d.value);
-            case CRAPLexer.NOT_EQUAL: return new Data(value != d.value);
-            case CRAPLexer.LT: return new Data(value < d.value);
-            case CRAPLexer.LE: return new Data(value <= d.value);
-            case CRAPLexer.GT: return new Data(value > d.value);
-            case CRAPLexer.GE: return new Data(value >= d.value);
-            default: assert false; 
+
+        if (this.type == Type.NUMBER && d.type == Type.NUMBER)
+        {
+	        switch (op) {
+	            case CRAPLexer.EQUAL: return new Data(value == d.value);
+	            case CRAPLexer.NOT_EQUAL: return new Data(value != d.value);
+	            case CRAPLexer.LT: return new Data(value < d.value);
+	            case CRAPLexer.LE: return new Data(value <= d.value);
+	            case CRAPLexer.GT: return new Data(value > d.value);
+	            case CRAPLexer.GE: return new Data(value >= d.value);
+	            default: assert false; 
+	        }
+        }
+        else if (this.type == Type.NUMBER && d.type == Type.NUMBER)
+        {
+	        switch (op) {
+	            case CRAPLexer.EQUAL: return new Data(vec.Equals(d.vec));
+	            case CRAPLexer.NOT_EQUAL: return new Data(!vec.Equals(d.vec));
+	            default: assert false; 
+	        }
         }
         return null;
     }
