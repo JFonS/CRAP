@@ -403,11 +403,24 @@ public class Interp
 
             // Write statement: it can write an expression or a string.
             case CRAPLexer.WRITE:
+            {
                 CRAPTree v = t.getChild(0);
                 Data str = evaluateExpression(v);
                 System.out.format(str.isString() ? str.getStringValue() : str.toString());
                 return null;
-
+            }   
+            case CRAPLexer.PRINT:
+            {
+            	if (t.getChildCount() == 0) {
+            		System.out.println();
+            		return null;
+            	}
+            	
+                CRAPTree v = t.getChild(0);
+                Data str = evaluateExpression(v);
+                System.out.format(str.isString() ? str.getStringValue() : str.toString() + "%n");
+                return null;
+            }
             // Function call
             case CRAPLexer.FUNCALL:
                 executeFunction(t.getChild(0).getText(), t.getChild(1));
@@ -463,7 +476,16 @@ public class Interp
             		String index = ti.getType() == CRAPLexer.ARR_INDEX ?
             				evaluateExpression(ti.getChild(0)).toArrIndex() : 
             				ti.getText();
-            				
+            		
+            		if (value.isVec()) {
+            			Vec vec = value.getVecValue();
+            			if (index.length() == 1) {
+            				value = new Data(vec.Get(index));
+            			} else {
+            				value = new Data(vec.Swizzle(index));
+            			}
+            			break;
+            		}
             		value = value.getProperty(index);
             		
             	}
@@ -474,17 +496,41 @@ public class Interp
             	value.setType(Data.Type.OBJECT);
             	break;
             case CRAPLexer.VEC:
-            	switch (t.getChildCount()) {
-            		case 1: 
-            			value = new Data(new Vec3(evaluateExpression(t.getChild(0)).getNumberValue()));
-            			break;
-            		case 3:
-            			value = new Data(new Vec3(
-            					evaluateExpression(t.getChild(0)).getNumberValue(),
-            					evaluateExpression(t.getChild(1)).getNumberValue(),
-            					evaluateExpression(t.getChild(2)).getNumberValue()));
-            			break;
-            		default: throw new RuntimeException("Wrong number of vector elements.");
+            	int nValues = Integer.parseUnsignedInt(t.getText().substring(3));
+            	float[] values = new float[nValues];
+            	
+            	int n = 0;
+            	for (int i = 0; i < t.getChildCount(); ++i) 
+            	{
+            		Data v = evaluateExpression(t.getChild(i));
+            		if (v.isNumber()) 
+            		{
+            			values[n++] = v.getNumberValue();
+            		}
+            		else if (v.isVec()) 
+            		{
+            			Vec vec = v.getVecValue();
+            			int s = vec.GetSize();
+
+            			if (n + s > nValues) {
+            				throw new RuntimeException("Too many values in vector initialization.");
+            			}
+            			for (int j = 0; j < s; ++j) 
+            			{
+            				values[n++] = vec.Get(j);
+            			}
+            		}
+            	}
+            	
+            	if (n == 1)
+            	{
+            		value = new Data(new Vec(nValues, values[0]));
+            	}
+            	else 
+            	{
+	            	if (n != nValues) 
+	            		throw new RuntimeException("Wrong number of values in vector initialization.");
+	            	value = new Data(new Vec(nValues,values));
             	}
                 break;
             // An integer literal

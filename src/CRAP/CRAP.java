@@ -141,6 +141,7 @@ public class CRAP
                 else System.err.print (" (" + infile + ", line " + linenumber + "): ");
                 System.err.println (e.getMessage() + ".");
                 System.err.format (interp.getStackTrace());
+                e.printStackTrace(System.out);
             } 
             catch (StackOverflowError e) 
             {

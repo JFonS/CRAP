@@ -80,6 +80,7 @@ instruction
         |   return_stmt  ';'! // Return statement
         |   read         ';'! // Read a variable
         |   write        ';'! // Write a string or an expression
+        |   print        ';'! // Write a string or an expression followed by a newline char
         |                ';'! // Nothing
         ;
 
@@ -107,6 +108,7 @@ read        :   READ^ ID;
 
 // Write an expression or a string
 write       :   WRITE^ expr;
+print       :   PRINT^ expr?;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    :   boolexpr (CONCAT^ boolexpr)*;
@@ -167,10 +169,11 @@ RETURN  : 'return' ;
 NEW     : 'new' ;
 READ    : 'read' ;
 WRITE   : 'write' ;
+PRINT   : 'print' ;
 TRUE    : 'true' ;
 FALSE   : 'false';
 KEY     : 'key';
-VEC     : 'vec';
+VEC     : 'vec2' | 'vec3' | 'vec4';
 GLOBAL  : 'global';
 PREFAB  :  'prefab'; 
 LINEAR  : 'Linear';

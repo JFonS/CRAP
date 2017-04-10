@@ -39,7 +39,7 @@ package interp;
 
 import parser.*;
 import java.util.*;
-import CRAP.Vec3;
+import CRAP.Vec;
 
 import org.omg.CORBA.portable.StreamableValue;
 
@@ -54,7 +54,7 @@ public class Data {
     private float value;
     private String str;
     private HashMap<String, Data> properties = new HashMap<String, Data>();
-    private Vec3 vec;
+    private Vec vec;
 
     public Data(int v) 
     { 
@@ -75,7 +75,7 @@ public class Data {
     	value = b ? 1 : 0;
 	}
     
-    public Data(Vec3 v)
+    public Data(Vec v)
     {
     	setValue(v);
     }
@@ -140,7 +140,7 @@ public class Data {
         return str;
     }
 
-    public Vec3 getVecValue() 
+    public Vec getVecValue() 
     {
     	assert type == Type.VEC;
     	return vec;
@@ -164,7 +164,7 @@ public class Data {
     
     public void setValue(String s) { type = Type.STRING; str = s; }
     
-    public void setValue(Vec3 v) { type = Type.VEC; vec = new Vec3(v); }
+    public void setValue(Vec v) { type = Type.VEC; vec = new Vec(v); }
     
    
     public void setType(Data.Type type) { this.type = type; }
@@ -205,7 +205,7 @@ public class Data {
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
         if (type == Type.STRING) return "\"" + str + "\"";
-        if (type == Type.VEC) return "(" + vec.x + ", " + vec.y + ", " + vec.z + ")";
+        if (type == Type.VEC) return vec.toString();
         
         // Type OBJECT
         String str = "{";
@@ -253,29 +253,29 @@ public class Data {
 	        }
         } else if (this.type == Type.VEC && d.type == Type.VEC) {
         	switch (op) {
-	            case CRAPLexer.PLUS:  setValue(Vec3.Sum(vec, d.vec)); break;
-	            case CRAPLexer.MINUS: setValue(Vec3.Sub(vec, d.vec)); break;
-	            case CRAPLexer.MUL:   setValue(Vec3.Mul(vec, d.vec)); break;
-	            case CRAPLexer.DIV:   setValue(Vec3.Div(vec, d.vec)); break;
-	            case CRAPLexer.MOD:   setValue(Vec3.Mod(vec, d.vec)); break;
+	            case CRAPLexer.PLUS:  setValue(Vec.Sum(vec, d.vec)); break;
+	            case CRAPLexer.MINUS: setValue(Vec.Sub(vec, d.vec)); break;
+	            case CRAPLexer.MUL:   setValue(Vec.Mul(vec, d.vec)); break;
+	            case CRAPLexer.DIV:   setValue(Vec.Div(vec, d.vec)); break;
+	            case CRAPLexer.MOD:   setValue(Vec.Mod(vec, d.vec)); break;
 	            default: assert false;
 	        }
         } else if (this.type == Type.NUMBER && d.type == Type.VEC) {
         	switch (op) {
-		        case CRAPLexer.PLUS:  setValue(Vec3.Sum(value, d.vec)); break;
-		        case CRAPLexer.MINUS: setValue(Vec3.Sub(value, d.vec)); break;
-		        case CRAPLexer.MUL:   setValue(Vec3.Mul(value, d.vec)); break;
-		        case CRAPLexer.DIV:   setValue(Vec3.Div(value, d.vec)); break;
-		        case CRAPLexer.MOD:   setValue(Vec3.Mod(value, d.vec)); break;
+		        case CRAPLexer.PLUS:  setValue(Vec.Sum(value, d.vec)); break;
+		        case CRAPLexer.MINUS: setValue(Vec.Sub(value, d.vec)); break;
+		        case CRAPLexer.MUL:   setValue(Vec.Mul(value, d.vec)); break;
+		        case CRAPLexer.DIV:   setValue(Vec.Div(value, d.vec)); break;
+		        case CRAPLexer.MOD:   setValue(Vec.Mod(value, d.vec)); break;
 		        default: assert false;
         	}
         } else if (this.type == Type.VEC && d.type == Type.NUMBER) {
         	switch (op) {
-		        case CRAPLexer.PLUS:  setValue(Vec3.Sum(vec, d.value)); break;
-		        case CRAPLexer.MINUS: setValue(Vec3.Sub(vec, d.value)); break;
-		        case CRAPLexer.MUL:   setValue(Vec3.Mul(vec, d.value)); break;
-		        case CRAPLexer.DIV:   setValue(Vec3.Div(vec, d.value)); break;
-		        case CRAPLexer.MOD:   setValue(Vec3.Mod(vec, d.value)); break;
+		        case CRAPLexer.PLUS:  setValue(Vec.Sum(vec, d.value)); break;
+		        case CRAPLexer.MINUS: setValue(Vec.Sub(vec, d.value)); break;
+		        case CRAPLexer.MUL:   setValue(Vec.Mul(vec, d.value)); break;
+		        case CRAPLexer.DIV:   setValue(Vec.Div(vec, d.value)); break;
+		        case CRAPLexer.MOD:   setValue(Vec.Mod(vec, d.value)); break;
 		        default: assert false;
         	}
         }

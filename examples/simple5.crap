@@ -59,8 +59,9 @@ timeline Main()
 	car.Position.z = -10;
 	car.advance = true;
 	
-	vector = vec(1,2,3);
-	write vec(3) .. "%n";
+	vector = vec3(1, vec2(3));
+	print vec3(2,3,4) + vector.zyx;
+	print vector;
 	
 	Animate [[2.0]]();
 }
