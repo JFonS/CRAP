@@ -1,0 +1,39 @@
+global vector;
+global advance;
+
+timeline MoveCarForward()
+{
+	key <<1.0>> { 
+		vector.yx -> vec2(3);
+	}
+}
+
+timeline MoveCarBackwards()
+{
+	key <<1.0>> { 
+		vector.xzy -> vec3(5,4,3);
+	}
+}
+
+timeline Animate()
+{
+	if (advance)
+	{
+		MoveCarForward <<1.0>>();
+	}
+	else
+	{
+		MoveCarBackwards <<1.0>>();
+	}
+	advance = not advance;
+	
+	key <<1.0>> { Animate<<1.0>>(); }
+}
+
+timeline Main()
+{	
+	vector = vec3(1);
+	advance = true;
+	
+	Animate [[2.0]]();
+}

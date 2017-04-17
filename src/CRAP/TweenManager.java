@@ -22,7 +22,7 @@ public class TweenManager
 		{
 			tweenList = new ArrayList<Tween>(); 
 			Tween beginTween = new Tween(tween.GetData(), Time.GetTimeAbs(), 
-					                     tween.GetData().getNumberValue());
+					                     new Data(tween.GetData()));
 			tweenList.add(beginTween); 
 			tweenList.add(tween);
 			tweenPool.put(tween.GetData(), tweenList);
@@ -65,9 +65,8 @@ public class TweenManager
 					float endTime   = tweenEnd.GetKeyTimeAbs();
 					float t = (timeAbs - startTime) / (endTime - startTime);
 					
-					float vStart = tweenStart.GetKeyValue();
-					float vEnd   = tweenEnd.GetKeyValue();
-					tweenData.setValue( t * (vEnd - vStart) + vStart);
+					ApplyTween(tweenStart, tweenEnd, t);
+					
 					break;
 				}
 			}
@@ -88,6 +87,26 @@ public class TweenManager
 					tweenList.remove(0);
 				}
 			}
+		}
+	}
+	
+	private void ApplyTween(Tween tStart, Tween tEnd, float t)
+	{
+		Data dStart = tStart.GetKeyData();
+		Data dEnd = tEnd.GetKeyData();
+		
+		if (dStart.isVec()) {
+			Vec vStart = dStart.getVecValue();
+			Vec vEnd = dEnd.getVecValue();
+			System.out.println(vStart.Size() + "," + vEnd.Size());
+			assert vStart.Size() == vEnd.Size() : "Unmatching vector lengths in tween.";
+			tStart.GetData().setValue(Vec.Sum(Vec.Mul(t, Vec.Sub(vEnd, vStart)), vStart));
+		}
+		else 
+		{
+			float vStart = tStart.GetKeyData().getNumberValue();
+			float vEnd = tEnd.GetKeyData().getNumberValue();
+			tStart.GetData().setValue( t * (vEnd - vStart) + vStart);
 		}
 	}
 }

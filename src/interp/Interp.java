@@ -325,8 +325,15 @@ public class Interp
         				evaluateExpression(index.getChild(0)).toArrIndex() : 
         				index.getText();
                 
-                data.setProperty(indexStr, new Data(value));
-                
+        		if (data.isVec()) 
+        		{
+        			float[] values = value.getVecValue().GetValues();// : new float[] { value.getNumberValue() };
+        			data.getVecValue().Swizzle(indexStr,values);
+        		}
+        		else
+        		{
+        			data.setProperty(indexStr, new Data(value));
+        		}
                 return null;
             }
 
@@ -334,18 +341,43 @@ public class Interp
             {
             	CRAPTree var = t.getChild(0);
             	Data dataToTween = stack.getVariable(var.getChild(0).getText());
-
+            	
+            	
+            	boolean isSwizzling = false;
+            	String swizzle = "";
             	for (int i = 1; i < var.getChildCount(); ++i) {
+            		if (dataToTween.isVec()) {
+            			System.out.println("HOLO: " + i);
+            			isSwizzling = i < var.getChildCount();
+            			CRAPTree vari = var.getChild(i);
+            			swizzle = vari.getType() == CRAPLexer.ARR_INDEX ?
+                        				evaluateExpression(vari.getChild(0)).toArrIndex() : 
+                        				vari.getText();
+                        break;
+            		}
+            		
             		CRAPTree vari = var.getChild(i);
             		String index = vari.getType() == CRAPLexer.ARR_INDEX ?
             				evaluateExpression(vari.getChild(0)).toArrIndex() : 
             				vari.getText();	
+
             		dataToTween = dataToTween.getProperty(index);
             	}
             	
             	Data finalValue = evaluateExpression(t.getChild(1));
+            	
+            	
+            	
+            	if (finalValue.isVec() && isSwizzling) {
+            		Vec v = new Vec(dataToTween.getVecValue());
+            		v.Swizzle(swizzle, finalValue.getVecValue().GetValues());
+            		finalValue = new Data(v);
+            	}
+            	
             	Tween tween = new Tween(dataToTween, currentKeyTimeAbs, 
-            							finalValue.getNumberValue());
+						finalValue);
+            	
+            	System.out.println("DTT: " + dataToTween);
             	
             	tweenManager.AddTween(tween);
             	return null;
@@ -510,7 +542,7 @@ public class Interp
             		else if (v.isVec()) 
             		{
             			Vec vec = v.getVecValue();
-            			int s = vec.GetSize();
+            			int s = vec.Size();
 
             			if (n + s > nValues) {
             				throw new RuntimeException("Too many values in vector initialization.");

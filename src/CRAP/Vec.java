@@ -51,10 +51,13 @@ public class Vec {
 	public Vec(Vec v) 
 	{ 
 		size = v.size;
-		values = v.values;
+		values = new float[v.values.length];
+		for (int i = 0; i < values.length; ++i) values[i] = v.values[i];
 	}
 	
-	public int GetSize() { return size; }
+	public int Size() { return size; }
+	
+	public float[] GetValues() { return values; }
 	
 	public float Get(int i) 
 	{
@@ -90,6 +93,28 @@ public class Vec {
 			v[i] = Get(Character.toString(swizzle.charAt(i)));
 		}
 		return new Vec(s,v);
+	}
+	
+	public void Swizzle(String swizzle, float... vals) 
+	{
+		System.out.println(this);
+		int s = swizzle.length();
+		assert s <= 4 : "Swizzling too long.";
+		assert vals.length == 1 || vals.length == s : "Wrong number of elements in swizzling assingatio.";
+		
+		
+		boolean[] set = new boolean[size];
+		for (int i = 0; i < s; ++i) set[i] = false;
+
+		
+		for (int i = 0; i < s; ++i) 
+		{	
+			assert !set[i] : "Cannot repeat elements in swizzling assignation.";
+			int elem = SWIZZLER.get(Character.toString(swizzle.charAt(i)));
+			System.out.println("ELEM: " + elem);
+			values[elem] = vals[vals.length == 1 ? 0 : i];
+			set[elem] = true;
+		}
 	}
 	
 	public String toString() 

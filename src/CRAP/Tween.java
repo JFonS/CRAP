@@ -6,20 +6,20 @@ public class Tween
 {
 	private Data data;
 	private float keyTimeAbs;
-	private float keyValue;
+	private Data keyData;
 		
-	public Tween(Data data, float keyTimeAbs, float keyValue)
+	public Tween(Data data, float keyTimeAbs, Data keyData)
 	{
 		assert data.isNumber();
 		
 		this.data       = data;
 		this.keyTimeAbs = keyTimeAbs;
-		this.keyValue   = keyValue;
+		this.keyData   = keyData;
 	}
 	
 	public Data GetData() { return data; }
-	public float GetKeyValue() { return keyValue; }
+	public Data GetKeyData() { return keyData; }
 	public float GetKeyTimeAbs() { return keyTimeAbs; }
 	
-	public String toString() { return "<" + keyTimeAbs + ", " + keyValue + ">"; }
+	public String toString() { return "<" + keyTimeAbs + ", " + keyData + ">"; }
 }
