@@ -1,5 +1,7 @@
 package CRAP;
 
+import java.util.ArrayList;
+
 import interp.*;
 
 public class Tween
@@ -7,7 +9,7 @@ public class Tween
 	private Data data;
 	private float keyTimeAbs;
 	private Data keyData;
-		
+	
 	public Tween(Data data, float keyTimeAbs, Data keyData)
 	{
 		assert data.isNumber();

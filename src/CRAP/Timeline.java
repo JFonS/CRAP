@@ -14,8 +14,9 @@ public class Timeline implements Comparable
 	private float startTimeAbs;
 	private float finishTimeAbs;
 	private String name;
+	private ArrayList<Data> args;
 	
-	public Timeline(String name,
+	public Timeline(String name, ArrayList<Data> args,
 					float startTimeAbs, float finishTimeAbs)
 	{
 		assert startTimeAbs <= finishTimeAbs;
@@ -23,6 +24,7 @@ public class Timeline implements Comparable
 		this.name = name;
 		this.startTimeAbs  = startTimeAbs;
 		this.finishTimeAbs = finishTimeAbs;
+		this.args = args;
 	}
 
 	@Override
@@ -39,11 +41,12 @@ public class Timeline implements Comparable
 	
 	public String toString()
 	{
-		return "Timeline " + name + "[[" + startTimeAbs + ", " + finishTimeAbs + "]]";
+		return "Timeline " + name + "[[" + startTimeAbs + ", " + finishTimeAbs + "]] args: (" + args + ")";
 	}
 	
 	public float GetStartTimeAbs() { return startTimeAbs; }
 	public float GetFinishTimeAbs() { return finishTimeAbs; }
+	public ArrayList<Data> GetArgs() { return args; }
 	public String GetName() { return name; }
 	
 	public ArrayList<Data> GetAliveDatas()

@@ -48,7 +48,7 @@ timeline Main()
 {	
 	car = new Car;
 	
-	car.Position = vec3(1,0,0);
+	car.Position = vec3(2.5,0,0);
 	car.Rotation = vec3(0,0,90);
 	
 	car.advance = false;

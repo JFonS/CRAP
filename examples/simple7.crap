@@ -1,0 +1,40 @@
+global car;
+global n;
+
+timeline MoveCarForward(&obj, m) 
+{
+	key <<1.0>> { obj.Position -> vec3(m,m*1.5,-10); }
+}
+
+timeline MoveCarBackwards(&obj) 
+{
+	key <<1.0>> { obj.Position -> vec3(0,0,-10); }
+}
+
+timeline Animate(&obj)
+{
+	if (obj.advance)
+	{
+		MoveCarForward <<1.0>>(obj, n);
+	}
+	else
+	{
+		MoveCarBackwards <<1.0>>(obj);
+	}
+	n = n + 1;
+	obj.advance = not obj.advance;
+	
+	key <<1.0>> { Animate<<1.0>>(obj); }
+}
+
+timeline Main()
+{	
+	n = 1;
+	car = new Car;
+	car.Position.z = -10;
+	
+	car.advance = true;
+	
+	Animate [[1.0]](car);
+	car.Position.x = -3; 
+}

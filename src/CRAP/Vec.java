@@ -111,7 +111,6 @@ public class Vec {
 		{	
 			assert !set[i] : "Cannot repeat elements in swizzling assignation.";
 			int elem = SWIZZLER.get(Character.toString(swizzle.charAt(i)));
-			System.out.println("ELEM: " + elem);
 			values[elem] = vals[vals.length == 1 ? 0 : i];
 			set[elem] = true;
 		}

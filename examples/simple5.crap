@@ -29,6 +29,10 @@ timeline MoveCarForward()
 
 timeline MoveCarBackwards()
 {
+	key <<0.5>> { 
+		car.Position.x -> car.Position.y - 2;
+	}
+	
 	key <<0.9>> { 
 		car.Position.x -> car.Position.y - 2;
 	}
@@ -63,8 +67,6 @@ timeline Main()
 	vector = vec3(1, vec2(3));
 	
 	vector.yx = vec2(100,10) % vec2(17,3);
-	print vec3(2,3,4) + vector.zyx;
-	print vector;
 	
 	Animate [[2.0]]();
 }

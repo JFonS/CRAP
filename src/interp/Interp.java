@@ -112,7 +112,7 @@ public class Interp
     	tweenManager = new TweenManager();
     	timelineManager = new TimelineManager(this);
 
-    	Timeline mainTimeline = new Timeline("Main", 0.0f, 1.0f);
+    	Timeline mainTimeline = new Timeline("Main", new ArrayList<Data>(), 0.0f, 1.0f);
     	executeTimeline(mainTimeline);
     }
     
@@ -206,7 +206,7 @@ public class Interp
         // Gather the list of arguments of the caller. This function
         // performs all the checks required for the compatibility of
         // parameters.
-        ArrayList<Data> Arg_values = listArguments(f, args);
+        ArrayList<Data> Arg_values = timeline == null ? listArguments(f, args) : timeline.GetArgs();
 
         // Dumps trace information (function call and arguments)
         if (trace != null) traceFunctionCall(f, Arg_values);
@@ -228,8 +228,8 @@ public class Interp
          
         // Copy the parameters to the current activation record
         for (int i = 0; i < nparam; ++i) {
-            String param_name = p.getChild(i).getText();
-            stack.defineVariable(param_name, Arg_values.get(i));
+        	String param_name = p.getChild(i).getText();
+        	stack.defineVariable(param_name, Arg_values.get(i));
         }
 
         // Execute the instructions
@@ -297,7 +297,6 @@ public class Interp
         switch (t.getType()) {
             case CRAPLexer.ASSIGN:
             {
-            	
                 value = evaluateExpression(t.getChild(1));
 
                 CRAPTree var = t.getChild(0);
@@ -327,7 +326,7 @@ public class Interp
                 
         		if (data.isVec()) 
         		{
-        			float[] values = value.getVecValue().GetValues();// : new float[] { value.getNumberValue() };
+        			float[] values = value.isVec() ? value.getVecValue().GetValues() : new float[] { value.getNumberValue() };
         			data.getVecValue().Swizzle(indexStr,values);
         		}
         		else
@@ -347,7 +346,6 @@ public class Interp
             	String swizzle = "";
             	for (int i = 1; i < var.getChildCount(); ++i) {
             		if (dataToTween.isVec()) {
-            			System.out.println("HOLO: " + i);
             			isSwizzling = i < var.getChildCount();
             			CRAPTree vari = var.getChild(i);
             			swizzle = vari.getType() == CRAPLexer.ARR_INDEX ?
@@ -368,9 +366,18 @@ public class Interp
             	
             	
             	
-            	if (finalValue.isVec() && isSwizzling) {
+            	if (isSwizzling) {
             		Vec v = new Vec(dataToTween.getVecValue());
-            		v.Swizzle(swizzle, finalValue.getVecValue().GetValues());
+            		if (!finalValue.isVec()) 
+            		{
+            			if (swizzle.length() > 1) throw new RuntimeException("Tweening a vector to a wrong type.");
+            			if (!finalValue.isNumber()) throw new RuntimeException("Tweening a vector to a non numeric value.");
+            			v.Set(swizzle, finalValue.getNumberValue());
+            		}
+            		else
+            		{
+            			v.Swizzle(swizzle, finalValue.getVecValue().GetValues());
+            		}
             		finalValue = new Data(v);
             	}
             	
@@ -464,11 +471,17 @@ public class Interp
             	{
             		durationAbs *= (timeScopeFinishAbs - timeScopeStartAbs);
             	}
+            	
+            	String timelineName = t.getChild(0).getText();
+            	CRAPTree f = FuncName2Tree.get(timelineName);
+                if (f == null) throw new RuntimeException(" timeline " + timelineName + " not declared");
+            	ArrayList<Data> args = listArguments(FuncName2Tree.get(timelineName), t.getChild(2));
                 
             	// Enqueue the timeline with the specified init and finish time
-            	Timeline timeline = new Timeline(t.getChild(0).getText(), 
+            	Timeline timeline = new Timeline(timelineName, args,
             			                         initTimeAbs, 
             			                         initTimeAbs + durationAbs);
+            	
             	timelineManager.AddTimeline(timeline);
             	
             	return null;
@@ -499,27 +512,7 @@ public class Interp
         switch (type) {
             // A variable
             case CRAPLexer.VAR:
-            	value = stack.getVariable(t.getChild(0).getText());
-
-            	for (int i = 1; i < t.getChildCount(); ++i) {
-            		CRAPTree ti = t.getChild(i);
-            		String index = ti.getType() == CRAPLexer.ARR_INDEX ?
-            				evaluateExpression(ti.getChild(0)).toArrIndex() : 
-            				ti.getText();
-            		
-            		if (value.isVec()) {
-            			Vec vec = value.getVecValue();
-            			if (index.length() == 1) {
-            				value = new Data(vec.Get(index));
-            			} else {
-            				value = new Data(vec.Swizzle(index));
-            			}
-            			break;
-            		}
-            		value = value.getProperty(index);
-            		
-            	}
-            	value = new Data(value);
+            	value = new Data(evaluateVar(t));
                 break;
             case CRAPLexer.EMPTYOBJ:
             	value = new Data();
@@ -595,8 +588,7 @@ public class Interp
             	prop = new Data(new Vec(3, 1.0f));
             	value.setProperty("Scale", prop);
             	
-            	// TODO Set prefab properties
-            	
+            	// TODO Set prefab properties            	
             	break;
             default: break;
         }
@@ -677,6 +669,29 @@ public class Interp
         setLineNumber(previous_line);
         return value;
     }
+
+	private Data evaluateVar(CRAPTree t) {
+		Data value;
+		value = stack.getVariable(t.getChild(0).getText());
+
+		for (int i = 1; i < t.getChildCount(); ++i) {			
+			CRAPTree ti = t.getChild(i);
+			String index = ti.getType() == CRAPLexer.ARR_INDEX ?
+					evaluateExpression(ti.getChild(0)).toArrIndex() : 
+					ti.getText();
+			if (value.isVec()) {
+				Vec vec = value.getVecValue();
+				if (index.length() == 1) {
+					value = new Data(vec.Get(index));
+				} else {
+					value = new Data(vec.Swizzle(index));
+				}
+				break;
+			}
+			value = value.getProperty(index);
+		}
+		return value;
+	}
 
     /**
      * Evaluation of Boolean expressions. This function implements
@@ -762,11 +777,11 @@ public class Interp
                 Params.add(i,evaluateExpression(a));
             } else {
                 // Pass by reference: check that it is a variable
-                if (a.getType() != CRAPLexer.ID) {
+                if (a.getType() != CRAPLexer.VAR) {
                     throw new RuntimeException("Wrong argument for pass by reference");
                 }
                 // Find the variable and pass the reference
-                Data v = stack.getVariable(a.getText());
+                Data v = evaluateVar(a);
                 Params.add(i,v);
             }
         }

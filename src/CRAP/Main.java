@@ -126,7 +126,7 @@ public class Main
     	
         Time.Update();
         CRAP.interp.Update();
-
+        
         glfwSwapBuffers(window); // swap the color buffers
         glfwPollEvents();
     }

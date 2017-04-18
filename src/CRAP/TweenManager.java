@@ -96,11 +96,11 @@ public class TweenManager
 	private void ApplyTween(Tween tStart, Tween tEnd, float t)
 	{
 		Data dStart = tStart.GetKeyData();
-		Data dEnd = tEnd.GetKeyData();
+		Data dEnd = tEnd.GetKeyData();		
 		
 		if (dStart.isVec()) {
 			Vec vStart = dStart.getVecValue();
-			Vec vEnd = dEnd.getVecValue();
+			Vec vEnd = dEnd.isVec() ? dEnd.getVecValue() : new Vec(vStart.Size(),dEnd.getNumberValue());
 			assert vStart.Size() == vEnd.Size() : "Unmatching vector lengths in tween.";
 			tStart.GetData().setValue(Vec.Sum(Vec.Mul(t, Vec.Sub(vEnd, vStart)), vStart));
 		}
