@@ -30,7 +30,6 @@ public class TimelineManager
 				timeAbs >= timelineQueue.element().GetStartTimeAbs())
 		{
 			Timeline timeline = timelineQueue.element();
-			System.out.println("  Executing " + timeline.toString());
 			interpret.executeTimeline(timeline);
 			
 			executedTimelines.add(timeline);
@@ -47,7 +46,6 @@ public class TimelineManager
 				execTimelineIt.remove();
 			}
 		}
-		System.out.println(executedTimelines.toString());
 	}
 	
 	public void AddTimeline(Timeline timeline)

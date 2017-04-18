@@ -6,25 +6,17 @@ import interp.Data;
 
 public class ObjectRenderer {
 	public static void RenderObject(Data object) {
-		float posx = object.getProperty("Position").getProperty("x").getNumberValue();
-		float posy = object.getProperty("Position").getProperty("y").getNumberValue();
-		float posz = object.getProperty("Position").getProperty("z").getNumberValue();
+		Vec pos = object.getProperty("Position").getVecValue();
+		Vec rot = object.getProperty("Rotation").getVecValue();
+		Vec scale = object.getProperty("Scale").getVecValue();
 		
-		float rotx = object.getProperty("Rotation").getProperty("x").getNumberValue();
-		float roty = object.getProperty("Rotation").getProperty("y").getNumberValue();
-		float rotz = object.getProperty("Rotation").getProperty("z").getNumberValue();
-		
-		float scalex = object.getProperty("Scale").getProperty("x").getNumberValue();
-		float scaley = object.getProperty("Scale").getProperty("y").getNumberValue();
-		float scalez = object.getProperty("Scale").getProperty("z").getNumberValue();
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef(posx, posy, posz);
-		glRotatef(rotx, 1, 0, 0);
-		glRotatef(roty, 0, 1, 0);
-		glRotatef(rotz, 0, 0, 1);
-		glScalef(scalex, scaley, scalez);
+		glTranslatef(pos.Get("x"), pos.Get("y"), pos.Get("z"));
+		glRotatef(rot.Get("x"), 1, 0, 0);
+		glRotatef(rot.Get("y"), 0, 1, 0);
+		glRotatef(rot.Get("z"), 0, 0, 1);
+		glScalef(scale.Get("x"), scale.Get("y"), scale.Get("z"));
 		
 		/*glBegin(GL_QUADS);
 		glColor3f(0.0f, 0.0f, 1.0f);

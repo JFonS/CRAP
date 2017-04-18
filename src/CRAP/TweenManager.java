@@ -82,8 +82,11 @@ public class TweenManager
 			}
 			if (tweenList.size() == 1)
 			{
-				if (timeAbs >= tweenList.get(0).GetKeyTimeAbs())
+				Tween t = tweenList.get(0);
+				if (timeAbs >= t.GetKeyTimeAbs())
 				{
+					Data d = t.GetData();
+					d.setData(t.GetKeyData());
 					tweenList.remove(0);
 				}
 			}
@@ -98,7 +101,6 @@ public class TweenManager
 		if (dStart.isVec()) {
 			Vec vStart = dStart.getVecValue();
 			Vec vEnd = dEnd.getVecValue();
-			System.out.println(vStart.Size() + "," + vEnd.Size());
 			assert vStart.Size() == vEnd.Size() : "Unmatching vector lengths in tween.";
 			tStart.GetData().setValue(Vec.Sum(Vec.Mul(t, Vec.Sub(vEnd, vStart)), vStart));
 		}

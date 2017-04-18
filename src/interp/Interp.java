@@ -377,8 +377,6 @@ public class Interp
             	Tween tween = new Tween(dataToTween, currentKeyTimeAbs, 
 						finalValue);
             	
-            	System.out.println("DTT: " + dataToTween);
-            	
             	tweenManager.AddTween(tween);
             	return null;
             }
@@ -588,22 +586,13 @@ public class Interp
             case CRAPLexer.NEW:
             	value = new Data();
             	
-            	Data prop = new Data();
-            	prop.setProperty("x", new Data(0.0f));
-            	prop.setProperty("y", new Data(0.0f));
-            	prop.setProperty("z", new Data(0.0f));
+            	Data prop = new Data(new Vec(3, 0.0f));
             	value.setProperty("Position", prop);
             	
-            	prop = new Data();
-            	prop.setProperty("x", new Data(0.0f));
-            	prop.setProperty("y", new Data(0.0f));
-            	prop.setProperty("z", new Data(0.0f));
+            	prop = new Data(new Vec(3, 0.0f));
             	value.setProperty("Rotation", prop);
             	
-            	prop = new Data();
-            	prop.setProperty("x", new Data(1.0f));
-            	prop.setProperty("y", new Data(1.0f));
-            	prop.setProperty("z", new Data(1.0f));
+            	prop = new Data(new Vec(3, 1.0f));
             	value.setProperty("Scale", prop);
             	
             	// TODO Set prefab properties
