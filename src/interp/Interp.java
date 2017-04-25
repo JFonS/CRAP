@@ -47,6 +47,7 @@ import CRAP.TweenManager;
 /** Class that implements the interpreter of the language. */
 
 public class Interp {
+	private String currentInterpType;
 	private float currentKeyTimeAbs = 0.0f;
 	private float timeScopeStartAbs = 0.0f;
 	private float timeScopeFinishAbs = 1.0f;
@@ -393,7 +394,7 @@ public class Interp {
 				finalValue = new Data(v);
 			}
 
-			Tween tween = new Tween(dataToTween, currentKeyTimeAbs, finalValue);
+			Tween tween = new Tween(dataToTween, currentKeyTimeAbs, finalValue, currentInterpType);
 
 			tweenManager.AddTween(tween);
 			return null;
@@ -431,7 +432,11 @@ public class Interp {
 			} else {
 				currentKeyTimeAbs = timeScopeStartAbs + keyTime;
 			}
-			executeListInstructions(t.getChild(1));
+			
+			currentInterpType = t.getChildCount() == 3 ? t.getChild(1).getText() : "Linear";
+			
+			executeListInstructions(t.getLastChild());
+			
 			return null;
 
 			// Return

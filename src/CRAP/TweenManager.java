@@ -96,19 +96,27 @@ public class TweenManager
 	private void ApplyTween(Tween tStart, Tween tEnd, float t)
 	{
 		Data dStart = tStart.GetKeyData();
-		Data dEnd = tEnd.GetKeyData();		
+		Data dEnd = tEnd.GetKeyData();	
+		
+		//https://github.com/jesusgollonet/processing-penner-easing/blob/master/src/Elastic.java
+		float v = t; // Linear by default
+		switch (tEnd.GetInterpType()) {
+			case "Cubic":
+				v = t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
+			break;
+		}
 		
 		if (dStart.isVec()) {
 			Vec vStart = dStart.getVecValue();
 			Vec vEnd = dEnd.isVec() ? dEnd.getVecValue() : new Vec(vStart.Size(),dEnd.getNumberValue());
 			assert vStart.Size() == vEnd.Size() : "Unmatching vector lengths in tween.";
-			tStart.GetData().setValue(Vec.Sum(Vec.Mul(t, Vec.Sub(vEnd, vStart)), vStart));
+			tStart.GetData().setValue(Vec.Sum(Vec.Mul(v, Vec.Sub(vEnd, vStart)), vStart));
 		}
 		else 
 		{
 			float vStart = tStart.GetKeyData().getNumberValue();
 			float vEnd = tEnd.GetKeyData().getNumberValue();
-			tStart.GetData().setValue( t * (vEnd - vStart) + vStart);
+			tStart.GetData().setValue( v * (vEnd - vStart) + vStart);
 		}
 	}
 }

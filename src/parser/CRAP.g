@@ -65,7 +65,7 @@ param           :   '&' id=ID -> ^(PREF[$id,$id.text])
                 |   id=ID -> ^(PVALUE[$id,$id.text])
                 ;
 
-key         :   KEY^ time '{'! instruction_list '}'!;
+key         :   KEY^ time interp_type? '{'! instruction_list '}'!;
 interp_type :   LINEAR | CUBIC;
 
 instruction_list:   instruction* -> ^(LIST_INSTR instruction*);

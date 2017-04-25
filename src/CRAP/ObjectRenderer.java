@@ -38,7 +38,7 @@ public class ObjectRenderer {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-10,3});
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-10,1});
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
 		ApplyObjectTransform(object);
