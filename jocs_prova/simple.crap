@@ -1,0 +1,27 @@
+prefab Bomb
+{
+	Primitive = Sphere;
+	Color = Red;
+}
+
+timeline Explode()
+{
+	key <<1.0>>
+	{
+		obj.Scale -> obj.Scale * 5.0;
+	}
+}
+
+timeline Main()
+{
+	bomb = new Bomb;
+	//bomb[0] = "a";
+	bomb[0] = {};
+	bomb[0].stuff = 5.0;
+	bomb[0].otherStuff = {};
+	bomb[0].otherStuff.x = {};
+	bomb[0].otherStuff.x[1] = {};
+	bomb[0].otherStuff.x[1].z = 2;
+		write bomb;
+	///Explode[[2.0]]();
+}

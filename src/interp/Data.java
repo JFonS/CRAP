@@ -172,16 +172,7 @@ public class Data {
     public void setProperty(String propName, Data propertyValue)
     { 
         type = Type.OBJECT;
-
-    	Data prop;
-    	if (properties.containsKey(propName)) { prop = properties.get(propName); }
-    	else 
-    	{ 
-    		prop = new Data();
-        	properties.put(propName, prop);
-        }
-
-        prop.setData(propertyValue);
+        properties.put(propName, propertyValue);
     }
 
     /** Copies the value from another data */

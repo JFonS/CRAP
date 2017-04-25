@@ -5,31 +5,51 @@ import static org.lwjgl.opengl.GL11.*;
 import interp.Data;
 
 public class ObjectRenderer {
-	public static void RenderObject(Data object) {
-		Vec pos = object.getProperty("Position").getVecValue();
-		Vec rot = object.getProperty("Rotation").getVecValue();
+	
+	public static void ApplyObjectTransform(Data object)
+	{
+		Data parent = object.getProperty("Parent");
+		if (parent != null && parent != object)
+		{
+			ApplyObjectTransform(parent);
+		}
+		
+		Vec pos   = object.getProperty("Position").getVecValue();
+		Vec rot   = object.getProperty("Rotation").getVecValue();
 		Vec scale = object.getProperty("Scale").getVecValue();
 		
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
 		glTranslatef(pos.Get("x"), pos.Get("y"), pos.Get("z"));
 		glRotatef(rot.Get("x"), 1, 0, 0);
 		glRotatef(rot.Get("y"), 0, 1, 0);
 		glRotatef(rot.Get("z"), 0, 0, 1);
 		glScalef(scale.Get("x"), scale.Get("y"), scale.Get("z"));
+	}
+	
+	public static void RenderObject(Data object) 
+	{
+		if (!object.getProperty("Visible").getBooleanValue()) { return; }
 		
-		/*glBegin(GL_QUADS);
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glVertex3f(-1, -1, 0);
-		glVertex3f(1, -1, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(-1, 1, 0);*/
+		Vec color = object.getProperty("Color").getVecValue();
 		
-		DrawSphere(1.0, 10, 32);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		ApplyObjectTransform(object);
+		
+		switch ( object.getProperty("Primitive").getStringValue() )
+		{
+			case "Cube":
+				DrawCube(1.0f, color);
+			break;
+
+			case "Sphere":
+				DrawSphere(1.0, 10, 32, color);
+			break;
+		}
+		
 		glEnd();
 	}
 
-	private static void DrawSphere(double r, int lats, int longs) {
+	private static void DrawSphere(double r, int lats, int longs, Vec color) {
 		int i, j;
 
 		for (i = 0; i <= lats; i++) {
@@ -42,20 +62,62 @@ public class ObjectRenderer {
 			double zr1 = Math.cos(lat1);
 
 			glBegin(GL_QUAD_STRIP);
+			glColor3f(color.Get(0), color.Get(1), color.Get(2));
 			for (j = 0; j <= longs; j++) {
 				double lng = 2 * Math.PI * (double) (j - 1) / longs;
 				double x = Math.cos(lng);
 				double y = Math.sin(lng);
 
-				glColor3f(0.0f, 0.0f, 1.0f);
 				glNormal3d(x * zr0, y * zr0, z0);
 				glVertex3d(x * zr0, y * zr0, z0);
 				
-				glColor3f(1.0f, 0.0f, 0.0f);
 				glNormal3d(x * zr1, y * zr1, z1);
 				glVertex3d(x * zr1, y * zr1, z1);
 			}
 			glEnd();
 		}
+	}
+	
+	private static void DrawCube(float side, Vec color)
+	{
+		glBegin(GL_QUADS);
+		glColor3f(color.Get(0), color.Get(1), color.Get(2));
+		glVertex3f(  side, -side, side );
+		glVertex3f(  side,  side, side );
+		glVertex3f( -side,  side, side );
+		glVertex3f( -side, -side, side );
+		glEnd();
+		 
+		glBegin(GL_QUADS);
+		glColor3f(color.Get(0), color.Get(1), color.Get(2));
+		glVertex3f( side, -side, -side );
+		glVertex3f( side,  side, -side );
+		glVertex3f( side,  side,  side );
+		glVertex3f( side, -side,  side );
+		glEnd();
+		 
+		glBegin(GL_QUADS);
+		glColor3f(color.Get(0), color.Get(1), color.Get(2));
+		glVertex3f( -side, -side,  side );
+		glVertex3f( -side,  side,  side );
+		glVertex3f( -side,  side, -side );
+		glVertex3f( -side, -side, -side );
+		glEnd();
+		 
+		glBegin(GL_QUADS);
+		glColor3f(color.Get(0), color.Get(1), color.Get(2));
+		glVertex3f(  side,  side,  side );
+		glVertex3f(  side,  side, -side );
+		glVertex3f( -side,  side, -side );
+		glVertex3f( -side,  side,  side );
+		glEnd();
+		 
+		glBegin(GL_QUADS);
+		glColor3f(color.Get(0), color.Get(1), color.Get(2));
+		glVertex3f(  side, -side, -side );
+		glVertex3f(  side, -side,  side );
+		glVertex3f( -side, -side,  side );
+		glVertex3f( -side, -side, -side );
+		glEnd();
 	}
 }
