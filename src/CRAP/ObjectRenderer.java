@@ -30,10 +30,19 @@ public class ObjectRenderer {
 		if (!object.getProperty("Visible").getBooleanValue()) { return; }
 		
 		Vec color = object.getProperty("Color").getVecValue();
+
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glShadeModel (GL_SMOOTH);
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-10,3});
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
+		
 		ApplyObjectTransform(object);
+		
 		
 		switch ( object.getProperty("Primitive").getStringValue() )
 		{
@@ -42,13 +51,18 @@ public class ObjectRenderer {
 			break;
 
 			case "Sphere":
-				DrawSphere(1.0, 10, 32, color);
+				DrawSphere(1.0, 64, 64, color);
 			break;
 		}
 		
 		glEnd();
 	}
 
+	private static void SetMaterial(Vec color)
+	{
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
+				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
+	}
 	private static void DrawSphere(double r, int lats, int longs, Vec color) {
 		int i, j;
 
@@ -62,7 +76,7 @@ public class ObjectRenderer {
 			double zr1 = Math.cos(lat1);
 
 			glBegin(GL_QUAD_STRIP);
-			glColor3f(color.Get(0), color.Get(1), color.Get(2));
+			SetMaterial(color);
 			for (j = 0; j <= longs; j++) {
 				double lng = 2 * Math.PI * (double) (j - 1) / longs;
 				double x = Math.cos(lng);
@@ -80,44 +94,58 @@ public class ObjectRenderer {
 	
 	private static void DrawCube(float side, Vec color)
 	{
-		glBegin(GL_QUADS);
-		glColor3f(color.Get(0), color.Get(1), color.Get(2));
-		glVertex3f(  side, -side, side );
-		glVertex3f(  side,  side, side );
-		glVertex3f( -side,  side, side );
-		glVertex3f( -side, -side, side );
-		glEnd();
-		 
-		glBegin(GL_QUADS);
-		glColor3f(color.Get(0), color.Get(1), color.Get(2));
-		glVertex3f( side, -side, -side );
-		glVertex3f( side,  side, -side );
-		glVertex3f( side,  side,  side );
-		glVertex3f( side, -side,  side );
-		glEnd();
-		 
-		glBegin(GL_QUADS);
-		glColor3f(color.Get(0), color.Get(1), color.Get(2));
-		glVertex3f( -side, -side,  side );
-		glVertex3f( -side,  side,  side );
-		glVertex3f( -side,  side, -side );
-		glVertex3f( -side, -side, -side );
-		glEnd();
-		 
-		glBegin(GL_QUADS);
-		glColor3f(color.Get(0), color.Get(1), color.Get(2));
-		glVertex3f(  side,  side,  side );
-		glVertex3f(  side,  side, -side );
-		glVertex3f( -side,  side, -side );
-		glVertex3f( -side,  side,  side );
-		glEnd();
-		 
-		glBegin(GL_QUADS);
-		glColor3f(color.Get(0), color.Get(1), color.Get(2));
-		glVertex3f(  side, -side, -side );
-		glVertex3f(  side, -side,  side );
-		glVertex3f( -side, -side,  side );
-		glVertex3f( -side, -side, -side );
-		glEnd();
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		 glNormal3f(0.0f, 0.0f, 1.0f);
+	     glVertex3f(side,side,side);
+	     glVertex3f(-side,side,side);
+	     glVertex3f(-side,-side,side);
+	     glVertex3f(side,-side,side);
+	   glEnd();
+
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		 glNormal3f(1.0f, 0.0f, 0.0f);
+	     glVertex3f(side,side,side);
+	     glVertex3f(side,-side,side);
+	     glVertex3f(side,-side,-side);
+	     glVertex3f(side,side,-side);
+	   glEnd();
+	   
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		glNormal3f(0.0f, 0.0f, -1.0f);
+	     glVertex3f(side,side,-side);
+	     glVertex3f(side,-side,-side);
+	     glVertex3f(-side,-side,-side);
+	     glVertex3f(-side,side,-side);
+	   glEnd();
+
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		 glNormal3f(-1.0f, 0.0f, 0.0f);
+	     glVertex3f(-side,side,side);
+	     glVertex3f(-side,side,-side);
+	     glVertex3f(-side,-side,-side);
+	     glVertex3f(-side,-side,side);
+	   glEnd();
+
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		 glNormal3f(0.0f, 1.0f, 0.0f);
+	     glVertex3f(side,side,side);
+	     glVertex3f(side,side,-side);
+	     glVertex3f(-side,side,-side);
+	     glVertex3f(-side,side,side);
+	   glEnd();
+	   
+	   glBegin(GL_POLYGON);
+		SetMaterial(color);
+		 glNormal3f(0.0f, -1.0f, 0.0f);
+	     glVertex3f(side,-side,side);
+	     glVertex3f(-side,-side,side);
+	     glVertex3f(-side,-side,-side);
+	     glVertex3f(side,-side,-side);
+	glEnd();
 	}
 }

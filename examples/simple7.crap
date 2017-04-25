@@ -50,6 +50,6 @@ timeline Main()
 	satellite.Position.x = 4;
 	satellite.Parent = car;
 	
-	Animate [[1.0]](car);
+	Animate [[10.0]](car);
 	car.Position.x = -3; 
 }
