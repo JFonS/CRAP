@@ -65,8 +65,7 @@ param           :   '&' id=ID -> ^(PREF[$id,$id.text])
                 |   id=ID -> ^(PVALUE[$id,$id.text])
                 ;
 
-key         :   KEY^ time interp_type? '{'! instruction_list '}'!;
-interp_type :   LINEAR | CUBIC;
+key         :   KEY^ time INTERP? '{'! instruction_list '}'!;
 
 instruction_list:   instruction* -> ^(LIST_INSTR instruction*);
 instruction
@@ -176,8 +175,7 @@ KEY     : 'key';
 VEC     : 'vec2' | 'vec3' | 'vec4';
 GLOBAL  : 'global';
 PREFAB  :  'prefab'; 
-LINEAR  : 'Linear';
-CUBIC   : 'Cubic';
+INTERP  : 'Cubic' | 'Linear' | 'Elastic';
 ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 //|          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
 NUMBER  : '0'..'9'+ | '0'..'9'+ '.' '0'..'9'+;

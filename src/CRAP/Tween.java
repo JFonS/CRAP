@@ -11,13 +11,14 @@ public class Tween
 	private Data keyData;
 	private String interpType;
 	
+	
 	public Tween(Data data, float keyTimeAbs, Data keyData, String interpType)
 	{
 		assert data.isNumber();
 		
 		this.data       = data;
 		this.keyTimeAbs = keyTimeAbs;
-		this.keyData   = keyData;
+		this.keyData    = keyData;
 		this.interpType = interpType;
 	}
 	

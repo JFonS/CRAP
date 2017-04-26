@@ -13,22 +13,22 @@ global n;
 
 timeline MoveCarForward(&obj, m) 
 {
-	key <<1.0>> Cubic { 
-	obj.Color -> vec3(0.0, 0.0, 1.0);
-	obj.Position -> vec3(m,m*1.5,-10);
-	car.Rotation -> vec3(123, 456, 189); 
-	satellite.Position.x -> 1;
+	key <<1.0>> Elastic { 
+		obj.Color -> vec3(0.0, 0.0, 1.0);
+		obj.Position -> vec3(m,m*1.5,-10);
+		car.Rotation -> vec3(123, 456, 189); 
+		satellite.Position.x -> 1;
 	}
 }
 
 timeline MoveCarBackwards(&obj) 
 {
-	key <<1.0>> Cubic { 
-	obj.Color -> vec3(1.0, 0.0, 0.0);
-	obj.Position -> vec3(0,0,-10);
-	car.Rotation -> vec3(-123, -456, -189);
-	satellite.Position.x -> 4;
-	 }
+	key <<1.0>> Elastic { 
+		obj.Color -> vec3(1.0, 0.0, 0.0);
+		obj.Position -> vec3(0,0,-10);
+		car.Rotation -> vec3(-123, -456, -189);
+		satellite.Position.x -> 4;
+	}
 }
 
 timeline Animate(&obj)
@@ -42,6 +42,7 @@ timeline Animate(&obj)
 		MoveCarBackwards <<1.0>>(obj);
 	}
 	n = n + 1;
+	n = n % 6;
 	obj.advance = not obj.advance;
 	
 	key <<1.0>> { Animate<<1.0>>(obj); }
@@ -59,6 +60,6 @@ timeline Main()
 	satellite.Position.x = 4;
 	satellite.Parent = car;
 	
-	Animate [[10.0]](car);
+	Animate [[2.0]](car);
 	car.Position.x = -3; 
 }

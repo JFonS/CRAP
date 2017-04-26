@@ -182,7 +182,7 @@ public class Data {
     	value = copyThis.value;
     	str = copyThis.str;
     	properties = new HashMap<String, Data>();
-    	vec = copyThis.vec;
+    	vec = copyThis.vec != null ? new Vec(copyThis.vec) : null;
     	for (String propName : copyThis.properties.keySet())
     	{
     		Data v = new Data( copyThis.getProperty(propName) );

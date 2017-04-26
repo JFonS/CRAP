@@ -61,11 +61,7 @@ public class TweenManager
 				if (timeAbs >= tweenStart.GetKeyTimeAbs() &&
 					timeAbs <= tweenEnd.GetKeyTimeAbs())
 				{
-					float startTime = tweenStart.GetKeyTimeAbs();
-					float endTime   = tweenEnd.GetKeyTimeAbs();
-					float t = (timeAbs - startTime) / (endTime - startTime);
-					
-					ApplyTween(tweenStart, tweenEnd, t);
+					ApplyTween(tweenStart, tweenEnd, timeAbs);
 					
 					break;
 				}
@@ -93,30 +89,53 @@ public class TweenManager
 		}
 	}
 	
-	private void ApplyTween(Tween tStart, Tween tEnd, float t)
+	private void ApplyTween(Tween tStart, Tween tEnd, float timeAbs)
 	{
 		Data dStart = tStart.GetKeyData();
-		Data dEnd = tEnd.GetKeyData();	
+		Data dEnd = tEnd.GetKeyData();
+		Data dataToTween = tStart.GetData();
 		
-		//https://github.com/jesusgollonet/processing-penner-easing/blob/master/src/Elastic.java
-		float v = t; // Linear by default
-		switch (tEnd.GetInterpType()) {
-			case "Cubic":
-				v = t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
-			break;
-		}
+		float t = timeAbs - tStart.GetKeyTimeAbs();
+		float d = tEnd.GetKeyTimeAbs() - tStart.GetKeyTimeAbs();
 		
 		if (dStart.isVec()) {
 			Vec vStart = dStart.getVecValue();
-			Vec vEnd = dEnd.isVec() ? dEnd.getVecValue() : new Vec(vStart.Size(),dEnd.getNumberValue());
+			Vec vEnd = dEnd.getVecValue(); //dEnd.isVec() ? dEnd.getVecValue() : new Vec(vStart.Size(),dEnd.getNumberValue());
 			assert vStart.Size() == vEnd.Size() : "Unmatching vector lengths in tween.";
-			tStart.GetData().setValue(Vec.Sum(Vec.Mul(v, Vec.Sub(vEnd, vStart)), vStart));
+		
+			System.out.println(vStart + " -> " + vEnd + "[[" + dataToTween + "]]");
+			
+			for (int i = 0; i < vStart.Size(); ++i) 
+			{
+				float b = vStart.Get(i);
+				float c = vEnd.Get(i) - b;
+				dataToTween.getVecValue().Set(i, EaseValue(tEnd.GetInterpType(), t, b, c, d));
+			}
 		}
 		else 
 		{
-			float vStart = tStart.GetKeyData().getNumberValue();
-			float vEnd = tEnd.GetKeyData().getNumberValue();
-			tStart.GetData().setValue( v * (vEnd - vStart) + vStart);
+			float b = dStart.getNumberValue();
+			float c = dEnd.getNumberValue() - b;
+			dataToTween.setValue(EaseValue(tEnd.GetInterpType(),t,b,c,d));
 		}
+	}
+	
+	private float EaseValue(String function, float t, float b, float c, float d) {		
+		//System.out.format("%f,%f,%f,%f %n",t,b,c,d);
+		switch (function) {
+			case "Cubic": 
+				if ((t/=d/2) < 1) return c/2*t*t*t + b;
+				return c/2*((t-=2)*t*t + 2) + b;
+			
+			case "Elastic":
+				if (t==0) return b;  if ((t/=d)==1) return b+c;  
+				float p=d*.3f;
+				float a=c; 
+				float s=p/4;
+				return (a*(float)Math.pow(2,-10*t) * (float)Math.sin( (t*d-s)*(2*(float)Math.PI)/p ) + c + b); 
+		}
+		
+		//Linear
+		return c*t/d + b;
 	}
 }
