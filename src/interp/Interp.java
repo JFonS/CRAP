@@ -394,7 +394,8 @@ public class Interp {
 				finalValue = new Data(v);
 			}
 
-			Tween tween = new Tween(dataToTween, currentKeyTimeAbs, finalValue, currentInterpType);
+			Tween tween = new Tween(dataToTween, currentKeyTimeAbs, finalValue,
+					currentInterpType);
 
 			tweenManager.AddTween(tween);
 			return null;
@@ -432,11 +433,12 @@ public class Interp {
 			} else {
 				currentKeyTimeAbs = timeScopeStartAbs + keyTime;
 			}
-			
-			currentInterpType = t.getChildCount() == 3 ? t.getChild(1).getText() : "Linear";
-			
+
+			currentInterpType = t.getChildCount() == 3 ? t.getChild(1)
+					.getText() : "Linear";
+
 			executeListInstructions(t.getLastChild());
-			
+
 			return null;
 
 			// Return
@@ -479,7 +481,8 @@ public class Interp {
 			CRAPTree v = t.getChild(0);
 			Data str = evaluateExpression(v);
 			System.out.format(str.isString() ? str.getStringValue() : str
-					.toString() + "%n");
+					.toString());
+			System.out.println();
 			return null;
 		}
 		// Function call

@@ -115,19 +115,26 @@ public class Main
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		perspectiveGL(60.0f, 1.0f, 0.1f, 1000.0f);
+
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glShadeModel (GL_SMOOTH);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-8,1});
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
     	HashSet<Data> aliveDatas = GetAliveDatas();
     	for (Data data : aliveDatas)
     	{
     		if (!data.isObject()) { continue; }
-    		
     		ObjectRenderer.RenderObject(data);
-    	
     	}
     	
         Time.Update();
         CRAP.interp.Update();
-        
+		
         glfwSwapBuffers(window); // swap the color buffers
         glfwPollEvents();
     }
@@ -138,6 +145,24 @@ public class Main
     	HashSet<Data> aliveDatas = new HashSet<Data>();
     	aliveDatas.addAll( CRAP.interp.timelineManager.GetAliveDatas() );
     	aliveDatas.addAll( CRAP.interp.stack.GetGlobalDatas() );
+    	
+		ArrayList<Data> addedAliveDatas = new ArrayList<Data>();
+    	do  // Please kill me
+    	{
+    		addedAliveDatas = new ArrayList<Data>();
+    		for (Data data : aliveDatas)
+	    	{
+    			for (Data d : data.getChildren()) {
+    				if (!aliveDatas.contains(d)) {
+    					addedAliveDatas.add(d);
+    				}
+    			}
+	    	}
+    		
+    		aliveDatas.addAll(addedAliveDatas);
+    	}
+    	while (addedAliveDatas.size() > 0);
+    	
     	return aliveDatas;
     }
     

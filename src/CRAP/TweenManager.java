@@ -16,8 +16,8 @@ public class TweenManager
 	public void AddTween(Tween tween)
 	{	
 		ArrayList<Tween> tweenList = tweenPool.get(tween.GetData());
-		System.out.println("Adding tween to list BEFORE: " + 
-								(tweenList == null ? "[]" : tweenList.toString()));
+		//System.out.println("Adding tween to list BEFORE: " + 
+		//						(tweenList == null ? "[]" : tweenList.toString()));
 		if (tweenList == null || tweenList.isEmpty())
 		{
 			tweenList = new ArrayList<Tween>(); 
@@ -43,7 +43,7 @@ public class TweenManager
 			if (!foundPlace) { tweenList.add(tween); } // Add to the end
 		}
 
-		System.out.println("Adding tween to list AFTER: " + tweenList.toString());
+		// System.out.println("Adding tween to list AFTER: " + tweenList.toString());
 		
 	}
 	

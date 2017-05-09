@@ -195,6 +195,13 @@ public class Data {
     /** Returns a string representing the data in textual form. */
     public String toString() 
     {
+    	return toString(0);
+    }
+    
+    public String toString(int recLevel) 
+    {
+    	if (recLevel >= 3) { return "..."; }
+    	
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         if (type == Type.NUMBER) return Float.toString(value);
         if (type == Type.STRING) return "\"" + str + "\"";
@@ -204,7 +211,8 @@ public class Data {
         String str = "{";
         for (String propName: properties.keySet())
         {
-            str += propName + ": "  + getProperty(propName).toString() + ", ";
+        	if (propName.equals("Parent")) { continue; }
+            str += propName + ": "  + getProperty(propName).toString(recLevel + 1) + ", ";
         }
         str += "}";
         str = str.replace(", }", "}");

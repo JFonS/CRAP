@@ -29,20 +29,13 @@ public class ObjectRenderer {
 	
 	public static void RenderObject(Data object) 
 	{
-		Data visible = object.getProperty("Visible");
-		if (visible == null || !visible.getBooleanValue()) { return; }
-		
-		Vec color = object.getProperty("Color").getVecValue();
+		//long time = System.nanoTime();
+		if ( !IsVisible(object) ) { return; }
 
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glShadeModel (GL_SMOOTH);
+		Vec color = object.getProperty("Color").getVecValue();
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-8,1});
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
 		ApplyObjectTransform(object);
 		
@@ -54,13 +47,22 @@ public class ObjectRenderer {
 			break;
 
 			case "Sphere":
-				DrawSphere(1.0, 64, 64, color);
+				DrawSphere(1.0, 10, 10, color);
 			break;
 		}
 		
 		glEnd();
+		//System.out.println( object + ": " + (System.nanoTime() - time) ); time = System.nanoTime();
 	}
 
+	public static boolean IsVisible(Data obj)
+	{
+		if (obj == null) { return true; }
+		Data visible = obj.getProperty("Visible");
+		return visible != null && visible.getBooleanValue() && 
+			   IsVisible(obj.getProperty("Parent"));
+	}
+	
 	private static void SetMaterial(Vec color)
 	{
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
