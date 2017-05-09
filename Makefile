@@ -64,6 +64,8 @@ GRAMMAR = 		$(PARSER)/$(TARGET).g
 
 MAIN_SRC =		$(MAIN)/*.java
 
+EASING_SRC =    $(MAIN)/easing/*.java
+
 PARSER_SRC =	$(PARSER)/$(TARGET)Lexer.java \
 				$(PARSER)/$(TARGET)Parser.java
 
@@ -73,7 +75,7 @@ INTERP_SRC =	$(INTERP)/Interp.java \
 				$(INTERP)/$(TARGET)Tree.java \
 				$(INTERP)/CRAPTreeAdaptor.java
 
-ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
+ALL_SRC =		$(MAIN_SRC) $(EASING_SRC)  $(PARSER_SRC) $(INTERP_SRC)
 
 all: compile exec
 

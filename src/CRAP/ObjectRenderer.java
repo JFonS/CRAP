@@ -2,6 +2,8 @@ package CRAP;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.ArrayList;
+
 import interp.Data;
 
 public class ObjectRenderer {
@@ -27,7 +29,8 @@ public class ObjectRenderer {
 	
 	public static void RenderObject(Data object) 
 	{
-		if (!object.getProperty("Visible").getBooleanValue()) { return; }
+		Data visible = object.getProperty("Visible");
+		if (visible == null || !visible.getBooleanValue()) { return; }
 		
 		Vec color = object.getProperty("Color").getVecValue();
 
@@ -38,7 +41,7 @@ public class ObjectRenderer {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-10,1});
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-8,1});
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
 		ApplyObjectTransform(object);

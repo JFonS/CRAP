@@ -1,0 +1,27 @@
+global objects;
+
+
+timeline Main()
+{
+    write "hi";
+    n = 0;
+
+    objects = new Cube;
+    objects.Position.z = -10;
+
+    while (n < 10) {
+        objects[n] = new Sphere;
+        objects[n].Position.x = 0;
+        objects[n].Parent = objects;
+        n = n + 1;
+    }
+
+    key <<0.0>> { Loop<<1.0>>(); }
+}
+
+
+timeline Loop()
+{
+    write "HELLOU";
+    key <<1.0>> { Loop<<1.0>>(); }
+}

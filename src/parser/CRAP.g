@@ -175,7 +175,7 @@ KEY     : 'key';
 VEC     : 'vec2' | 'vec3' | 'vec4';
 GLOBAL  : 'global';
 PREFAB  :  'prefab'; 
-INTERP  : 'Cubic' | 'Linear' | 'Elastic';
+INTERP  : ('Back' | 'Bounce' | 'Circ' | 'Cubic' | 'Elastic' | 'Expo' | 'Linear' | 'Quad' | 'Quart' | 'Quint' | 'Sine') ('In' | 'Out' | 'InOut' | );
 ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 //|          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;
 NUMBER  : '0'..'9'+ | '0'..'9'+ '.' '0'..'9'+;

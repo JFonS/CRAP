@@ -122,6 +122,7 @@ public class Main
     		if (!data.isObject()) { continue; }
     		
     		ObjectRenderer.RenderObject(data);
+    	
     	}
     	
         Time.Update();

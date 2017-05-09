@@ -97,7 +97,6 @@ public class Vec {
 	
 	public void Swizzle(String swizzle, float... vals) 
 	{
-		System.out.println(this);
 		int s = swizzle.length();
 		assert s <= 4 : "Swizzling too long.";
 		assert vals.length == 1 || vals.length == s : "Wrong number of elements in swizzling assingatio.";

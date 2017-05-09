@@ -1,5 +1,6 @@
 global car;
 global satellite;
+global s2;
 global n;
 
 //prefab Car()
@@ -13,7 +14,7 @@ global n;
 
 timeline MoveCarForward(&obj, m) 
 {
-	key <<1.0>> Elastic { 
+	key <<1.0>> BackIn { 
 		obj.Color -> vec3(0.0, 0.0, 1.0);
 		obj.Position -> vec3(m,m*1.5,-10);
 		car.Rotation -> vec3(123, 456, 189); 
@@ -23,7 +24,7 @@ timeline MoveCarForward(&obj, m)
 
 timeline MoveCarBackwards(&obj) 
 {
-	key <<1.0>> Elastic { 
+	key <<1.0>> BackIn { 
 		obj.Color -> vec3(1.0, 0.0, 0.0);
 		obj.Position -> vec3(0,0,-10);
 		car.Rotation -> vec3(-123, -456, -189);
@@ -60,6 +61,11 @@ timeline Main()
 	satellite.Position.x = 4;
 	satellite.Parent = car;
 	
+    s2 = new Mandonguilla;
+    s2.Parent = satellite;
+    s2.Primitive = "Cube";
+    s2.Position.z = 2;
+
 	Animate [[2.0]](car);
 	car.Position.x = -3; 
 }

@@ -146,6 +146,8 @@ public class Data {
     	return vec;
     }
     
+    public  ArrayList<Data> getChildren() { return new ArrayList<Data>(properties.values()); }
+    
     public Data getProperty(String propName)
     {
     	if (!propName.isEmpty())
