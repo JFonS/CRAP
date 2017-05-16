@@ -27,11 +27,11 @@ public class ObjectRenderer {
 		glScalef(scale.Get("x"), scale.Get("y"), scale.Get("z"));
 	}
 	
-	public static void RenderObject(Data object) 
+	public static void RenderObject(Data object)
 	{
 		//long time = System.nanoTime();
 		if ( !IsVisible(object) ) { return; }
-
+		
 		Vec color = object.getProperty("Color").getVecValue();
 		
 		glMatrixMode(GL_MODELVIEW);
@@ -67,7 +67,6 @@ public class ObjectRenderer {
 	{
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
 				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
-		System.out.println(color);
 	}
 	private static void DrawSphere(double r, int lats, int longs, Vec color) {
 		int i, j;

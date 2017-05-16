@@ -22,7 +22,6 @@ tokens {
     BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
-    PREFAB_PROPS;
     ARR_ACCESS;
     ARR_ELM_ASSIGN; // One element assign
     LIST;
@@ -45,13 +44,13 @@ prog    :   declaration+ EOF -> ^(LIST_FUNCTIONS declaration+);
 
 declaration     :   globalDeclare | prefabDeclare | funcDeclare | timelineDeclare;
 
-prop_list       :   (assign ';')* -> ^(PREFAB_PROPS assign*);
-prefabDeclare   :   PREFAB^ ID (':' ID)? '{'! prop_list '}'!;
+prefabDeclare   :   PREFAB^ ID params '{'! instruction_list '}'!;
 
 globalDeclare   :   GLOBAL^ ID ';'!;
 
 funcDeclare     :   FUNCTION^ ID params '{'! instruction_list '}'!;
 
+prefabCreation  :   NEW^ funcCall;
 funcCall        :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?));
 
 timelineDeclare :   TIMELINE^ ID params '{'! instruction_list '}'!;
@@ -132,7 +131,7 @@ atom    :   variable
         |   STRING
         |   NUMBER
         |   VEC^ '('! expr_list ')'!
-	    |   NEW^ ID
+	|   prefabCreation
         //|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
@@ -174,7 +173,7 @@ FALSE   : 'false';
 KEY     : 'key';
 VEC     : 'vec2' | 'vec3' | 'vec4';
 GLOBAL  : 'global';
-PREFAB  :  'prefab'; 
+PREFAB  : 'prefab'; 
 INTERP  : ('Back' | 'Bounce' | 'Circ' | 'Cubic' | 'Elastic' | 'Expo' | 'Linear' | 'Quad' | 'Quart' | 'Quint' | 'Sine') ('In' | 'Out' | 'InOut' | );
 ID      : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 //|          ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ('.' ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*)+;

@@ -96,11 +96,13 @@ public class Stack {
     	String out = "{\n";
     	for (HashMap<String,Data> ar : actRecords)
     	{
+    		out += "{\n";
     		for (String varName : ar.keySet())
     		{
     			Data data = ar.get(varName);
     			out += "  " + varName + ": " + data.toString() + "\n";
     		}
+    		out += "}\n";
     	}
     	out += "}\n";
     	return out;
@@ -127,7 +129,7 @@ public class Stack {
         	var = activationRecord.get(varName); // Else modify local one
         }
     	
-        if (var == null) 
+        if (var == null)
         {
         	activationRecord.put(varName, value); // New definition
         }

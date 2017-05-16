@@ -187,7 +187,8 @@ public class Data {
     	vec = copyThis.vec != null ? new Vec(copyThis.vec) : null;
     	for (String propName : copyThis.properties.keySet())
     	{
-    		Data v = new Data( copyThis.getProperty(propName) );
+    		Data prop = copyThis.getProperty(propName);
+    		Data v = prop.isObject() ? prop : new Data(prop);
     		setProperty(propName, v);
     	}
     }

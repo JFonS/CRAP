@@ -1,0 +1,60 @@
+global car;
+global satellite;
+global s2;
+global n;
+
+prefab Wheel(n)
+{
+	this.Primitive = "Sphere";
+	this.Position = vec3(n, -4, 0);
+	this.Rotation = vec3(n, -4, 0);
+	this.Color = vec3(1,1,0);
+
+	this.Center = new Object();
+	this.Center.Primitive = "Cube";
+	this.Center.Scale = vec3(0.1, 0.1, 1.2);
+	this.Center.Color = vec3(0.5);
+	this.Center.Parent = this;
+
+	key<<0.0>>
+	{
+		WheelIt(this);
+	}
+}
+
+prefab Car()
+{
+      n = 0;
+      this.Primitive = "Cube";
+      this.Position = vec3(0, 0, -15);
+      print "car: " .. this;
+      while (n < 4) {
+              // wheel = new Wheel(n);
+              this["wheel" .. n] = new Wheel(n);
+	      this["wheel" .. n].Parent = this;
+	      n = n + 1;
+      }
+      print "carAfter: " .. this;
+}
+
+timeline WheelIt(w)
+{
+	w.Rotation.z = 0.0;
+	key<<1.0>>
+	{
+		w.Rotation.z -> -360.0;
+		WheelIt<<1.0>>(w);
+	}
+}
+
+
+timeline Main()
+{
+	car = new Car();
+
+	key<<1.0>>
+	{
+		Main<<1.0>>();
+	}
+}
+

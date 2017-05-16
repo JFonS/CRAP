@@ -40,6 +40,7 @@ import javax.management.RuntimeErrorException;
 
 import java.io.*;
 
+import CRAP.CRAP;
 import CRAP.Timeline;
 import CRAP.Tween;
 import CRAP.TweenManager;
@@ -150,6 +151,7 @@ public class Interp {
 				stack.defineVariable(fname, globalVariable);
 				break;
 
+			case CRAPLexer.PREFAB:
 			case CRAPLexer.TIMELINE:
 			case CRAPLexer.FUNCTION:
 				if (FuncName2Tree.containsKey(fname)) {
@@ -206,8 +208,7 @@ public class Interp {
 		linenumber = l;
 	}
 
-	private Data executeFunction(String funcName, CRAPTree args,
-			Timeline timeline) {
+	private Data executeFunction(String funcName, CRAPTree args, Timeline timeline, Data thisRef) {
 		// Get the AST of the function
 		CRAPTree f = FuncName2Tree.get(funcName);
 		if (f == null)
@@ -230,6 +231,11 @@ public class Interp {
 
 		// Create the activation record in memory
 		stack.pushActivationRecord(funcName, lineNumber());
+		
+		if (thisRef != null)
+		{
+			stack.defineVariable("this", thisRef);
+		}
 
 		if (timeline != null) {
 			timeline.SetActivationRecord(stack.GetCurrentActivationRecord());
@@ -262,14 +268,14 @@ public class Interp {
 	}
 
 	private Data executeFunction(String funcName, CRAPTree args) {
-		return executeFunction(funcName, args, null);
+		return executeFunction(funcName, args, null, null);
 	}
 
 	public Data executeTimeline(Timeline timeline) {
 		timeScopeStartAbs = timeline.GetStartTimeAbs();
 		timeScopeFinishAbs = timeline.GetFinishTimeAbs();
 
-		return executeFunction(timeline.GetName(), null, timeline);
+		return executeFunction(timeline.GetName(), null, timeline, null);
 	}
 
 	/**
@@ -349,6 +355,7 @@ public class Interp {
 				value = value.isObject() ? value : new Data(value);
 				data.setProperty(indexStr, value);
 			}
+			
 			return null;
 		}
 
@@ -625,6 +632,15 @@ public class Interp {
 
 			prop = new Data("Sphere");
 			value.setProperty("Primitive", prop);
+			
+			CRAPTree funcCall = t.getChild(0);
+			
+			String prefabName = funcCall.getChild(0).getText();
+			if (!prefabName.equals("Object"))
+			{
+				this.executeFunction(prefabName,
+								 	 funcCall.getChild(1), null, value);
+			}
 
 			break;
 		default:
