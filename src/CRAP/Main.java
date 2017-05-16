@@ -122,7 +122,7 @@ public class Main
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-8,1});
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-2,1});
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
     	HashSet<Data> aliveDatas = GetAliveDatas();

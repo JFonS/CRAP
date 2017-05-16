@@ -67,6 +67,7 @@ public class ObjectRenderer {
 	{
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
 				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
+		System.out.println(color);
 	}
 	private static void DrawSphere(double r, int lats, int longs, Vec color) {
 		int i, j;

@@ -5,32 +5,44 @@ timeline Main()
 {
     objects = new Cube;
     objects.Primitive  = "Empty";
-    objects.Scale      = vec3(0.2);
+    objects.Scale      = vec3(0.25);
     objects.Position.x = 0;
-    objects.Position.y = -2;
-    objects.Position.z = -8;
+    objects.Position.y = 0.5;
+    objects.Position.z = -4;
 
-    GridSize = 30;
+    GridSize = 6;
 
     i = 0; 
     while (i < GridSize) {
 	    objects[i] = {};
-            j = 0;
+        j = 0;
 	    while (j < GridSize) {
-		objects[i][j] = new Sphere;
-		objects[i][j].Primitive  = "Cube";
-		objects[i][j].Position.x = i - GridSize / 2.0;
-		objects[i][j].Position.z = j - GridSize / 2.0;
-		objects[i][j].Parent = objects;
-		key << (i+j) / (GridSize+GridSize) >>
-		{
-			Loop<<1.0>>(objects[i][j], 3); 
+	    	objects[i][j] = {};
+        	k = 0;
+	    	while (k < GridSize) {
+			    objects[i][j][k] = new Sphere;
+				objects[i][j][k].Primitive  = "Cube";
+				objects[i][j][k].Position.x = i - GridSize / 2.0;
+				objects[i][j][k].Position.z = j - GridSize / 2.0;
+				objects[i][j][k].Position.y = k - GridSize / 2.0;
+				objects[i][j][k].Scale = vec3(0.1);
+				objects[i][j][k].Parent = objects;
+
+				time = (i+j+k) / (GridSize*3);// ( (j+k+1) *(i+1));
+				// if (i % 2 = 0) {
+				// 	tmie = time * 1.25;
+				// }
+				key << time  >>
+				{
+					Loop<<1.0>>(objects[i][j][k], 3); 
+				}
+				k = k + 1;
+			}	
+			j = j + 1;
 		}
-		j = j + 1;
-	    }
-	i = i + 1;
+		i = i + 1;
     }
-    FlagUpDown<<1.0>>(objects, 3); 
+    //FlagUpDown<<1.0>>(objects, 3); 
 }
 
 timeline FlagUpDown(obj, amount)
@@ -41,16 +53,18 @@ timeline FlagUpDown(obj, amount)
     key <<1.0>> {  FlagUpDown<<1.0>>(obj, amount); }
 }
 
+timeline ToggleVisibility(obj) { print obj.Visible; obj.Visible = not obj.Visible; }
+
 timeline Loop(obj, amount)
 {
-    key <<0.5>> Sine { obj.Position.y ->  amount; }
-    key <<1.0>> Sine { obj.Position.y -> -amount; }
+    key <<0.5>> BounceOut { obj.Position -> obj.Position * 2.0; }
+    key <<1.0>> ExpoOut      { obj.Position -> obj.Position ; }
 
-    key <<0.75>> Back { obj.Scale -> vec3(1.0); }
-    key <<0.25>> Back { obj.Scale -> vec3(0.5); }
+    key <<1.0>> BounceOut { obj.Scale -> vec3(0.3); }
+    key <<0.5>> SineOut { obj.Scale -> vec3(0.1); }
 
-    key <<0.5>> Linear { obj.Color -> vec3(1, 0, 0); }
-    key <<1.0>> Linear { obj.Color -> vec3(0, 0, 1); }
+    key <<0.5>> Sine { obj.Color -> vec3(1, 0, 0); ToggleVisibility<<1.0>>(obj); }
+    key <<1.0>> Sine { obj.Color -> vec3(0, 0, 1); ToggleVisibility<<1.0>>(obj); }
 
     key <<1.0>>
     { 
