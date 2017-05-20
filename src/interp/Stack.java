@@ -96,13 +96,13 @@ public class Stack {
     	String out = "{\n";
     	for (HashMap<String,Data> ar : actRecords)
     	{
-    		out += "{\n";
+    		out += "   {\n";
     		for (String varName : ar.keySet())
     		{
     			Data data = ar.get(varName);
-    			out += "  " + varName + ": " + data.toString() + "\n";
+    			out += "     " + varName + ": " + data.toString() + "\n";
     		}
-    		out += "}\n";
+    		out += "   }\n";
     	}
     	out += "}\n";
     	return out;
@@ -129,14 +129,14 @@ public class Stack {
         	var = activationRecord.get(varName); // Else modify local one
         }
     	
-        if (var == null)
-        {
+        //if (var == null)
+        //{
         	activationRecord.put(varName, value); // New definition
-        }
+        /*}
         else
         {
         	var.setData(value);
-        }
+        }*/
     }
 
     /** Gets the value of the variable. The value is represented as
@@ -147,15 +147,19 @@ public class Stack {
      */
     public Data getVariable(String varName) 
     {
+    	//System.out.println(" Getting " + varName + " from stack");
+    	
         Data v = actRecords.getFirst().get(varName);
         if (v == null)
         {
+        	//System.out.println(" Not found as global, looking at local AR... ");
         	// Look for v in local AR, if not found global
         	v = currentAR.get(varName);
         }
 
         if (v != null)
         {
+        	//System.out.println("Found: " + v);
         	return v;
         }
         else { throw new RuntimeException ("Variable " + varName + " not defined"); }

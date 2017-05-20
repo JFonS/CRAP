@@ -79,6 +79,7 @@ instruction
         |   read         ';'! // Read a variable
         |   write        ';'! // Write a string or an expression
         |   print        ';'! // Write a string or an expression followed by a newline char
+        |   dump         ';'!
         |                ';'! // Nothing
         ;
 
@@ -107,6 +108,7 @@ read        :   READ^ ID;
 // Write an expression or a string
 write       :   WRITE^ expr;
 print       :   PRINT^ expr?;
+dump        :   DUMP^  expr?;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    :   boolexpr (CONCAT^ boolexpr)*;
@@ -168,6 +170,7 @@ NEW     : 'new' ;
 READ    : 'read' ;
 WRITE   : 'write' ;
 PRINT   : 'print' ;
+DUMP    : 'dump';
 TRUE    : 'true' ;
 FALSE   : 'false';
 KEY     : 'key';

@@ -1,0 +1,64 @@
+global root;
+
+
+prefab Cube(n)
+{
+	print "IN CUBE " .. n;
+	if (n = 0)
+	{
+		this.Primitive = "Cube";
+	}
+	else
+	{
+		this.Primitive = "Empty";
+
+		this[0] = new Cube(n-1);
+		this[0].Scale = vec3(0.4);
+		this[0].Position = vec3(-0.3, -0.3, -0.3);
+		this[0].Parent = this;
+
+		this[1] = new Cube(n-1);
+		this[1].Scale = vec3(0.4);
+		this[1].Position = vec3(-0.3, -0.3,  0.3);
+		this[1].Parent = this;
+
+		this[2] = new Cube(n-1);
+		this[2].Scale = vec3(0.4);
+		this[2].Position = vec3(-0.3,  0.3, -0.3);
+		this[2].Parent = this;
+
+		this[3] = new Cube(n-1);
+		this[3].Scale = vec3(0.4);
+		this[3].Position = vec3(-0.3,  0.3,  0.3);
+		this[3].Parent = this;
+
+		this[4] = new Cube(n-1);
+		this[4].Scale = vec3(0.4);
+		this[4].Position = vec3( 0.3, -0.3, -0.3);
+		this[4].Parent = this;
+
+		this[5] = new Cube(n-1);
+		this[5].Scale = vec3(0.4);
+		this[5].Position = vec3( 0.3, -0.3,  0.3);
+		this[5].Parent = this;
+
+		this[6] = new Cube(n-1);
+		this[6].Scale = vec3(0.4);
+		this[6].Position = vec3( 0.3,  0.3, -0.3);
+		this[6].Parent = this;
+
+		this[7] = new Cube(n-1);
+		this[7].Scale = vec3(0.4);
+		this[7].Position = vec3( 0.3,  0.3,  0.3);
+		this[7].Parent = this;
+	}
+}
+
+
+timeline Main()
+{
+	root = new Cube(1);
+
+	root.Position = vec3(0,0.3,-1.5);
+	root.Rotation = vec3(0,35,0);
+}

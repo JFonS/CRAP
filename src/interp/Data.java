@@ -209,11 +209,11 @@ public class Data {
         if (type == Type.VEC) return vec.toString();
         
         // Type OBJECT
-        String str = "{";
+        String str = "{" + toArrIndex() + " ";
         for (String propName: properties.keySet())
         {
-        	if (propName.equals("Parent")) { continue; }
-            str += propName + ": "  + getProperty(propName).toString(recLevel + 1) + ", ";
+        	Data prop = getProperty(propName);
+            str += propName + ": "  + (propName.equals("Parent") ? prop.toArrIndex() : prop.toString(recLevel + 1)) + ", ";
         }
         str += "}";
         str = str.replace(", }", "}");
@@ -223,7 +223,7 @@ public class Data {
     public String toArrIndex() 
     {
         if (type == Type.STRING) return str;
-        if (type == Type.OBJECT) return "::" + System.identityHashCode(this) + "::";
+        if (type == Type.OBJECT) return "[[" + System.identityHashCode(this) + "]]";
         return toString();
     }
     

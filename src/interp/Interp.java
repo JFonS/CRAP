@@ -320,7 +320,7 @@ public class Interp {
 		switch (t.getType()) {
 		case CRAPLexer.ASSIGN: {
 			value = evaluateExpression(t.getChild(1));
-
+			
 			CRAPTree var = t.getChild(0);
 			String baseVar = var.getChild(0).getText();
 
@@ -490,6 +490,21 @@ public class Interp {
 			System.out.format(str.isString() ? str.getStringValue() : str
 					.toString());
 			System.out.println();
+			return null;
+		}
+		case CRAPLexer.DUMP: {
+			
+			
+			
+			System.out.println("####### STACK CONTENTS ######");
+			if (t.getChildCount() == 1) {
+				CRAPTree v = t.getChild(0);
+				Data str = evaluateExpression(v);
+				String title = str.isString() ? str.getStringValue() : str.toString();
+				System.out.println("   " + title);
+			}
+			stack.Print();
+			System.out.println("####### -------------- ######");
 			return null;
 		}
 		// Function call

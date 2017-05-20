@@ -3,7 +3,7 @@ global objects;
 
 timeline Main()
 {
-    objects = new Cube;
+    objects = new Object();
     objects.Primitive  = "Empty";
     objects.Scale      = vec3(0.25);
     objects.Position.x = 0;
@@ -20,7 +20,7 @@ timeline Main()
 	    	objects[i][j] = {};
         	k = 0;
 	    	while (k < GridSize) {
-			    objects[i][j][k] = new Sphere;
+			    objects[i][j][k] = new Object();
 				objects[i][j][k].Primitive  = "Cube";
 				objects[i][j][k].Position.x = i - GridSize / 2.0;
 				objects[i][j][k].Position.z = j - GridSize / 2.0;

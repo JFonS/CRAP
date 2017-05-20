@@ -36,9 +36,8 @@ public class ObjectRenderer {
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		
+
 		ApplyObjectTransform(object);
-		
 		
 		switch ( object.getProperty("Primitive").getStringValue() )
 		{
