@@ -1,0 +1,52 @@
+prefab Fractal(n)
+{
+	this.axis = n % 3;
+	this.Primitive = "Sphere";
+	if (n%3 = 0) { this.Color = vec3(1,0,0); }
+	if (n%3 = 1) { this.Color = vec3(0,1,0); }
+	if (n%3 = 2) { this.Color = vec3(0,0,1); }
+	this.Scale = vec3(0.5);
+	
+	if (n < 3)
+	{
+		i = 0;
+		while (i < 4)
+		{
+			this.child = new Fractal(n+1);
+			this.child.Parent = this;
+			if (i = 1) { this.child.Position.x = 1.5; }
+			if (i = 2) { this.child.Position.y = 1.5; }
+			if (i = 3) { this.child.Position.z = 1.5; }
+			i = i + 1;
+		}
+	}
+
+	key <<0.0>>
+	{
+		Rotate<<1.0>>(this);
+	}
+}
+
+timeline Rotate(obj)
+{
+	obj.Rotation = vec3(0.0);
+	key<<0.5>>
+	{
+		if (obj.axis = 0) { obj.Rotation.x -> 180.0; }
+		if (obj.axis = 1) { obj.Rotation.y -> 180.0; }
+		if (obj.axis = 2) { obj.Rotation.z -> 180.0; }
+	}
+	key<<1.0>>
+	{
+		if (obj.axis = 0) { obj.Rotation.x -> 360.0; }
+		if (obj.axis = 1) { obj.Rotation.y -> 360.0; }
+		if (obj.axis = 2) { obj.Rotation.z -> 360.0; }
+		Rotate<<1.0>>(obj);
+	}
+}
+
+timeline Main()
+{
+	root = new Fractal(0);
+	root.Position.z = -3.0;
+}
