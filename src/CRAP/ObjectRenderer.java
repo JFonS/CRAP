@@ -49,6 +49,10 @@ public class ObjectRenderer {
 			case "Sphere":
 				DrawSphere(1.0, 10, 10, color);
 			break;
+			
+			case "Cylinder":
+				DrawCylinder(1.0f, 1.0f, color);
+			break;
 		}
 		
 		glEnd();
@@ -70,6 +74,7 @@ public class ObjectRenderer {
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
 				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
 	}
+	
 	private static void DrawSphere(double r, int lats, int longs, Vec color) {
 		int i, j;
 
@@ -97,6 +102,59 @@ public class ObjectRenderer {
 			}
 			glEnd();
 		}
+	}
+	
+	private static void DrawCylinder(float radius, float height, Vec color)
+	{
+		float x              = 0.0f;
+		float y              = 0.0f;
+		float angle          = 0.0f;
+		float angle_stepsize = 0.1f;
+		
+		/** Draw the tube */
+		glBegin(GL_QUAD_STRIP);
+		SetMaterial(color);
+		angle = 0.0f;
+		 while( angle < 2*Math.PI) {
+		     x = (float) (radius * Math.cos(angle));
+		     y = (float) (radius * Math.sin(angle));
+		     glNormal3f((float)Math.cos(angle),
+		    		    (float)Math.sin(angle), 0.0f);
+		     glVertex3f(x, y, height);
+		     glVertex3f(x, y, 0.0f);
+		     angle = angle + angle_stepsize;
+		 }
+		 glVertex3f(radius, 0.0f, height);
+		 glVertex3f(radius, 0.0f, 0.0f);
+		glEnd();
+		
+		/** Draw the circle on top of cylinder */
+		glBegin(GL_POLYGON);
+		SetMaterial(color);
+		angle = 0.0f;
+		while( angle < 2*Math.PI ) {
+		     x = (float) (radius * Math.cos(angle));
+		     y = (float) (radius * Math.sin(angle));
+		     glNormal3f(0.0f, 0.0f, 1.0f);
+		     glVertex3f(x, y , height);
+		     angle = angle + angle_stepsize;
+		}
+		glVertex3f(radius, 0.0f, height);
+		glEnd();
+
+		/** Draw the circle on bot of cylinder */
+		glBegin(GL_POLYGON);
+		SetMaterial(color);
+		angle = 0.0f;
+		while( angle < 2*Math.PI ) {
+		     x = (float) (radius * Math.cos(angle));
+		     y = (float) (radius * Math.sin(angle));
+		     glNormal3f(0.0f, 0.0f, -1.0f);
+		     glVertex3f(x, y, 0.0f);
+		     angle = angle + angle_stepsize;
+		}
+		glVertex3f(radius, 0.0f, height);
+		glEnd();
 	}
 	
 	private static void DrawCube(float side, Vec color)
