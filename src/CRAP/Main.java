@@ -56,15 +56,6 @@ public class Main {
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		// Setup a key callback. It will be called every time a key is pressed,
-		// repeated or released.
-		/*
-		 * glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-		 * if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-		 * glfwSetWindowShouldClose(window, true); // We will detect this in the
-		 * rendering loop });
-		 */
-
 		try (MemoryStack stack = stackPush()) {
 			IntBuffer pWidth = stack.mallocInt(1); // int*
 			IntBuffer pHeight = stack.mallocInt(1); // int*
@@ -85,11 +76,7 @@ public class Main {
 
 	private static void Loop() {
 		GL.createCapabilities();
-
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		Camera.GetInstance().LoadProjection();
+		
 
 		glEnable(GL_LIGHTING);
 		glEnable(GL_NORMALIZE);
@@ -98,12 +85,23 @@ public class Main {
 		glShadeModel(GL_SMOOTH);
 
 		glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
-		while (!glfwWindowShouldClose(window)) {
+		while (!glfwWindowShouldClose(window)) 
+		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			IntBuffer screenWidth = memAllocInt(1); // int*
+			IntBuffer screenHeight = memAllocInt(1); // int*
+			glfwGetWindowSize(window, screenWidth, screenHeight);
+			Camera.GetInstance().LoadProjection(screenWidth.get(0), screenHeight.get(0));
+			
 			Camera.GetInstance().Update();
 			Update();
+			
+			glPopMatrix();
 		}
-		glPopMatrix();
 	}
 
 	private static void Update() {

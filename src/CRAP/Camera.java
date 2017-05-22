@@ -29,9 +29,10 @@ public class Camera
 	{
 	}
 	
-	public void LoadProjection()
+	public void LoadProjection(int screenWidth, int screenHeight)
 	{
-		Camera.perspectiveGL(60.0f, 1.0f, 0.1f, 1000.0f);
+		glViewport(0, 0, screenWidth, screenHeight);
+		Camera.perspectiveGL(60.0f, ((float)screenWidth)/screenHeight, 0.1f, 1000.0f);
 	}
 	
 	public void LoadView()
