@@ -1,10 +1,9 @@
 package CRAP;
 
+
 import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.ARBShaderObjects;
 
-import java.util.ArrayList;
-
-import org.lwjgl.opengl.GLUtil;
 
 import interp.Data;
 
@@ -39,7 +38,8 @@ public class ObjectRenderer {
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		ApplyObjectTransform(object);
-		
+		ARBShaderObjects.glUseProgramObjectARB(Main.programID);
+			
 		switch ( object.getProperty("Primitive").getStringValue() )
 		{
 			case "Cube":
@@ -53,7 +53,6 @@ public class ObjectRenderer {
 		
 		glEnd();
 		glPopMatrix();
-		//System.out.println( object + ": " + (System.nanoTime() - time) ); time = System.nanoTime();
 	}
 
 	public static boolean IsVisible(Data obj)

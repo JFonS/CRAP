@@ -1,17 +1,14 @@
 package CRAP;
 
-import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import interp.Data;
-import interp.Interp;
 
 import java.nio.*;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -21,6 +18,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
 	public static long window;
+	public static int programID;
 
 	public static void main(String[] args) throws Exception {
 		CRAP.Init(args);
@@ -35,6 +33,116 @@ public class Main {
 			glfwSetErrorCallback(null).free();
 		}
 	}
+	
+	private static String getLogInfo(int obj) {
+        return ARBShaderObjects.glGetInfoLogARB(obj, ARBShaderObjects.glGetObjectParameteriARB(obj, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB));
+    }
+	
+	private static int createShader(String source, int shaderType) throws Exception {
+        int shader = 0;
+        try {
+            shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
+             
+            if(shader == 0)
+                return 0;
+             
+            ARBShaderObjects.glShaderSourceARB(shader, source);
+            ARBShaderObjects.glCompileShaderARB(shader);
+             
+            if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
+                throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
+             
+            return shader;
+        }
+        catch(Exception exc) {
+            ARBShaderObjects.glDeleteObjectARB(shader);
+            throw exc;
+        }
+    }
+	
+	private static void InitShaders() {
+		
+		String vertSource = "varying vec3 vN;\n" +
+				"varying vec3 v;\n" +
+
+				"void main(void) {\n" +
+					"v = vec3(gl_ModelViewMatrix * gl_Vertex);\n" +       
+					"vN = normalize(gl_NormalMatrix * gl_Normal);\n" +
+
+						"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n" +
+				"}";
+		
+		String fragSource = 
+						"varying vec3 vN;\n" +
+						"varying vec3 v; \n" +
+
+						"#define MAX_LIGHTS 3 \n" +
+
+						"void main (void) \n" +
+						"{ \n" +
+						"   vec3 N = normalize(vN);\n" +
+						"   vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);\n" +
+
+						"   for (int i=0;i<MAX_LIGHTS;i++)\n" +
+						"   {\n" +
+						"      vec3 L = normalize(gl_LightSource[i].position.xyz - v); \n" +
+						"      vec3 E = normalize(-v); // we are in Eye Coordinates, so EyePos is (0,0,0) \n" +
+						"      vec3 R = normalize(-reflect(L,N)); \n" +
+
+						"      //calculate Ambient Term: \n" +
+						"      vec4 Iamb = gl_FrontLightProduct[i].ambient; \n" +
+
+						"      //calculate Diffuse Term: \n" +
+						"      vec4 Idiff = gl_FrontLightProduct[i].diffuse * max(dot(N,L), 0.0);\n" +
+						"      Idiff = clamp(Idiff, 0.0, 1.0); \n" +
+
+						"      // calculate Specular Term:\n" +
+						"      vec4 Ispec = gl_FrontLightProduct[i].specular \n" +
+						"             * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);\n" +
+						"      Ispec = clamp(Ispec, 0.0, 1.0); \n" +
+
+						"      finalColor += Iamb + Idiff + Ispec;\n" +
+						"   }\n" +
+
+						"   // write Total Color: \n" +
+						"   gl_FragColor = gl_FrontLightModelProduct.sceneColor + finalColor; \n" +
+						"}\n";
+		
+		int vertShader = 0, fragShader = 0;
+
+        try {
+            vertShader = createShader(vertSource,ARBVertexShader.GL_VERTEX_SHADER_ARB);
+            fragShader = createShader(fragSource,ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+        }
+        catch(Exception exc) {
+            exc.printStackTrace();
+            return;
+        }
+        finally {
+            if(vertShader == 0 || fragShader == 0)
+                return;
+        }
+         
+        programID = ARBShaderObjects.glCreateProgramObjectARB();
+         
+        if(programID == 0)
+            return;
+         
+        ARBShaderObjects.glAttachObjectARB(programID, vertShader);
+        ARBShaderObjects.glAttachObjectARB(programID, fragShader);
+         
+        ARBShaderObjects.glLinkProgramARB(programID);
+        if (ARBShaderObjects.glGetObjectParameteriARB(programID, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE) {
+            System.err.println(getLogInfo(programID));
+            return;
+        }
+         
+        ARBShaderObjects.glValidateProgramARB(programID);
+        if (ARBShaderObjects.glGetObjectParameteriARB(programID, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) {
+            System.err.println(getLogInfo(programID));
+            return;
+        }
+	}
 
 	private static void Init() {
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -43,14 +151,14 @@ public class Main {
 			throw new IllegalStateException("Unable to initialize GLFW");
 
 		glfwDefaultWindowHints(); // optional, the current window hints are
-									// already the default
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+							      // already the default
+
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden
 													// after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);  // the window will be
 													// resizable
-
+	
+			
 		// Create the window
 		window = glfwCreateWindow(600, 600, "Hello World!", NULL, NULL);
 		if (window == NULL)
@@ -77,12 +185,14 @@ public class Main {
 	private static void Loop() {
 		GL.createCapabilities();
 		
+		InitShaders();
 
 		glEnable(GL_LIGHTING);
 		glEnable(GL_NORMALIZE);
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_COLOR_MATERIAL);
 		glShadeModel(GL_SMOOTH);
+
 
 		glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
 		while (!glfwWindowShouldClose(window)) 
