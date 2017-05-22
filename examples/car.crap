@@ -1,0 +1,128 @@
+
+prefab Window()
+{
+	this.Primitive = "Cube";
+	this.Color = vec3(0.6, 0.6, 1.0);
+	this.Scale = vec3(0.6, 0.4, 0.55);
+}
+
+prefab CarLight()
+{
+	this.Primitive = "Cube";
+	this.Color = vec3(0.8, 0.6, 0.0);
+	this.Scale = vec3(0.2);
+}
+
+prefab WindowF()
+{
+	this.Primitive = "Cube";
+	this.Color = vec3(0.6, 0.6, 1.0);
+	this.Scale = vec3(0.45, 0.35, 0.9);
+}
+
+timeline RotWheel(wheel) 
+{ 
+	wheel.Rotation.z = 0.0; 
+	key<<1.0>> 
+	{ 
+		wheel.Rotation.z -> -360.0; 
+		RotWheel<<1.0>>(wheel); 
+	} 
+}
+
+prefab Wheel()
+{
+	this.Color = vec3(0.0);
+	this.Scale = vec3(0.5);
+	this.Primitive = "Cylinder"; 
+	
+	this.Middle = new Object();
+	this.Middle.Parent = this;
+	this.Middle.Primitive = "Cube";
+	this.Middle.Scale = vec3(0.2, 0.2, 0.6);
+	this.Middle.Position.z = 0.5;
+	this.Middle.Color = vec3(1.0);
+	RotWheel<<1.0>>(this);
+}
+
+prefab Car(carColor)
+{
+	this.UpperPart = new Object();
+	this.UpperPart.Color = carColor;
+	this.UpperPart.Parent = this;
+	this.UpperPart.Primitive = "Cube";
+	this.UpperPart.Scale = vec3(1.5, 1.0, 1.0);
+
+	this.LowerPart = new Object();
+	this.LowerPart.Color = carColor;
+	this.LowerPart.Parent = this;
+	this.LowerPart.Primitive = "Cube";
+	this.LowerPart.Scale = vec3(2.0, 0.5, 1.0);
+	this.LowerPart.Position.y = -0.5;
+
+	this.Window1 = new Window();
+	this.Window1.Parent = this; 
+	this.Window1.Position = vec3(0.7, 0.45, 0.5);
+	this.Window2 = new Window();
+	this.Window2.Parent = this; 
+	this.Window2.Position = vec3(-0.7, 0.45, 0.5);
+	this.Window3 = new Window();
+	this.Window3.Parent = this; 
+	this.Window3.Position = vec3(0.7, 0.45, -0.5);
+	this.Window4 = new Window();
+	this.Window4.Parent = this; 
+	this.Window4.Position = vec3(-0.7, 0.45, -0.5);
+	this.Window5 = new WindowF();
+	this.Window5.Parent = this; 
+	this.Window5.Position = vec3(1.1, 0.45, 0.0);
+	this.Window6 = new WindowF();
+	this.Window6.Parent = this; 
+	this.Window6.Position = vec3(-1.1, 0.45, 0.0);
+
+	this.CLight0 = new CarLight();
+	this.CLight0.Position = vec3(1.9, -0.3, 0.6);
+	this.CLight1 = new CarLight();
+	this.CLight1.Position = vec3(1.9, -0.3, -0.6);
+	this.Matricula = new Object();
+	this.Matricula.Primitive = "Cube";
+	this.Matricula.Scale = vec3(0.2, 0.1, 0.5);
+	this.Matricula.Position = vec3(1.9, -0.7, 0.0);
+
+	this.wheel0 = new Wheel();
+	this.wheel0.Parent = this;
+	this.wheel0.Position = vec3(-1,-1,-1.25);
+
+	this.wheel1 = new Wheel();
+	this.wheel1.Parent = this;
+	this.wheel1.Position = vec3(-1,-1,0.75);
+
+	this.wheel2 = new Wheel();
+	this.wheel2.Parent = this;
+	this.wheel2.Position = vec3(1,-1,-1.25);
+
+	this.wheel3 = new Wheel();
+	this.wheel3.Parent = this;
+	this.wheel3.Position = vec3(1,-1,0.75);
+}
+
+timeline MoveCar(car)
+{
+	key <<1.0>>
+	{
+		MoveCar<<1.0>>(car);
+	}
+}
+
+timeline Main()
+{
+        car = new Car( vec3(1,0,0) );
+
+        Light0.Position = vec3(10.0, 10.0, 10.0);
+        Light0.Color = vec3(1.0, 1.0, 1.0);
+        Light0.Range = 1000.0;
+        Light0.Intensity = 500.0;
+        Light0.Visible = true;
+
+	MoveCar[[1.0]](car);
+}
+
