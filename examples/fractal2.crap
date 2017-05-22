@@ -10,10 +10,12 @@ function CreateCube(n, parent)
 
 prefab Cube(n)
 {
+	if (n <= 3) { key [[n]] { Scale<<3>>(this); } }
+
 	if (n = 0)
 	{
 		this.Primitive = "Sphere";
-		this.Color = vec3(1,0.3,0);
+		this.Color = vec3(rand(), rand(), rand());
 	}
 	else
 	{
@@ -48,12 +50,28 @@ prefab Cube(n)
 	}
 }
 
+timeline Scale(obj)
+{
+	obj.Scale = vec3(0.3);
+
+	key<<0.5>> ElasticOut
+	{
+		obj.Scale -> vec3(0.6);
+	}
+	key<<1.0>> ElasticOut
+	{
+		obj.Scale -> vec3(0.3);
+		Scale<<1.0>>(obj);
+	}
+}
+
 timeline SpinX(obj)
 {
 	obj.Rotation.x = 0;
 
 	key<<1.0>> 
 	{
+		obj.Color -> vec3(rand(), rand(), rand());
 		obj.Rotation.x -> 360;
 		SpinY<<1.0>>(obj);
 	}
@@ -65,6 +83,7 @@ timeline SpinY(obj)
 
 	key<<1.0>> 
 	{
+		obj.Color -> vec3(rand(), rand(), rand());
 		obj.Rotation.y -> 360;
 		SpinZ<<1.0>>(obj);
 	}
@@ -76,6 +95,7 @@ timeline SpinZ(obj)
 
 	key<<1.0>> 
 	{
+		obj.Color -> vec3(rand(), rand(), rand());
 		obj.Rotation.z -> 360;
 		SpinX<<1.0>>(obj);
 	}
@@ -83,22 +103,18 @@ timeline SpinZ(obj)
 
 timeline Main()
 {
-	root = new Cube(5);
-	
-	Light0.Position = vec3(0,0,0);
-	Light0.Color = vec3(1,1,1);
-	Light0.Range = 5.0; 
-	//Light0.Visible = true;
+	root = new Cube(4);
 
-	Light1.Position = vec3(2,0,0);
-	Light1.Color = vec3(0.5,1,0.5);
-	Light1.Range = 5.0; 
-	//Light1.Visible = true;
+	Light0.Position = vec3(1.5,1.5,0);
+	Light0.Color = vec3(1.0, 1.0, 1.0);
+	Light0.Range = 200.0; 
+	Light0.Intensity = 500.0;
+	Light0.Visible = true;
 
-	//Light2.Primitive = "Sphere";
-	Light2.Position = vec3(0,1.5,0);
-	Light2.Color = vec3(0.5,0.5,1.0);
-	Light2.Range = 2.0; 
-	Light2.Intensity = 10.0;
-	Light2.Visible = true;
+	Light1.Position = vec3(-1.5,-1.5,0);
+	Light1.Color = vec3(1.0, 1.0, 1.0);
+	Light1.Range = 200.0; 
+	Light1.Intensity = 500.0;
+	Light1.Visible = true;
 }
+	

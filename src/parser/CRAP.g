@@ -134,6 +134,7 @@ atom    :   variable
         |   NUMBER
         |   VEC^ '('! expr_list ')'!
 	|   prefabCreation
+	|   RAND
         //|   (ID '[' expr ']') -> ^(ARR_ACCESS[$ID,"ARR_ACCESS"] ID expr)
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcCall
@@ -170,6 +171,7 @@ NEW     : 'new' ;
 READ    : 'read' ;
 WRITE   : 'write' ;
 PRINT   : 'print' ;
+RAND    : 'rand()' ;
 DUMP    : 'dump';
 TRUE    : 'true' ;
 FALSE   : 'false';

@@ -44,20 +44,20 @@ public class Camera
 	public void Update()
 	{
 		float rotSpeed = 1.0f;
-		if ( glfwGetKey(Main.window, GLFW_KEY_W) > 0 )
+		if ( glfwGetKey(Main.window, GLFW_KEY_W) == 1)
 		{
 			rotationX += rotSpeed;
 		}
-		else if ( glfwGetKey(Main.window, GLFW_KEY_S) > 0 )
+		if ( glfwGetKey(Main.window, GLFW_KEY_S) == 1)
 		{
 			rotationX -= rotSpeed;
 		}
 		
-		if ( glfwGetKey(Main.window, GLFW_KEY_A) > 0 )
+		if ( glfwGetKey(Main.window, GLFW_KEY_A) == 1)
 		{
 			rotationY += rotSpeed;
 		}
-		else if ( glfwGetKey(Main.window, GLFW_KEY_D) > 0 )
+		if ( glfwGetKey(Main.window, GLFW_KEY_D) == 1)
 		{
 			rotationY -= rotSpeed;
 		}

@@ -588,6 +588,10 @@ public class Interp {
 			value = new Data();
 			value.setType(Data.Type.OBJECT);
 			break;
+		case CRAPLexer.RAND:
+			Random r = new Random();
+			value = new Data(r.nextFloat());
+			break;
 		case CRAPLexer.VEC:
 			int nValues = Integer.parseUnsignedInt(t.getText().substring(3));
 			float[] values = new float[nValues];
