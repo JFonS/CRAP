@@ -88,7 +88,23 @@ public class Interp {
 		assert T != null;
 		stack = new Stack(); // Creates the memory of the virtual machine
 		stack.pushActivationRecord("__global", 0);
-		stack.defineVariable("Camera", Camera.GetInstance());
+		Data light0 = new Data(), light1 = new Data(), light2 = new Data();
+		light0.ConvertToObject(); light1.ConvertToObject(); light2.ConvertToObject();
+		light0.setProperty("Primitive", new Data("Light"));
+		light1.setProperty("Primitive", new Data("Light"));
+		light2.setProperty("Primitive", new Data("Light"));
+		stack.defineVariable("Light0", light0);
+		stack.defineVariable("Light1", light1);
+		stack.defineVariable("Light2", light2);
+		light0.setProperty("Visible", new Data(false));
+		light1.setProperty("Visible", new Data(false));
+		light2.setProperty("Visible", new Data(false));
+		light0.setProperty("Range", new Data(1.0f));
+		light1.setProperty("Range", new Data(1.0f));
+		light2.setProperty("Range", new Data(1.0f));
+		light0.setProperty("Intensity", new Data(64.0f));
+		light1.setProperty("Intensity", new Data(64.0f));
+		light2.setProperty("Intensity", new Data(64.0f));
 
 		MapFunctions(T); // Creates the table to map function names into AST
 							// nodes
@@ -627,24 +643,7 @@ public class Interp {
 			break;
 		case CRAPLexer.NEW:
 			value = new Data();
-
-			Data prop = new Data(new Vec(3, 0.0f));
-			value.setProperty("Position", prop);
-
-			prop = new Data(new Vec(3, 0.0f));
-			value.setProperty("Rotation", prop);
-
-			prop = new Data(new Vec(3, 1.0f));
-			value.setProperty("Scale", prop);
-
-			prop = new Data(new Vec(3, 1.0f));
-			value.setProperty("Color", prop);
-
-			prop = new Data(true);
-			value.setProperty("Visible", prop);
-
-			prop = new Data("Sphere");
-			value.setProperty("Primitive", prop);
+			value.ConvertToObject();
 			
 			CRAPTree funcCall = t.getChild(0);
 			

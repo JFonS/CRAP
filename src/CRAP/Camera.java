@@ -19,7 +19,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Camera extends Data
+public class Camera
 {
 	static float rotationX = 0.0f;
 	static float rotationY = 0.0f;

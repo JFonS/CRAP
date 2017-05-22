@@ -37,8 +37,7 @@ public class ObjectRenderer {
 		Vec color = object.getProperty("Color").getVecValue();
 		
 		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		Camera.GetInstance().LoadView();
+		glPushMatrix();
 		ApplyObjectTransform(object);
 		
 		switch ( object.getProperty("Primitive").getStringValue() )
@@ -53,6 +52,7 @@ public class ObjectRenderer {
 		}
 		
 		glEnd();
+		glPopMatrix();
 		//System.out.println( object + ": " + (System.nanoTime() - time) ); time = System.nanoTime();
 	}
 
@@ -66,6 +66,8 @@ public class ObjectRenderer {
 	
 	private static void SetMaterial(Vec color)
 	{
+		glMaterialfv(GL_FRONT, GL_AMBIENT, 
+			     new float[]{color.Get(0) * 0.5f, color.Get(1) * 0.5f, color.Get(2) * 0.5f, 1});
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
 				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
 	}

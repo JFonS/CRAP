@@ -10,10 +10,9 @@ function CreateCube(n, parent)
 
 prefab Cube(n)
 {
-	print "IN CUBE " .. n;
 	if (n = 0)
 	{
-		this.Primitive = "Cube";
+		this.Primitive = "Sphere";
 		this.Color = vec3(1,0.3,0);
 	}
 	else
@@ -39,7 +38,8 @@ prefab Cube(n)
 		this[6].Position = vec3( d,  d, -d);
 		this[7].Position = vec3( d,  d,  d);
 	}
-
+	
+	if (n = 5) { return; }
 	key<<0.0>>
 	{
 		if (n % 3 = 0) { SpinX<<10>>(this); }
@@ -84,4 +84,21 @@ timeline SpinZ(obj)
 timeline Main()
 {
 	root = new Cube(5);
+	
+	Light0.Position = vec3(0,0,0);
+	Light0.Color = vec3(1,1,1);
+	Light0.Range = 5.0; 
+	//Light0.Visible = true;
+
+	Light1.Position = vec3(2,0,0);
+	Light1.Color = vec3(0.5,1,0.5);
+	Light1.Range = 5.0; 
+	//Light1.Visible = true;
+
+	//Light2.Primitive = "Sphere";
+	Light2.Position = vec3(0,1.5,0);
+	Light2.Color = vec3(0.5,0.5,1.0);
+	Light2.Range = 2.0; 
+	Light2.Intensity = 10.0;
+	Light2.Visible = true;
 }

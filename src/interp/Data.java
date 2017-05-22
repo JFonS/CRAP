@@ -140,6 +140,27 @@ public class Data {
         return str;
     }
 
+    public void ConvertToObject()
+    {
+		Data prop = new Data(new Vec(3, 0.0f));
+		setProperty("Position", prop);
+
+		prop = new Data(new Vec(3, 0.0f));
+		setProperty("Rotation", prop);
+
+		prop = new Data(new Vec(3, 1.0f));
+		setProperty("Scale", prop);
+
+		prop = new Data(new Vec(3, 1.0f));
+		setProperty("Color", prop);
+
+		prop = new Data(true);
+		setProperty("Visible", prop);
+
+		prop = new Data("Sphere");
+		setProperty("Primitive", prop);
+    }
+    
     public Vec getVecValue() 
     {
     	assert type == Type.VEC;
