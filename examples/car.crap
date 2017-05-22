@@ -113,6 +113,15 @@ timeline MoveCar(car)
 	}
 }
 
+timeline MoveBack(obj)
+{
+	key <<1.0>>
+	{
+		obj.Position.x -> obj.Position.x - 8.0;
+		MoveBack<<1.0>>(obj);
+	}
+}
+
 timeline Main()
 {
         car = new Car( vec3(1,0,0) );
@@ -122,6 +131,19 @@ timeline Main()
         Light0.Range = 1000.0;
         Light0.Intensity = 500.0;
         Light0.Visible = true;
+	
+	n = 0;
+	while (n < 200)
+	{
+		cube = new Object();
+		cube.Primitive = "Cube";
+		if (n%2 = 0) { cube.Color = vec3(0.1); }
+		else { cube.Color = vec3(1.0); }
+		cube.Position = vec3(n*4-10, -1.7, 0.0);
+		cube.Scale = vec3(2.0, 0.2, 10.0);
+		MoveBack<<1.0>>(cube);
+		n = n + 1;
+	}
 
 	MoveCar[[1.0]](car);
 }
