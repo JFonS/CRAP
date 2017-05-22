@@ -1,5 +1,12 @@
 global root;
 
+function CreateCube(n, parent)
+{
+	c = new Cube(n);
+	c.Scale = vec3(0.45);
+	c.Parent = parent;
+	return c;
+}
 
 prefab Cube(n)
 {
@@ -7,58 +14,75 @@ prefab Cube(n)
 	if (n = 0)
 	{
 		this.Primitive = "Cube";
+		this.Color = vec3(1,0.3,0);
 	}
 	else
 	{
 		this.Primitive = "Empty";
 
-		this[0] = new Cube(n-1);
-		this[0].Scale = vec3(0.4);
-		this[0].Position = vec3(-0.3, -0.3, -0.3);
-		this[0].Parent = this;
+		this[0] = CreateCube(  0, this);
+		this[1] = CreateCube(n-1, this);
+		this[2] = CreateCube(n-1, this);
+		this[3] = CreateCube(  0, this);
+		this[4] = CreateCube(n-1, this);
+		this[5] = CreateCube(  0, this);
+		this[6] = CreateCube(  0, this);
+		this[7] = CreateCube(n-1, this);
+		
+		d = 0.55;
+		this[0].Position = vec3(-d, -d, -d);
+		this[1].Position = vec3(-d, -d,  d);
+		this[2].Position = vec3(-d,  d, -d);
+		this[3].Position = vec3(-d,  d,  d);
+		this[4].Position = vec3( d, -d, -d);
+		this[5].Position = vec3( d, -d,  d);
+		this[6].Position = vec3( d,  d, -d);
+		this[7].Position = vec3( d,  d,  d);
+	}
 
-		this[1] = new Cube(n-1);
-		this[1].Scale = vec3(0.4);
-		this[1].Position = vec3(-0.3, -0.3,  0.3);
-		this[1].Parent = this;
-
-		this[2] = new Cube(n-1);
-		this[2].Scale = vec3(0.4);
-		this[2].Position = vec3(-0.3,  0.3, -0.3);
-		this[2].Parent = this;
-
-		this[3] = new Cube(n-1);
-		this[3].Scale = vec3(0.4);
-		this[3].Position = vec3(-0.3,  0.3,  0.3);
-		this[3].Parent = this;
-
-		this[4] = new Cube(n-1);
-		this[4].Scale = vec3(0.4);
-		this[4].Position = vec3( 0.3, -0.3, -0.3);
-		this[4].Parent = this;
-
-		this[5] = new Cube(n-1);
-		this[5].Scale = vec3(0.4);
-		this[5].Position = vec3( 0.3, -0.3,  0.3);
-		this[5].Parent = this;
-
-		this[6] = new Cube(n-1);
-		this[6].Scale = vec3(0.4);
-		this[6].Position = vec3( 0.3,  0.3, -0.3);
-		this[6].Parent = this;
-
-		this[7] = new Cube(n-1);
-		this[7].Scale = vec3(0.4);
-		this[7].Position = vec3( 0.3,  0.3,  0.3);
-		this[7].Parent = this;
+	key<<0.0>>
+	{
+		if (n % 3 = 0) { SpinX<<10>>(this); }
+		if (n % 3 = 1) { SpinY<<10>>(this); }
+		if (n % 3 = 2) { SpinZ<<10>>(this); }
 	}
 }
 
+timeline SpinX(obj)
+{
+	obj.Rotation.x = 0;
+
+	key<<1.0>> 
+	{
+		obj.Rotation.x -> 360;
+		SpinY<<1.0>>(obj);
+	}
+}
+
+timeline SpinY(obj)
+{
+	obj.Rotation.y = 0;
+
+	key<<1.0>> 
+	{
+		obj.Rotation.y -> 360;
+		SpinZ<<1.0>>(obj);
+	}
+}
+
+timeline SpinZ(obj)
+{
+	obj.Rotation.z = 0;
+
+	key<<1.0>> 
+	{
+		obj.Rotation.z -> 360;
+		SpinX<<1.0>>(obj);
+	}
+}
 
 timeline Main()
 {
-	root = new Cube(1);
-
-	root.Position = vec3(0,0.3,-1.5);
-	root.Rotation = vec3(0,35,0);
+	root = new Cube(5);
+	root.Position = vec3(0, 0.35, -3.5);
 }

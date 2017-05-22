@@ -88,7 +88,7 @@ public class Main
     {
         GL.createCapabilities();
         
-        glClearColor(0.0f,1.0f, 0.0f, 0.0f);
+        glClearColor(0.3f,0.3f, 0.3f, 0.0f);
         while ( !glfwWindowShouldClose(window) ) 
         {
         	Update();
@@ -122,8 +122,8 @@ public class Main
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-2,1});
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-1,1});
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0,1,1,1});
 		
     	HashSet<Data> aliveDatas = GetAliveDatas();
     	for (Data data : aliveDatas)
