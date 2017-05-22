@@ -1,6 +1,8 @@
 package CRAP;
 
 import org.lwjgl.*;
+
+import static org.lwjgl.system.MemoryUtil.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
@@ -24,6 +26,14 @@ public class Camera
 	static float rotationX = 0.0f;
 	static float rotationY = 0.0f;
 	static float zoom = -5.0f;
+	static boolean mouseLocked = false;
+	
+	static double newX = 0;
+    static double newY = 0;
+
+    static double prevX = 0;
+    static double prevY = 0;
+    static int width, height;
 	
 	public Camera()
 	{
@@ -44,7 +54,55 @@ public class Camera
 	
 	public void Update()
 	{
-		float rotSpeed = 1.0f;
+		IntBuffer pWidth = memAllocInt(1); // int*
+		IntBuffer pHeight = memAllocInt(1); // int*
+		
+		glfwGetWindowSize(Main.window, pWidth, pHeight);
+		
+		width = pWidth.get(0);
+		height = pHeight.get(0);
+		
+		float rotSpeed = 0.3f;
+		if (glfwGetMouseButton(Main.window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+            glfwSetCursorPos(Main.window, width/2, height/2);
+            glfwSetInputMode(Main.window,GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            mouseLocked = true;
+        }
+
+        if (mouseLocked){
+            DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
+            DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
+
+            glfwGetCursorPos(Main.window, x, y);
+            x.rewind();
+            y.rewind();
+
+            newX = x.get();
+            newY = y.get();
+
+            double deltaX = newX - width/2;
+            double deltaY = newY - height/2;
+
+            if(newX != prevX) {
+            	rotationY += rotSpeed*deltaX;
+
+            }
+            if( newY != prevY) {
+            	rotationX += rotSpeed*deltaY;
+            }
+
+            prevX = newX;
+            prevY = newY;
+
+            glfwSetCursorPos(Main.window, width/2, height/2);
+            
+            if (glfwGetKey(Main.window, GLFW_KEY_ESCAPE) == 1)
+            {
+            	glfwSetInputMode(Main.window,GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            	mouseLocked = false;
+            }
+        }
+        
 		if ( glfwGetKey(Main.window, GLFW_KEY_W) == 1)
 		{
 			rotationX += rotSpeed;
@@ -63,6 +121,8 @@ public class Camera
 			rotationY -= rotSpeed;
 		}
 		
+        
+        
 		glfwSetScrollCallback(Main.window, new GLFWScrollCallbackI() {
 		    @Override
 		    public void invoke(long window, double xoffset, double yoffset) {

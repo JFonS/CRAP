@@ -99,7 +99,7 @@ public class Main {
 						"      Idiff = clamp(Idiff, 0.0, 1.0); \n" +
 
 						"      // calculate Specular Term:\n" +
-						"      vec4 Ispec = vec4(0.03) \n" +
+						"      vec4 Ispec = vec4(0.001) \n" +
 						"             * pow(max(dot(R,E),0.0),0.3*1.0);\n" +
 						"      Ispec = clamp(Ispec, 0.0, 1.0); \n" +
 
