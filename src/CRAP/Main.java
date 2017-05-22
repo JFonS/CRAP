@@ -63,18 +63,20 @@ public class Main {
 	private static void InitShaders() {
 		
 		String vertSource = "varying vec3 vN;\n" +
-				"varying vec3 v;\n" +
+							"varying vec3 v;\n" +
+							//"uniform vec4 c;\n" +
 
-				"void main(void) {\n" +
-					"v = vec3(gl_ModelViewMatrix * gl_Vertex);\n" +       
-					"vN = normalize(gl_NormalMatrix * gl_Normal);\n" +
-
-						"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n" +
-				"}";
+							"void main(void) {\n" +
+								"v = vec3(gl_ModelViewMatrix * gl_Vertex);\n" +       
+								"vN = normalize(gl_NormalMatrix * gl_Normal);\n" +
+								//"c = gl_Color;\n" +
+								"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n" +
+							"}";
 		
 		String fragSource = 
 						"varying vec3 vN;\n" +
-						"varying vec3 v; \n" +
+						"varying vec3 v;\n" +
+						"uniform vec4 c;\n" +
 
 						"#define MAX_LIGHTS 3 \n" +
 
@@ -90,22 +92,22 @@ public class Main {
 						"      vec3 R = normalize(-reflect(L,N)); \n" +
 
 						"      //calculate Ambient Term: \n" +
-						"      vec4 Iamb = gl_FrontLightProduct[i].ambient; \n" +
+						"      vec4 Iamb = c * 0.1; \n" +
 
 						"      //calculate Diffuse Term: \n" +
-						"      vec4 Idiff = gl_FrontLightProduct[i].diffuse * max(dot(N,L), 0.0);\n" +
+						"      vec4 Idiff = c * max(dot(N,L), 0.0);\n" +
 						"      Idiff = clamp(Idiff, 0.0, 1.0); \n" +
 
 						"      // calculate Specular Term:\n" +
-						"      vec4 Ispec = gl_FrontLightProduct[i].specular \n" +
-						"             * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);\n" +
+						"      vec4 Ispec = vec4(0.03) \n" +
+						"             * pow(max(dot(R,E),0.0),0.3*1.0);\n" +
 						"      Ispec = clamp(Ispec, 0.0, 1.0); \n" +
 
 						"      finalColor += Iamb + Idiff + Ispec;\n" +
 						"   }\n" +
 
 						"   // write Total Color: \n" +
-						"   gl_FragColor = gl_FrontLightModelProduct.sceneColor + finalColor; \n" +
+						"   gl_FragColor = finalColor; \n" +
 						"}\n";
 		
 		int vertShader = 0, fragShader = 0;
@@ -190,8 +192,10 @@ public class Main {
 		glEnable(GL_LIGHTING);
 		glEnable(GL_NORMALIZE);
 		glEnable(GL_DEPTH_TEST);
-		// glEnable(GL_COLOR_MATERIAL);
-		glShadeModel(GL_SMOOTH);
+
+		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+		glEnable(GL_COLOR_MATERIAL);
+		//glShadeModel(GL_SMOOTH);
 
 
 		glClearColor(0.3f, 0.3f, 0.3f, 0.0f);

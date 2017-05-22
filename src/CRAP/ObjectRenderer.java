@@ -3,7 +3,7 @@ package CRAP;
 
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.ARBShaderObjects;
-
+import org.lwjgl.opengl.GL20;
 
 import interp.Data;
 
@@ -69,10 +69,16 @@ public class ObjectRenderer {
 	
 	private static void SetMaterial(Vec color)
 	{
-		glMaterialfv(GL_FRONT, GL_AMBIENT, 
+		GL20.glUniform4f(GL20.glGetUniformLocation(Main.programID, "c"), color.Get(0), color.Get(1), color.Get(2), 1.0f);
+		
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, 
 			     new float[]{color.Get(0) * 0.5f, color.Get(1) * 0.5f, color.Get(2) * 0.5f, 1});
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, 
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, 
 				     new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, new float[]{color.Get(0) * 0.5f, color.Get(1) * 0.5f, color.Get(2) * 0.5f, 1});
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, new float[]{color.Get(0), color.Get(1), color.Get(2), 1});
+		
+		glColor4f(color.Get(0), color.Get(1), color.Get(2), 1.0f);
 	}
 	
 	private static void DrawSphere(double r, int lats, int longs, Vec color) {
@@ -87,8 +93,9 @@ public class ObjectRenderer {
 			double z1 = Math.sin(lat1);
 			double zr1 = Math.cos(lat1);
 
-			glBegin(GL_QUAD_STRIP);
 			SetMaterial(color);
+			
+			glBegin(GL_QUAD_STRIP);
 			for (j = 0; j <= longs; j++) {
 				double lng = 2 * Math.PI * (double) (j - 1) / longs;
 				double x = Math.cos(lng);
@@ -111,9 +118,10 @@ public class ObjectRenderer {
 		float angle          = 0.0f;
 		float angle_stepsize = 0.1f;
 		
+		SetMaterial(color);
+		
 		/** Draw the tube */
 		glBegin(GL_QUAD_STRIP);
-		SetMaterial(color);
 		angle = 0.0f;
 		 while( angle < 2*Math.PI) {
 		     x = (float) (radius * Math.cos(angle));
@@ -144,7 +152,6 @@ public class ObjectRenderer {
 
 		/** Draw the circle on bot of cylinder */
 		glBegin(GL_POLYGON);
-		SetMaterial(color);
 		angle = 0.0f;
 		while( angle < 2*Math.PI ) {
 		     x = (float) (radius * Math.cos(angle));
@@ -159,8 +166,8 @@ public class ObjectRenderer {
 	
 	private static void DrawCube(float side, Vec color)
 	{
+	   SetMaterial(color);
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		 glNormal3f(0.0f, 0.0f, 1.0f);
 	     glVertex3f(side,side,side);
 	     glVertex3f(-side,side,side);
@@ -169,7 +176,6 @@ public class ObjectRenderer {
 	   glEnd();
 
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		 glNormal3f(1.0f, 0.0f, 0.0f);
 	     glVertex3f(side,side,side);
 	     glVertex3f(side,-side,side);
@@ -178,7 +184,6 @@ public class ObjectRenderer {
 	   glEnd();
 	   
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		glNormal3f(0.0f, 0.0f, -1.0f);
 	     glVertex3f(side,side,-side);
 	     glVertex3f(side,-side,-side);
@@ -187,7 +192,6 @@ public class ObjectRenderer {
 	   glEnd();
 
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		 glNormal3f(-1.0f, 0.0f, 0.0f);
 	     glVertex3f(-side,side,side);
 	     glVertex3f(-side,side,-side);
@@ -196,7 +200,6 @@ public class ObjectRenderer {
 	   glEnd();
 
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		 glNormal3f(0.0f, 1.0f, 0.0f);
 	     glVertex3f(side,side,side);
 	     glVertex3f(side,side,-side);
@@ -205,7 +208,6 @@ public class ObjectRenderer {
 	   glEnd();
 	   
 	   glBegin(GL_POLYGON);
-		SetMaterial(color);
 		 glNormal3f(0.0f, -1.0f, 0.0f);
 	     glVertex3f(side,-side,side);
 	     glVertex3f(-side,-side,side);
