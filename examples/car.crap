@@ -1,4 +1,11 @@
 
+prefab Stone()
+{
+	this.Primitive = "Sphere";
+	this.Color = vec3(0.6);
+	this.Scale = vec3(1.0);
+}
+
 prefab Window()
 {
 	this.Primitive = "Cube";
@@ -80,10 +87,13 @@ prefab Car(carColor)
 	this.Window6.Position = vec3(-1.1, 0.45, 0.0);
 
 	this.CLight0 = new CarLight();
+	this.CLight0.Parent = this;
 	this.CLight0.Position = vec3(1.9, -0.3, 0.6);
 	this.CLight1 = new CarLight();
+	this.CLight1.Parent = this;
 	this.CLight1.Position = vec3(1.9, -0.3, -0.6);
 	this.Matricula = new Object();
+	this.Matricula.Parent = this;
 	this.Matricula.Primitive = "Cube";
 	this.Matricula.Scale = vec3(0.2, 0.1, 0.5);
 	this.Matricula.Position = vec3(1.9, -0.7, 0.0);
@@ -105,6 +115,44 @@ prefab Car(carColor)
 	this.wheel3.Position = vec3(1,-1,0.75);
 }
 
+timeline Spin(car)
+{
+	car.Rotation.x = 0.0;
+	key<<1.0>>
+	{
+		car.Rotation.x -> 360.0;
+	}
+}
+
+timeline Fall(car, finalY)
+{
+	key<<1.0>> BounceOut
+	{
+		car.Position.y -> finalY;
+	}
+}
+
+timeline StretchCar(car, finalScale)
+{
+	key<<1.0>> BounceOut
+	{
+		car.Scale.z -> finalScale;
+	}
+}
+
+timeline JumpCar(car, finalY)
+{
+	key<<0.5>> Sine
+	{
+		car.Position.y -> 10.0;
+	}
+
+	key<<1.0>> SineIn
+	{
+		car.Position.y -> finalY;
+	}
+}
+
 timeline MoveCar(car)
 {
 	key <<1.0>>
@@ -117,7 +165,7 @@ timeline MoveBack(obj)
 {
 	key <<1.0>>
 	{
-		obj.Position.x -> obj.Position.x - 8.0;
+		obj.Position.x -> obj.Position.x - 20.0;
 		MoveBack<<1.0>>(obj);
 	}
 }
@@ -133,7 +181,7 @@ timeline Main()
         Light0.Visible = true;
 	
 	n = 0;
-	while (n < 200)
+	while (n < 400)
 	{
 		cube = new Object();
 		cube.Primitive = "Cube";
@@ -145,6 +193,49 @@ timeline Main()
 		n = n + 1;
 	}
 
+	obst1 = new Object();
+	obst1.Primitive = "Cube";
+	obst1.Color = vec3(0, 1, 0);
+	obst1.Position = vec3(80, 1, 0);
+	obst1.Scale = vec3(2.0, 2.9, 9.0);
+	MoveBack<<1.0>>(obst1);
+
+	obst2 = new Object();
+	obst2.Primitive = "Cube";
+	obst2.Color = vec3(0, 1, 0);
+	obst2.Position = vec3(160, 1, 0);
+	obst2.Scale = vec3(20.0, 2.9, 9.0);
+	MoveBack<<1.0>>(obst2);
+
+	obst3 = new Object();
+	obst3.Primitive = "Cube";
+	obst3.Color = vec3(0, 1, 0);
+	obst3.Position = vec3(350, 0, -1.5);
+	obst3.Scale = vec3(20.0, 1.5, 1.0);
+	MoveBack<<1.0>>(obst3);
+
+	obst4 = new Object();
+	obst4.Primitive = "Cube";
+	obst4.Color = vec3(0, 1, 0);
+	obst4.Position = vec3(350, 0, 1.5);
+	obst4.Scale = vec3(20.0, 1.5, 1.0);
+	MoveBack<<1.0>>(obst4);
+
+	n = 0;
+	while (n < 3)
+	{
+		stone = new Stone();
+		stone.Position = vec3(-5.0, 10.0, 0.0);
+		key [[10.0 + n]] { Fall[[0.8]](stone, 0.0); }
+		n = n + 1;
+	}
+
+	key [[3.6]] { JumpCar[[0.8]](car, 0.0); } 
+	key [[6.5]] { JumpCar[[0.8]](car, 5.5); } 
+	key [[6.5]] { Spin[[0.8]](car); } 
+	key [[9.0]] { Fall[[0.8]](car, 0.0); } 
+	key [[16.0]] { StretchCar[[1.0]](car, 0.1); } 
+	key [[19.0]] { StretchCar[[1.0]](car, 1.0); } 
 	MoveCar[[1.0]](car);
 }
 
