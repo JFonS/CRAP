@@ -3,14 +3,21 @@ global satellite;
 global s2;
 global n;
 
-//prefab Car()
-//{
-//	this.Position = vec3(0);
-//	while (n < 20) {
-//		wheel = new Wheel();
-//		wheel.Parent = this;
-//	}
-//}
+prefab Wheel()
+{
+	this.Primitive = "Sphere";
+}
+
+prefab Car()
+{
+	this.Position = vec3(0);
+	while (n < 3) 
+	{
+		wheel = new Wheel();
+		wheel.Parent = this;
+		n = n + 1;
+	}
+}
 
 timeline MoveCarForward(&obj, m) 
 {
@@ -52,19 +59,19 @@ timeline Animate(&obj)
 timeline Main()
 {	
 	n = 1;
-	car = new Car;
+	car = new Car();
 	car.Position.z = -10;
 	car.Primitive = "Cube";
 	car.advance = true;
 	
-	satellite = new Car;
+	satellite = new Car();
 	satellite.Position.x = 4;
 	satellite.Parent = car;
 	
-    s2 = new Mandonguilla;
-    s2.Parent = satellite;
-    s2.Primitive = "Cube";
-    s2.Position.z = 2;
+	s2 = new Car();
+	s2.Parent = satellite;
+	s2.Primitive = "Cube";
+	s2.Position.z = 2;
 
 	Animate [[2.0]](car);
 	car.Position.x = -3; 

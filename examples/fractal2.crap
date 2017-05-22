@@ -84,5 +84,4 @@ timeline SpinZ(obj)
 timeline Main()
 {
 	root = new Cube(5);
-	root.Position = vec3(0, 0.35, -3.5);
 }

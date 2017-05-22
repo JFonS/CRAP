@@ -20,7 +20,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main 
 {
-    private static long window;
+    public static long window;
     
 	public static void main(String[] args) throws Exception
 	{
@@ -91,19 +91,9 @@ public class Main
         glClearColor(0.3f,0.3f, 0.3f, 0.0f);
         while ( !glfwWindowShouldClose(window) ) 
         {
+        	Camera.GetInstance().Update();
         	Update();
         }
-    }
-    
-    private static void perspectiveGL(float fovY, float aspect, float zNear, float zFar )
-    {
-        float pi = 3.141592f;
-        float fW, fH;
-
-        fH = (float) Math.tan( fovY / 360 * pi ) * zNear;
-        fW = fH * aspect;
-
-        glFrustum( -fW, fW, -fH, fH, zNear, zFar );
     }
     
     private static void Update()
@@ -114,7 +104,7 @@ public class Main
         // Camera
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		perspectiveGL(60.0f, 1.0f, 0.1f, 1000.0f);
+		Camera.GetInstance().LoadProjection();
 
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
@@ -122,8 +112,8 @@ public class Main
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-1,1});
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0,1,1,1});
+		glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0,0,-2,1});
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{1,1,1,1});
 		
     	HashSet<Data> aliveDatas = GetAliveDatas();
     	for (Data data : aliveDatas)

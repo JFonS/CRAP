@@ -26,7 +26,7 @@ prefab Car()
 {
       n = 0;
       this.Primitive = "Cube";
-      this.Position = vec3(0, 0, -15);
+      this.Position = vec3(0, 0, 0);
       print "car: " .. this;
       while (n < 4) {
               // wheel = new Wheel(n);

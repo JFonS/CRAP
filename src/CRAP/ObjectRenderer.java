@@ -4,6 +4,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GLUtil;
+
 import interp.Data;
 
 public class ObjectRenderer {
@@ -36,7 +38,7 @@ public class ObjectRenderer {
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
+		Camera.GetInstance().LoadView();
 		ApplyObjectTransform(object);
 		
 		switch ( object.getProperty("Primitive").getStringValue() )

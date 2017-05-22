@@ -88,6 +88,7 @@ public class Interp {
 		assert T != null;
 		stack = new Stack(); // Creates the memory of the virtual machine
 		stack.pushActivationRecord("__global", 0);
+		stack.defineVariable("Camera", Camera.GetInstance());
 
 		MapFunctions(T); // Creates the table to map function names into AST
 							// nodes
@@ -493,9 +494,6 @@ public class Interp {
 			return null;
 		}
 		case CRAPLexer.DUMP: {
-			
-			
-			
 			System.out.println("####### STACK CONTENTS ######");
 			if (t.getChildCount() == 1) {
 				CRAPTree v = t.getChild(0);
