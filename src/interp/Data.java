@@ -313,8 +313,16 @@ public class Data {
      */
     public Data evaluateRelational (int op, Data d) {
 
-        if (this.type == Type.NUMBER && d.type == Type.NUMBER)
+    	if (this.type == Type.VEC && d.type == Type.VEC)
         {
+	        switch (op) {
+	            case CRAPLexer.EQUAL: return new Data(vec.Equals(d.vec));
+	            case CRAPLexer.NOT_EQUAL: return new Data(!vec.Equals(d.vec));
+	            default: assert false; 
+	        }
+        }
+    	else
+    	{
 	        switch (op) {
 	            case CRAPLexer.EQUAL: return new Data(value == d.value);
 	            case CRAPLexer.NOT_EQUAL: return new Data(value != d.value);
@@ -324,15 +332,8 @@ public class Data {
 	            case CRAPLexer.GE: return new Data(value >= d.value);
 	            default: assert false; 
 	        }
-        }
-        else if (this.type == Type.NUMBER && d.type == Type.NUMBER)
-        {
-	        switch (op) {
-	            case CRAPLexer.EQUAL: return new Data(vec.Equals(d.vec));
-	            case CRAPLexer.NOT_EQUAL: return new Data(!vec.Equals(d.vec));
-	            default: assert false; 
-	        }
-        }
+    	}
+ 
         return null;
     }
 }
