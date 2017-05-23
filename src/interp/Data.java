@@ -271,6 +271,7 @@ public class Data {
 	            case CRAPLexer.MINUS: value -= d.value; break;
 	            case CRAPLexer.MUL:   value *= d.value; break;
 	            case CRAPLexer.DIV:   checkDivZero(d); value /= d.value; break;
+	            case CRAPLexer.IDIV:  checkDivZero(d); value = ((int)value)/((int)d.value); break;
 	            case CRAPLexer.MOD:   checkDivZero(d); value %= d.value; break;
 	            default: assert false;
 	        }

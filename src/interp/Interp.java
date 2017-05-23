@@ -725,6 +725,7 @@ public class Interp {
 		case CRAPLexer.MUL:
 		case CRAPLexer.DIV:
 		case CRAPLexer.MOD:
+		case CRAPLexer.IDIV:
 			value2 = evaluateExpression(t.getChild(1));
 			value.evaluateArithmetic(type, value2);
 			break;

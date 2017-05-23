@@ -121,7 +121,7 @@ boolfact:   num_expr ((EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?;
 
 num_expr:   term ( (PLUS^ | MINUS^) term)*;
 
-term    :   factor ( (MUL^ | DIV^ | MOD^) factor)*;
+term    :   factor ( (MUL^ | DIV^ | IDIV^ | MOD^) factor)*;
 factor  :   (NOT^ | PLUS^ | MINUS^)? atom;
 
 variableIndex: '[' expr ']' -> ^(ARR_INDEX expr);
@@ -156,6 +156,7 @@ PLUS    : '+' ;
 MINUS   : '-' ;
 MUL     : '*';
 DIV     : '/';
+IDIV    : ':/';
 MOD     : '%' ;
 EMPTYOBJ: '{' '}';
 NOT     : 'not';

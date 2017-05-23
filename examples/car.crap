@@ -181,28 +181,11 @@ timeline MoveBack(obj)
 	}
 }
 
-prefab CarAnimation(createMultipleCars)
+prefab CarAnimation()
 {
 	this.Primitive = "Empty";
-
-	if (createMultipleCars)
-	{
-		i = 0;
-		while (i < 5)
-		{
-			this["car"..i] = new Car();
-			this["car"..i].Parent = this; 
-			posZ = -6 + i * 3;
-			this["car"..i].Position = vec3(0, -i*0.5, posZ);
-			this["car"..i].Scale = vec3(1.0/(i/2.0+1));
-			i = i + 1;
-		}
-	}
-	else
-	{
-		this.car = new Car();
-		this.car.Parent = this; 
-	}
+	this.car = new Car();
+	this.car.Parent = this;
 
         Light0.Position = vec3(10.0, 10.0, 10.0);
         Light0.Color = vec3(1.0, 1.0, 1.0);
@@ -268,18 +251,27 @@ prefab CarAnimation(createMultipleCars)
 	}
 }
 
-global anim1;
-global anim2;
+global anims;
 global carColor;
 
 timeline Animation()
 {
-	carColor = vec3(1,0,0);
-	anim1 = new CarAnimation(false);
+	anims = new Object();
+	anims.Primitive = "Empty";
 
-	carColor = vec3(0,0,1);
-	anim2 = new CarAnimation(true);
-	anim2.Position = vec3(0, 0, -15);
+	n = 0;
+	numCars = 5;
+	while (n < numCars)
+	{
+		r = n%2; 
+		g = (n:/2)%2;
+		b = (n:/4)%2; 
+		carColor = vec3(r,g,b);
+		anims[n] = new CarAnimation();
+		anims[n].Parent = anims;
+		anims[n].Position = vec3(0, 0, n * -15);
+		n = n + 1;
+	}
 }
 
 timeline Main()
