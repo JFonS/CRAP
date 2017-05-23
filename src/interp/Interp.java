@@ -288,11 +288,13 @@ public class Interp {
 		return executeFunction(funcName, args, null, null);
 	}
 
-	public Data executeTimeline(Timeline timeline) {
+	public Data executeTimeline(Timeline timeline) 
+	{
 		timeScopeStartAbs = timeline.GetStartTimeAbs();
 		timeScopeFinishAbs = timeline.GetFinishTimeAbs();
 
-		return executeFunction(timeline.GetName(), null, timeline, null);
+		Data d = executeFunction(timeline.GetName(), null, timeline, null);
+		return d;
 	}
 
 	/**

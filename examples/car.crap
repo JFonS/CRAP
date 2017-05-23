@@ -52,7 +52,7 @@ prefab Wheel()
 	RotWheel<<1.0>>(this);
 }
 
-prefab Car(carColor)
+prefab Car()
 {
 	this.UpperPart = new Object();
 	this.UpperPart.Color = carColor;
@@ -113,6 +113,14 @@ prefab Car(carColor)
 	this.wheel3 = new Wheel();
 	this.wheel3.Parent = this;
 	this.wheel3.Position = vec3(1,-1,0.75);
+
+	key <<3.6>> { JumpCar<<0.8>>(this, 0.0); } 
+	key <<6.5>> { JumpCar<<0.8>>(this, 5.5); } 
+	key <<6.5>> { Spin<<0.8>>(this); } 
+	key <<9.0>> { Fall<<0.8>>(this, 0.0, false); } 
+	key <<16.0>> { StretchCar<<1.0>>(this, 0.1); } 
+	key <<19.0>> { StretchCar<<1.0>>(this, 1.0); } 
+	key <<0.0>> { MoveCar<<1.0>>(this); }
 }
 
 timeline Spin(car)
@@ -124,11 +132,14 @@ timeline Spin(car)
 	}
 }
 
-timeline Fall(car, finalY)
+timeline UnVisible(obj) { key<<0.0>>{ obj.Visible = false; } }
+timeline Fall(obj, finalY, invisibleAtEnd)
 {
+  	obj.Visible = true;	
 	key<<1.0>> BounceOut
 	{
-		car.Position.y -> finalY;
+		obj.Position.y -> finalY;
+		if (invisibleAtEnd) { UnVisible[[1.0]](obj); }
 	}
 }
 
@@ -170,9 +181,28 @@ timeline MoveBack(obj)
 	}
 }
 
-timeline Main()
+prefab CarAnimation(createMultipleCars)
 {
-        car = new Car( vec3(1,0,0) );
+	this.Primitive = "Empty";
+
+	if (createMultipleCars)
+	{
+		i = 0;
+		while (i < 5)
+		{
+			this["car"..i] = new Car();
+			this["car"..i].Parent = this; 
+			posZ = -6 + i * 3;
+			this["car"..i].Position = vec3(0, -i*0.5, posZ);
+			this["car"..i].Scale = vec3(1.0/(i/2.0+1));
+			i = i + 1;
+		}
+	}
+	else
+	{
+		this.car = new Car();
+		this.car.Parent = this; 
+	}
 
         Light0.Position = vec3(10.0, 10.0, 10.0);
         Light0.Color = vec3(1.0, 1.0, 1.0);
@@ -183,59 +213,79 @@ timeline Main()
 	n = 0;
 	while (n < 400)
 	{
-		cube = new Object();
-		cube.Primitive = "Cube";
-		if (n%2 = 0) { cube.Color = vec3(0.1); }
-		else { cube.Color = vec3(1.0); }
-		cube.Position = vec3(n*4-10, -1.7, 0.0);
-		cube.Scale = vec3(2.0, 0.2, 10.0);
-		MoveBack<<1.0>>(cube);
+		this["cube"..n] = new Object();
+		this["cube"..n].Parent = this;  
+		this["cube"..n].Primitive = "Cube";
+		if (n%2 = 0) { this["cube"..n].Color = vec3(0.1); }
+		else { this["cube"..n].Color = vec3(1.0); }
+		this["cube"..n].Position = vec3(n*4-10, -1.7, 0.0);
+		this["cube"..n].Scale = vec3(2.0, 0.2, 10.0);
+		key<<0.0>> { MoveBack<<1.0>>(this["cube"..n]); }
 		n = n + 1;
 	}
 
-	obst1 = new Object();
-	obst1.Primitive = "Cube";
-	obst1.Color = vec3(0, 1, 0);
-	obst1.Position = vec3(80, 1, 0);
-	obst1.Scale = vec3(2.0, 2.9, 9.0);
-	MoveBack<<1.0>>(obst1);
+	this.obst1 = new Object();
+	this.obst1.Parent = this;  
+	this.obst1.Primitive = "Cube";
+	this.obst1.Color = vec3(0, 1, 0);
+	this.obst1.Position = vec3(80, 1, 0);
+	this.obst1.Scale = vec3(2.0, 2.9, 9.0);
+	key <<0.0>> { MoveBack<<1.0>>(this.obst1); }
 
-	obst2 = new Object();
-	obst2.Primitive = "Cube";
-	obst2.Color = vec3(0, 1, 0);
-	obst2.Position = vec3(160, 1, 0);
-	obst2.Scale = vec3(20.0, 2.9, 9.0);
-	MoveBack<<1.0>>(obst2);
+	this.obst2 = new Object();
+	this.obst2.Parent = this;  
+	this.obst2.Primitive = "Cube";
+	this.obst2.Color = vec3(0, 1, 0);
+	this.obst2.Position = vec3(160, 1, 0);
+	this.obst2.Scale = vec3(20.0, 2.9, 9.0);
+	key <<0.0>> { MoveBack<<1.0>>(this.obst2); }
 
-	obst3 = new Object();
-	obst3.Primitive = "Cube";
-	obst3.Color = vec3(0, 1, 0);
-	obst3.Position = vec3(350, 0, -1.5);
-	obst3.Scale = vec3(20.0, 1.5, 1.0);
-	MoveBack<<1.0>>(obst3);
+	this.obst3 = new Object();
+	this.obst3.Parent = this;
+	this.obst3.Primitive = "Cube";
+	this.obst3.Color = vec3(0, 1, 0);
+	this.obst3.Position = vec3(350, 0, -1.5);
+	this.obst3.Scale = vec3(20.0, 1.5, 1.0);
+	key <<0.0>> { MoveBack<<1.0>>(this.obst3); }
 
-	obst4 = new Object();
-	obst4.Primitive = "Cube";
-	obst4.Color = vec3(0, 1, 0);
-	obst4.Position = vec3(350, 0, 1.5);
-	obst4.Scale = vec3(20.0, 1.5, 1.0);
-	MoveBack<<1.0>>(obst4);
+	this.obst4 = new Object();
+	this.obst4.Parent = this;
+	this.obst4.Primitive = "Cube";
+	this.obst4.Color = vec3(0, 1, 0);
+	this.obst4.Position = vec3(350, 0, 1.5);
+	this.obst4.Scale = vec3(20.0, 1.5, 1.0);
+	key <<0.0>> { MoveBack<<1.0>>(this.obst4); }
 
 	n = 0;
 	while (n < 3)
 	{
-		stone = new Stone();
-		stone.Position = vec3(-5.0, 10.0, 0.0);
-		key [[10.0 + n]] { Fall[[0.8]](stone, 0.0); }
+		this.stone = new Stone();
+		this.stone.Parent = this;
+		this.stone.Visible = false; 
+		this.stone.Position = vec3(-5.0, 10.0, 0.0);
+		key <<10.0 + n>> { Fall<<0.8>>(this.stone, 0.0, true); }
 		n = n + 1;
 	}
-
-	key [[3.6]] { JumpCar[[0.8]](car, 0.0); } 
-	key [[6.5]] { JumpCar[[0.8]](car, 5.5); } 
-	key [[6.5]] { Spin[[0.8]](car); } 
-	key [[9.0]] { Fall[[0.8]](car, 0.0); } 
-	key [[16.0]] { StretchCar[[1.0]](car, 0.1); } 
-	key [[19.0]] { StretchCar[[1.0]](car, 1.0); } 
-	MoveCar[[1.0]](car);
 }
 
+global anim1;
+global anim2;
+global carColor;
+
+timeline Animation()
+{
+	carColor = vec3(1,0,0);
+	anim1 = new CarAnimation(false);
+
+	carColor = vec3(0,0,1);
+	anim2 = new CarAnimation(true);
+	anim2.Position = vec3(0, 0, -15);
+}
+
+timeline Main()
+{
+	key<<0.0>> 
+	{ 
+		Animation<<1.0>>();	 
+	}
+}
