@@ -1,109 +1,62 @@
 global root;
+global depth;
 
-function CreateCube(n, parent)
-{
-	c = new Cube(n);
+function CreateSphere(n, i, parent) {
+	if ((i :/ 1) % 2 = 0) { x = 1; } else { x = -1; }
+	if ((i :/ 2) % 2 = 0) { y = 1; } else { y = -1; }
+	if ((i :/ 4) % 2 = 0) { z = 1; } else { z = -1; }
+
+	if (x*y*z > 0) { n = n + 1; }
+	if (n > depth) { n = 0; }
+	c = new Sphere(n);
+
+	c.Position = vec3(x,y,z) * 0.55;
 	c.Scale = vec3(0.45);
 	c.Parent = parent;
+	c.Color = vec3((i :/ 1) % 2, (i :/ 2) % 2, (i :/ 4) % 2);
 	return c;
 }
 
-prefab Cube(n)
-{
-	if (n <= 3) { key [[n]] { Scale<<3>>(this); } }
-
-	if (n = 0)
-	{
+prefab Sphere(n) {
+	if (n <= 0) {
 		this.Primitive = "Sphere";
 		this.Color = vec3(rand(), rand(), rand());
-	}
-	else
-	{
+	} else {
 		this.Primitive = "Empty";
 
-		this[0] = CreateCube(  0, this);
-		this[1] = CreateCube(n-1, this);
-		this[2] = CreateCube(n-1, this);
-		this[3] = CreateCube(  0, this);
-		this[4] = CreateCube(n-1, this);
-		this[5] = CreateCube(  0, this);
-		this[6] = CreateCube(  0, this);
-		this[7] = CreateCube(n-1, this);
-		
-		d = 0.55;
-		this[0].Position = vec3(-d, -d, -d);
-		this[1].Position = vec3(-d, -d,  d);
-		this[2].Position = vec3(-d,  d, -d);
-		this[3].Position = vec3(-d,  d,  d);
-		this[4].Position = vec3( d, -d, -d);
-		this[5].Position = vec3( d, -d,  d);
-		this[6].Position = vec3( d,  d, -d);
-		this[7].Position = vec3( d,  d,  d);
+		i = 0;
+		while (i < 8) {
+			this[i] = CreateSphere(n-2,i,this);
+			i = i + 1;
+		}
 	}
 	
-	if (n = 5) { return; }
-	key<<0.0>>
-	{
-		if (n % 3 = 0) { SpinX<<10>>(this); }
-		if (n % 3 = 1) { SpinY<<10>>(this); }
-		if (n % 3 = 2) { SpinZ<<10>>(this); }
+	if (n = depth) { return; }
+
+	key [[n]] { Scale<<6>>(this); }
+	
+	if (n % 3 = 0) { this.Rotation.x = 360.0; }
+	if (n % 3 = 1) { this.Rotation.y = 360.0; }
+	if (n % 3 = 2) { this.Rotation.z = 360.0; }
+
+	//key<<0.0>> { Spin<<10>>(this); }
+}
+
+timeline Scale(obj) {
+	key<<0.5>> ElasticOut { obj.Scale -> vec3(0.49); }
+	key<<1.0>> ElasticOut { obj.Scale -> vec3(0.3);	Scale<<1.0>>(obj); }
+}
+
+timeline Spin(obj) {
+	key<<1.0>> {
+		obj.Rotation -> obj.Rotation.zxy;
+		Spin<<1.0>>(obj);
 	}
 }
 
-timeline Scale(obj)
-{
-	obj.Scale = vec3(0.3);
-
-	key<<0.5>> ElasticOut
-	{
-		obj.Scale -> vec3(0.6);
-	}
-	key<<1.0>> ElasticOut
-	{
-		obj.Scale -> vec3(0.3);
-		Scale<<1.0>>(obj);
-	}
-}
-
-timeline SpinX(obj)
-{
-	obj.Rotation.x = 0;
-
-	key<<1.0>> 
-	{
-		obj.Color -> vec3(rand(), rand(), rand());
-		obj.Rotation.x -> 360;
-		SpinY<<1.0>>(obj);
-	}
-}
-
-timeline SpinY(obj)
-{
-	obj.Rotation.y = 0;
-
-	key<<1.0>> 
-	{
-		obj.Color -> vec3(rand(), rand(), rand());
-		obj.Rotation.y -> 360;
-		SpinZ<<1.0>>(obj);
-	}
-}
-
-timeline SpinZ(obj)
-{
-	obj.Rotation.z = 0;
-
-	key<<1.0>> 
-	{
-		obj.Color -> vec3(rand(), rand(), rand());
-		obj.Rotation.z -> 360;
-		SpinX<<1.0>>(obj);
-	}
-}
-
-timeline Main()
-{
-	root = new Cube(4);
+timeline Main() {
+	depth = 4;
+	root = new Sphere(depth);
 
 	Light0.Position = vec3(1.5,1.5,0);
 	Light0.Color = vec3(1.0, 1.0, 1.0);
@@ -117,4 +70,3 @@ timeline Main()
 	Light1.Intensity = 500.0;
 	Light1.Visible = true;
 }
-	
