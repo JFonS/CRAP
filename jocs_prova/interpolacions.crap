@@ -92,15 +92,18 @@ timeline Main()
 	cubes[i].Position = vec3(0,-1.2,0);
 	cubes[i].Color = vec3(0.1);
 
-	key<<0.0>> { MoveLinear     <<5>>(cubes[0]); }
-	key<<0.0>> { MoveSine       <<5>>(cubes[1]); }
-	key<<0.0>> { MoveElasticOut <<5>>(cubes[2]); }
-	key<<0.0>> { MoveBounceOut  <<5>>(cubes[3]); }
-	key<<0.0>> { MoveBack       <<5>>(cubes[4]); }
-	key<<0.0>> { MoveQuint      <<5>>(cubes[5]); }
-	key<<0.0>> { MoveExpo       <<5>>(cubes[6]); }
-	key<<0.0>> { MoveSineIn     <<5>>(cubes[7]); }
-	key<<0.0>> { MoveBounce     <<5>>(cubes[8]); }
-	key<<0.0>> { MoveCubicOut   <<5>>(cubes[9]); }
-
+        duration = 5;
+	key<<0.0>> 
+        { 
+        	MoveLinear     [[duration]](cubes[0]);
+		MoveSine       [[duration]](cubes[1]);
+		MoveElasticOut [[duration]](cubes[2]);
+		MoveBounceOut  [[duration]](cubes[3]);
+		MoveBack       [[duration]](cubes[4]);
+		MoveQuint      [[duration]](cubes[5]);
+		MoveExpo       [[duration]](cubes[6]);
+		MoveSineIn     [[duration]](cubes[7]);
+		MoveBounce     [[duration]](cubes[8]);
+		MoveCubicOut   [[duration]](cubes[9]);
+	}
 }

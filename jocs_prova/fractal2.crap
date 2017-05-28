@@ -1,0 +1,86 @@
+global root;
+global depth;
+
+prefab Cube(i)
+{
+	this.Primitive = "Cube";
+	this.Color = vec3((i :/ 1) % 2, (i :/ 2) % 2, (i :/ 4) % 2); 
+}
+
+prefab Branch (n) 
+{
+	this.Primitive = "Empty";
+
+	// Create the cubes
+	i = 0;
+	length = n + 8;
+	this.cubes = new Object(); 
+	this.cubes.Primitive = "Empty";
+	lastPosition = vec3(0);
+  	while (i < length)
+	{
+		this.cubes[i] = new Cube(n+1);
+		this.cubes[i].Parent = this;
+		s = (n*0.5+1);
+		this.cubes[i].Scale = vec3(s); // vec3( (1.0/(i+1)) ) * 2.0;
+		this.cubes[i].Position.z = i * 2.0 * (s);
+		lastPosition = this.cubes[i].Position;
+		i = i + 1;
+	}
+	lastPosition.z = lastPosition.z + 1;
+
+	// Creacio esferes joints 
+	this.sphere = new Object();
+	this.sphere.Parent = this;
+	this.sphere.Primitive = "Sphere";
+	this.sphere.Scale = vec3(n+3);
+
+	if (n = 0) { return; } // Cas base
+	
+	// Create the branches
+	i = 0;
+	numBranches = 2;
+	this.branches = new Object();
+	this.branches.Primitive = "Empty";
+  	while (i < numBranches)
+	{
+		this.branches[i] = new Branch(n-1);
+		this.branches[i].Parent = this;
+		this.branches[i].Position = lastPosition - vec3(0,0,2); 
+		this.branches[i].Rotation.x = 90;
+		this.branches[i].Rotation.y = i * (360 / numBranches);
+		i = i + 1;
+	}
+	
+	key<<0.0>> { Spin[[7.0]](this); }
+}
+
+timeline Spin(obj) {
+        key<<0.0>> {
+		obj.Rotation.z -> 0;
+	}
+
+        key<<1.0>> {
+                obj.Rotation.z -> 360;
+                Spin<<1.0>>(obj);
+        }
+}
+
+timeline Main() {
+	depth = 6;
+        root = new Branch(depth);
+	root.Position.z = -50;
+
+        Light0.Position = vec3(1.5,1.5,0);
+        Light0.Color = vec3(1.0, 1.0, 1.0);
+        Light0.Range = 2000.0;
+        Light0.Intensity = 500.0;
+        Light0.Visible = true;
+
+        Light1.Position = vec3(-1.5,-1.5,0);
+        Light1.Color = vec3(1.0, 1.0, 1.0);
+        Light1.Range = 2000.0;
+        Light1.Intensity = 500.0;
+        Light1.Visible = true;
+}
+

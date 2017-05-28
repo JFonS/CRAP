@@ -8,6 +8,7 @@ FILE=$1
 ./bin/CRAP ${FILE} -dot -ast ${FILE}.ast.dot 
 if [ -z $2 ]
 then
+	rm ${FILE}.ast.dot
 	echo ""
 else
 	dot -Tpdf ${FILE}.ast.dot -o ${FILE}.ast.pdf 
