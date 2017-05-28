@@ -1,0 +1,106 @@
+global amount;
+global cubes;
+
+prefab Cube(n) 
+{
+	this.Primitive = "Cube";
+	this.Color = vec3(rand(), rand(), rand());
+	this.Position.x = n - (amount/2);
+	this.Scale = vec3(0.25);
+}
+
+timeline MoveLinear(obj) {
+	key<<0.5>> Linear { obj.Position.y -> 5.0; }
+	key<<1.0>> Linear { obj.Position.y -> 0.0; MoveLinear<<1.0>>(obj); }
+}
+
+timeline MoveSine(obj) {
+	key<<0.5>> Sine { obj.Position.y -> 5.0; }
+	key<<1.0>> Sine { obj.Position.y -> 0.0; MoveSine<<1.0>>(obj); }
+}
+
+timeline MoveExpo(obj) {
+	key<<0.5>> Expo { obj.Position.y -> 5.0; }
+	key<<1.0>> Expo { obj.Position.y -> 0.0; MoveExpo<<1.0>>(obj); }
+}
+
+timeline MoveElasticOut(obj) {
+	key<<0.5>> ElasticOut { obj.Position.y -> 5.0; }
+	key<<1.0>> ElasticOut { obj.Position.y -> 0.0; MoveElasticOut<<1.0>>(obj); }
+}
+
+timeline MoveBounceOut(obj) {
+	key<<0.5>> BounceOut { obj.Position.y -> 5.0; }
+	key<<1.0>> BounceOut { obj.Position.y -> 0.0; MoveBounceOut<<1.0>>(obj); }
+}
+
+timeline MoveQuint(obj) {
+	key<<0.5>> Quint { obj.Position.y -> 5.0; }
+	key<<1.0>> Quint { obj.Position.y -> 0.0; MoveQuint<<1.0>>(obj); }
+}
+
+timeline MoveBack(obj) {
+	key<<0.5>> Back { obj.Position.y -> 5.0; }
+	key<<1.0>> Back { obj.Position.y -> 0.0; MoveBack<<1.0>>(obj); }
+}
+
+timeline MoveCubicOut(obj) {
+	key<<0.5>> CubicOut { obj.Position.y -> 5.0; }
+	key<<1.0>> CubicOut { obj.Position.y -> 0.0; MoveCubicOut<<1.0>>(obj); }
+}
+
+timeline MoveSineIn(obj) {
+	key<<0.5>> SineIn { obj.Position.y -> 5.0; }
+	key<<1.0>> SineIn { obj.Position.y -> 0.0; MoveSineIn<<1.0>>(obj); }
+}
+
+timeline MoveBounce(obj) {
+	key<<0.5>> Bounce { obj.Position.y -> 5.0; }
+	key<<1.0>> Bounce { obj.Position.y -> 0.0; MoveBounce<<1.0>>(obj); }
+}
+
+function InitLigths()
+{
+	Light0.Position = vec3(0,10,0);
+	Light0.Color = vec3(1.0, 1.0, 1.0);
+	Light0.Range = 200.0; 
+	Light0.Intensity = 500.0;
+	Light0.Visible = true;
+
+	Light1.Position = vec3(5,6,0);
+	Light1.Color = vec3(1.0, 1.0, 1.0);
+	Light1.Range = 200.0; 
+	Light1.Intensity = 500.0;
+	Light1.Visible = true;
+}
+
+timeline Main() 
+{
+	amount = 10;
+
+	InitLigths();
+
+	i = 0;
+	while (i < amount)
+	{
+		cubes[i] = new Cube(i);
+		i = i + 1;
+	}	
+
+	cubes[i] = new Object();
+	cubes[i].Scale = vec3(1000,1,1000);
+	cubes[i].Position = vec3(0,-1.2,0);
+	cubes[i].Color = vec3(0.1);
+
+	key<<0.0>> { MoveLinear     <<5>>(cubes[0]); }
+	key<<0.0>> { MoveSine       <<5>>(cubes[1]); }
+	key<<0.0>> { MoveElasticOut <<5>>(cubes[2]); }
+	key<<0.0>> { MoveBounceOut  <<5>>(cubes[3]); }
+	key<<0.0>> { MoveBack       <<5>>(cubes[4]); }
+	key<<0.0>> { MoveQuint      <<5>>(cubes[5]); }
+	key<<0.0>> { MoveExpo       <<5>>(cubes[6]); }
+	key<<0.0>> { MoveSineIn     <<5>>(cubes[7]); }
+	key<<0.0>> { MoveBounce     <<5>>(cubes[8]); }
+	key<<0.0>> { MoveCubicOut   <<5>>(cubes[9]); }
+
+}
