@@ -52,14 +52,12 @@ prefab Branch (n)
 		i = i + 1;
 	}
 	
-	key<<0.0>> { Spin[[7.0]](this); }
+	// key<<0.0>> { Spin[[ (n*n)/10.0 ]](this); }
+	key<<0.0>> { Spin[[ 7.0 ]](this); }
 }
 
 timeline Spin(obj) {
-        key<<0.0>> {
-		obj.Rotation.z -> 0;
-	}
-
+        key<<0.0>> { obj.Rotation.z -> 0; }
         key<<1.0>> {
                 obj.Rotation.z -> 360;
                 Spin<<1.0>>(obj);

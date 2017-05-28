@@ -331,9 +331,11 @@ timeline Animation()
 	numCars = 8;
 	while (n < numCars)
 	{
-		key <<(1.0/numCars) * n * 3>>
+		timei = (n-numCars/2);
+		if (timei < 0) { timei = -timei; }
+		key <<(1.0/numCars) * timei * 3>>
 		{
-			CreateCar<<1.0>>(n);
+			 CreateCar<<1.0>>(n);
 		}
 		n = n + 1;
 	}
