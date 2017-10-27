@@ -1,4 +1,4 @@
-Desciption of the directories:
+Description of the directories:
 ==============================
 
 src:      all the source files
@@ -22,10 +22,10 @@ make clean   -> cleans the directories and keeps the essential files
 Execution:
 ==========
 
-* Set your path too look into the bin directory
-* Run "CRAP" (you can run "CRAP -help" too see the available options)
+* Set your path to look into the bin directory
+* Run "CRAP" (you can run "CRAP -help" to see the available options)
 
-Licesing:
+Licensing:
 =========
 
 This distribution contains the libraries antlr3.jar and commons-cli.jar
